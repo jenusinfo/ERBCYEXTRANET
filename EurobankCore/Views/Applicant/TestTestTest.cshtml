@@ -1,0 +1,795 @@
+﻿@using CMS.DataEngine
+@using CMS.SiteProvider
+@using Eurobank.Helpers.Process;
+@using Microsoft.AspNetCore.Mvc;
+@using Eurobank.Models.Application.Common;
+@model Eurobank.Models.Application.RelatedParty.RelatedPartyModel
+@using Kendo.Mvc.UI
+@{
+	ViewData["Title"] = "Related Party";
+	Layout = "~/Views/Shared/_Layout_Applications.cshtml";
+	bool isLegalEntity = string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+	var userModel = UserProcess.GetUser(User.Identity.Name);
+	bool isIntroducer = userModel != null && string.Equals(userModel.UserType, ApplicationUserType.INTRODUCER.ToString(), StringComparison.OrdinalIgnoreCase);
+}
+
+
+
+<form id="relatedPartyForm" asp-action="RelatedParty" asp-controller="RelatedParty">
+	@Html.HiddenFor(model => model.ApplicationNumber)
+	@Html.HiddenFor(model => model.ApplicationID)
+	@Html.HiddenFor(m => m.Id)
+	@Html.HiddenFor(m => m.Type)
+	@Html.HiddenFor(m => m.ApplicationType)
+	@Html.HiddenFor(m => m.IsRelatedPartyUBO)
+	@if(Model.PersonalDetails != null && !isLegalEntity)
+	{
+		<div class="shadow-box col-md-12" id="stPersonalDetails">
+			<div class="col-md-12">
+				<ul id="accordionPersonalDetails">
+					<li id="chartSection" class="k-state-active">
+						<span class="k-link" id="Span1" style="width:auto; height:auto;">
+							@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails")
+						</span>
+						<div id="PersonalDetailsaccordionContentOne" class="row m-0">
+							@if(isIntroducer)
+							{
+								<div class="form-group">
+									<input type="button" id="btnPersonSearch" onclick="personSearchGrid();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Search")" class="btn btn-primary mt-3">
+									<input type="button" id="btnPersonClear" onclick="clearContact();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Clear")" class="btn btn-primary mt-3">
+								</div>
+							}
+							<div id="divRegisteredPerson">
+
+								@(Html.Kendo().Window()
+    .Name("PersonSearchWindow")
+    .Title(ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Search.Header"))
+    .Content(@<text>
+        @(Html.Kendo().Grid<Eurobank.Models.Application.Common.PersonsRegistrySearchModel>
+()
+.Name("RegPersons")
+.Columns(columns =>
+{
+	columns.Bound(p => p.ApplicationTypeName).Title("Type");
+	columns.Bound(p => p.FullName).Title("Full Name");
+	columns.Bound(p => p.IdentificationNumber);
+	columns.Bound(p => p.DateofBirth).Width(120);
+	columns.Bound(p => p.IssueDate).Width(100);
+	columns.Bound(p => p.CitizenshipName).Width(120);
+	columns.Select().Width(50);
+	//if (isLegalEntity == true)
+	//{
+	//    columns.Bound(p => p.PhoneNo);
+	//    columns.Bound(p => p.FaxNo);
+	//}
+})
+.ToolBar(toolbar =>
+		toolbar.ClientTemplate("<div class='toolbar search-address'>" +
+		"<input type='text' name='toolApplicationType' placeholder='Type' class ='k-textbox' id='toolApplicationType'/>" +
+		"<input type='text' name='toolReferenceNumber' placeholder='Reference' class ='k-textbox' id='toolReferenceNumber'/>" +
+		"<input type='text' name='toolFullName' placeholder='Full Name' class ='k-textbox' id='toolFullName'/>" +
+		"<input type='text' name='toolIdentificationNumber' placeholder='Identification Number' class ='k-textbox' id='toolIdentificationNumber'/>" +
+		"<input type='text' name='toolDateofBirth' placeholder='Date of Birth' class ='k-textbox' id='toolDateofBirth'/>" +
+		"<input type='text' name='toolIssueDate' placeholder='Issue Date' class ='k-textbox' id='toolIssueDate'/>" +
+		"<input type='text' name='toolCitizenshipName' placeholder='Citizenship' class ='k-textbox' id='toolCitizenshipName'/>" +
+		"<button class='k-button' onclick='searchPersons()'>Search</button></div>"))
+.Pageable()
+.Sortable()
+.Scrollable()
+.HtmlAttributes(new { style = "height:550px;" })
+.DataSource(dataSource => dataSource
+.Ajax()
+.PageSize(10)
+.Model(model =>
+{
+
+	//model.Id(p => p.Id);
+	model.Field(p => p.ApplicationTypeName);
+	model.Field(p => p.FirstName);
+	model.Field(p => p.LastName);
+	model.Field(p => p.IdentificationNumber);
+	model.Field(p => p.DateofBirth);
+	model.Field(p => p.IssueDate);
+	model.Field(p => p.CitizenshipName);
+	model.Field(p => p.HomeTelNoCountryCode);
+	model.Field(p => p.HomeTelNoNumber);
+	model.Field(p => p.MobileTelNoCountryCode);
+	model.Field(p => p.MobileTelNoNumber);
+	model.Field(p => p.WorkTelNoCountryCode);
+	model.Field(p => p.WorkTelNoNumber);
+	model.Field(p => p.FaxNoCountryCode);
+	model.Field(p => p.FaxNoFaxNumber);
+	model.Field(p => p.EmailAddress);
+	model.Field(p => p.PreferredCommunicationLanguage);
+	model.Field(p => p.ConsentforMarketingPurposes);
+	//model.Field(p => p.Status);
+})
+.ServerOperation(true)
+//.Read(read => read.Action("RegisteredAddresses_Read", "Registries"))
+.Read(read => read.Action("PersonRegistry_Read", "Registries"))
+))
+
+	<div class="form-group d-flex justify-content-end">
+		<input type="button" id="btnPersonCancel" onclick="personCancelGrid()" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Cancel")" class="btn btn-primary mt-3 mr-3 k-grid-cancel">
+		<input type="button" id="btnPersonSelect" onclick="selectPersonFromGrid()" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Select")" class="btn btn-primary mt-3">
+	</div>
+    </text>)
+	.Resizable()
+	.Visible(false)
+	.Width(600)
+	.Actions(actions => actions.Close())
+//.Events(ev => ev.Close("onSearchWindowClose"))
+)
+
+
+
+
+							</div>
+
+
+							@Html.HiddenFor(model => model.PersonalDetails.Id)
+							@Html.HiddenFor(model => model.PersonalDetails.PersonRegistryId)
+							@Html.HiddenFor(model => model.PersonalDetails.IsRelatedPartyUBO)
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="PersonalDetails.Title" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.Title")</label>
+									@(Html.Kendo().DropDownListFor(m => m.PersonalDetails.Title).BindTo((System.Collections.IEnumerable)ViewBag.PersonTitle)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+									@Html.ValidationMessageFor(X => X.PersonalDetails.Title)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.FirstName" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.FirstName")</label>
+									@Html.Kendo().TextBoxFor(model => model.PersonalDetails.FirstName).HtmlAttributes(new { @class = "form-control" })
+									@Html.ValidationMessageFor(X => X.PersonalDetails.FirstName)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.LastName" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.LastName")</label>
+									@Html.Kendo().TextBoxFor(model => model.PersonalDetails.LastName).HtmlAttributes(new { @class = "form-control" })
+									@Html.ValidationMessageFor(X => X.PersonalDetails.LastName)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.FathersName" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.FathersName")</label>
+									@Html.Kendo().TextBoxFor(model => model.PersonalDetails.FathersName).HtmlAttributes(new { @class = "form-control" })
+									@Html.ValidationMessageFor(X => X.PersonalDetails.FathersName)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.Gender" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.Gender")</label>
+									@(Html.Kendo().DropDownListFor(m => m.PersonalDetails.Gender).BindTo((System.Collections.IEnumerable)ViewBag.Gender)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+									@Html.ValidationMessageFor(X => X.PersonalDetails.Gender)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.DateOfBirth" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.DateOfBirth")</label>
+									@Html.Kendo().DatePickerFor(model => model.PersonalDetails.DateOfBirth).Events(e =>
+							   {
+								   e.Change("onChangePersonalDetailsDOB");
+							   }).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+									@Html.HiddenFor(model => model.PersonalDetails.HdnDateOfBirth)
+									@Html.ValidationMessageFor(X => X.PersonalDetails.DateOfBirth)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.PlaceOfBirth" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.PlaceOfBirth")</label>
+									@Html.Kendo().TextBoxFor(model => model.PersonalDetails.PlaceOfBirth).HtmlAttributes(new { @class = "form-control" })
+									@Html.ValidationMessageFor(X => X.PersonalDetails.PlaceOfBirth)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.CountryOfBirth" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.Label.CountryOfBirth")</label>
+									@(Html.Kendo().DropDownListFor(m => m.PersonalDetails.CountryOfBirth).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text")
+    .Filter("startswith")
+    .HtmlAttributes(new { @class = "form-control" }))
+									@Html.ValidationMessageFor(X => X.PersonalDetails.CountryOfBirth)
+								</div>
+								<div class="form-group">
+									<label asp-for="PersonalDetails.EducationLevel" class="control-label">@ResHelper.GetString("Eurobank.Application.RelatedParty.PersonalDetails.EducationLevel")</label>
+									@(Html.Kendo().DropDownListFor(m => m.PersonalDetails.EducationLevel).BindTo((System.Collections.IEnumerable)ViewBag.Education)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+									@Html.ValidationMessageFor(X => X.PersonalDetails.EducationLevel)
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	}
+
+	@if(Model.CompanyDetails != null && isLegalEntity)
+	{
+		<div class="shadow-box col-md-12" id="stPersonalDetails">
+			<div class="col-md-12">
+				<ul id="accordionPersonalDetails">
+					<li id="chartSection" class="k-state-active">
+						<span class="k-link" id="Span1" style="width:auto; height:auto;">
+							@ResHelper.GetString("Eurobank.Application.RelatedParty.CompanyDetails")
+						</span>
+						<div id="PersonalDetailsaccordionContentOne" class="row m-0">
+							@Html.HiddenFor(model => model.CompanyDetails.Id)
+							@Html.HiddenFor(model => model.CompanyDetails.IsRelatedPartyUBO)
+							@{
+								<div class="col-md-6">
+									<div class="form-group">
+										<label asp-for="CompanyDetails.RegisteredName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.RegisteredName")</label>
+										@Html.Kendo().TextBoxFor(model => model.CompanyDetails.RegisteredName).HtmlAttributes(new { @class = "form-control" })
+										@Html.ValidationMessageFor(X => X.CompanyDetails.RegisteredName)
+									</div>
+									<div class="form-group">
+										<label asp-for="CompanyDetails.EntityType" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.EntityType")</label>
+										@(Html.Kendo().DropDownListFor(m => m.CompanyDetails.EntityType).BindTo((System.Collections.IEnumerable)ViewBag.CompanyEntities)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+										@Html.ValidationMessageFor(X => X.CompanyDetails.EntityType)
+									</div>
+									<div class="form-group">
+										<label asp-for="CompanyDetails.CountryofIncorporation" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.CountryofIncorporation")</label>
+										@(Html.Kendo().DropDownListFor(m => m.CompanyDetails.CountryofIncorporation).BindTo((System.Collections.IEnumerable)ViewBag.Countries)
+    .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+    .DataValueField("Value")
+    .Filter("startswith")
+    .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+										@Html.ValidationMessageFor(X => X.CompanyDetails.CountryofIncorporation)
+									</div>
+
+									<div class="form-group">
+										<label asp-for="CompanyDetails.RegistrationNumber" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.RegistrationNumber")</label>
+										@Html.Kendo().TextBoxFor(model => model.CompanyDetails.RegistrationNumber).HtmlAttributes(new { @class = "form-control" })
+										@Html.ValidationMessageFor(X => X.CompanyDetails.RegistrationNumber)
+									</div>
+
+									<div class="form-group">
+										<label asp-for="CompanyDetails.DateofIncorporation" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.DateofIncorporation")</label>
+										@Html.Kendo().DatePickerFor(model => model.CompanyDetails.DateofIncorporation).Events(e =>
+								   {
+									   e.Change("onChangeCompanyDetailsDOI");
+								   }).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+										@Html.HiddenFor(model => model.CompanyDetails.HdnDateofIncorporation)
+										@Html.ValidationMessageFor(X => X.CompanyDetails.DateofIncorporation)
+									</div>
+
+								</div>
+
+							}
+
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	}
+
+
+
+	@if(Model.Id > 0)
+	{
+		@if(isLegalEntity)
+		{
+			@Html.Partial("_AddressDetails", Model)
+			@Html.Partial("_PartyRolesLegal", Model)
+			@*@Html.Partial("_PEPDetailsLegal", Model)
+				@Html.Partial("_SourceOfIncome", Model)
+				@Html.Partial("_OriginOfTotalAssets", Model)
+				@Html.Partial("_IdentificationDetails", Model)
+				@Html.Partial("_ContactDetails", Model)*@
+
+		}
+		else
+		{
+			@Html.Partial("_IdentificationDetails", Model)
+			@Html.Partial("_AddressDetails", Model)
+			@Html.Partial("_ContactDetails", Model)
+			@if(Model.EmploymentDetails != null)
+			{
+				<div class="shadow-box col-md-12" id="stEmploymentDetails">
+					<div class="col-md-12">
+						<ul id="accordionEmploymentDetails">
+							<li id="chartSection" class="k-state-active">
+								<span class="k-link" id="Span1" style="width:auto; height:auto;">
+									@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails")
+								</span>
+								<div id="EmploymentDetailsaccordionContentOne" class="row m-0">
+									<div class="col-md-6">
+										@Html.HiddenFor(model => model.EmploymentDetails.Id)
+
+										<div class="specialStatusBlock">
+											<div class="form-group">
+												<label asp-for="EmploymentDetails.Profession" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.Profession")</label>
+												@(Html.Kendo().DropDownListFor(m => m.EmploymentDetails.Profession).BindTo((System.Collections.IEnumerable)ViewBag.EmploymentProfessions)
+    .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+    .DataValueField("Value")
+    .Filter("startswith")
+    .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+												@Html.ValidationMessageFor(X => X.EmploymentDetails.Profession)
+											</div>
+											<div class="form-group">
+												<label asp-for="EmploymentDetails.EmployersName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.EmployersName")</label>
+												@Html.Kendo().TextBoxFor(model => model.EmploymentDetails.EmployersName).HtmlAttributes(new { @class = "form-control" })
+												@Html.ValidationMessageFor(X => X.EmploymentDetails.EmployersName)
+											</div>
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			}
+			@Html.Partial("_SourceOfIncome", Model)
+			@Html.Partial("_OriginOfTotalAssets", Model)
+			@Html.Partial("_PEPDetails", Model)
+			@Html.Partial("_PartyRoles", Model)
+
+		}
+	}
+	<div id="stSubmitConfirm" class="fix-appbtn" style="clear:both;">
+		<div class="row justify-content-between pt-3">
+			@*<div class="row">*@
+			<div class="col-6">
+				<a href="@Url.Action("Edit", "Applications", new { @id = Model.ApplicationID})">
+					<button type="button" class="btn btn-link">Close</button>
+				</a>
+
+			</div>
+			<div class="col-6 text-right">
+				@if(Model.Id > 0)
+				{
+					@if(string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.PENDING_INITIATOR.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.DRAFT.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.PENDING_SIGNATURES.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.PENDING_OMMISSIONS.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase))
+					{
+						<button form="relatedPartyForm" name="relatedPartyButton" value="SAVEDRAFT" type="submit" class="btn btn-success mr-3">SAVE AS DRAFT</button>
+					}
+					@if(Model.IsEdit)
+					{
+						<button form="relatedPartyForm" name="relatedPartyButton" value="SAVECLOSE" type="submit" class="btn btn-primary">SAVE & CLOSE</button>
+
+					}
+				}
+				else
+				{
+					<button form="relatedPartyForm" type="submit" class="btn btn-primary">PROCEED</button>
+				}
+
+
+			</div>
+		</div>
+	</div>
+</form>
+<script>
+
+    var isApplicationPermisssionEdit = '@Model.IsEdit';
+
+	function onChangeCompanyDetailsDOI(e) {
+		$('#CompanyDetails_HdnDateofIncorporation').val($('#CompanyDetails_DateofIncorporation').val());
+	}
+	function onChangePersonalDetailsDOB(e) {
+		$('#PersonalDetails_HdnDateOfBirth').val($('#PersonalDetails_DateOfBirth').val());
+	}
+    function searchPersons() {
+        var applicationTypevalue = $("#toolApplicationType").val();
+        var referenceNumbervalue = $("#toolReferenceNumber").val();
+        var fullNamevalue = $("#toolFullName").val();
+        var identificationNumbervalue = $("#toolIdentificationNumber").val();
+        var dateofBirthvalue = $("#toolDateofBirth").val();
+        var issueDatevalue = $("#toolIssueDate").val();
+        var citizenshipNamevalue = $("#toolCitizenshipName").val();
+        grid = $("#RegPersons").data("kendoGrid");
+
+        if (applicationTypevalue || referenceNumbervalue || fullNamevalue || identificationNumbervalue || dateofBirthvalue || issueDatevalue || citizenshipNamevalue) {
+            console.log('in');
+            grid.dataSource.filter({
+                logic: "and",
+                filters: [
+                    { field: "ApplicationTypeName", operator: "contains", value: applicationTypevalue },
+                    { field: "IdentificationNumber", operator: "contains", value: identificationNumbervalue },
+                    { field: "DateofBirth", operator: "contains", value: dateofBirthvalue },
+                    { field: "IssueDate", operator: "contains", value: issueDatevalue },
+                    { field: "CitizenshipName", operator: "contains", value: citizenshipNamevalue },
+                ]
+            });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+
+
+    function selectPersonFromGrid() {
+        var grid = $("#RegPersons").data("kendoGrid");
+        var selectedItem = grid.dataItem(grid.select());
+
+        var dropdownlistTitle = $("#PersonalDetails_Title").data("kendoDropDownList");
+        dropdownlistTitle.value(selectedItem.Title);
+
+        $('#PersonalDetails_FirstName').val(selectedItem.FirstName);
+        $('#PersonalDetails_LastName').val(selectedItem.LastName);
+        $('#PersonalDetails_FathersName').val(selectedItem.FatherName);
+
+        var dropdownlistGender = $("#PersonalDetails_Gender").data("kendoDropDownList");
+        dropdownlistGender.value(selectedItem.Gender);
+
+        $('#PersonalDetails_DateOfBirth').val(selectedItem.DateofBirth);
+        $('#PersonalDetails_PlaceOfBirth').val(selectedItem.PlaceofBirth);
+
+        var dropdownlistCOB = $("#PersonalDetails_CountryOfBirth").data("kendoDropDownList");
+        dropdownlistCOB.value(selectedItem.CountryofBirth);
+
+        var homeTelCountryCode = $("#Country_Code_HomeTelNoNumber").data("kendoDropDownList");
+        if (typeof homeTelCountryCode !== 'undefined') {
+            homeTelCountryCode.value(selectedItem.HomeTelNoCountryCode);
+            $('#ContactDetails_HomeTelNoNumber').val(selectedItem.HomeTelNoNumber);
+
+            var mobileTelCountryCode = $("#Country_Code_MobileTelNoNumber").data("kendoDropDownList");
+            mobileTelCountryCode.value(selectedItem.MobileTelNoCountryCode);
+            $('#ContactDetails_MobileTelNoNumber').val(selectedItem.MobileTelNoNumber);
+
+            var workTelCountryCode = $("#Country_Code_WorkTelNoNumber").data("kendoDropDownList");
+            workTelCountryCode.value(selectedItem.WorkTelNoCountryCode);
+            $('#ContactDetails_WorkTelNoNumber').val(selectedItem.WorkTelNoNumber);
+
+            var faxTelCountryCode = $("#Country_Code_FaxNoFaxNumber").data("kendoDropDownList");
+            faxTelCountryCode.value(selectedItem.FaxNoCountryCode);
+            $('#ContactDetails_FaxNoFaxNumber').val(selectedItem.FaxNoFaxNumber);
+
+            $('#ContactDetails_ContactDetails_EmailAddress').val(selectedItem.EmailAddress);
+
+            var preferredCommunicationLang = $("#ContactDetails_ContactDetails_PreferredCommunicationLanguage").data("kendoDropDownList");
+            preferredCommunicationLang.value(selectedItem.PreferredCommunicationLanguage);
+        }
+        $("#PersonSearchWindow").data("kendoWindow").close();
+        $("#divRegisteredPerson").css("display", "none");
+        $('#PersonalDetails_PersonRegistryId').val(selectedItem.NodeID);
+    }
+    function personCancelGrid() {
+        $("#PersonSearchWindow").data("kendoWindow").close();
+        $("#divRegisteredPerson").css("display", "none");
+    }
+
+    function personSearchGrid() {
+        $("#RegPersons").data("kendoGrid").dataSource.read();
+        var searchWindow = $("#PersonSearchWindow").data("kendoWindow");
+        searchWindow.wrapper.addClass("middle-popup");
+        searchWindow.center();
+        searchWindow.open();
+        $("#divRegisteredPerson").css("display", "block");
+    }
+
+    function clearContact() {
+
+        var dropdownlistTitle = $("#PersonalDetails_Title").data("kendoDropDownList");
+        dropdownlistTitle.value('');
+
+        $('#PersonalDetails_FirstName').val("");
+        $('#PersonalDetails_LastName').val("");
+        $('#PersonalDetails_FathersName').val("");
+
+        var dropdownlistGender = $("#PersonalDetails_Gender").data("kendoDropDownList");
+        dropdownlistGender.value('');
+
+        $('#PersonalDetails_DateOfBirth').val("");
+        $('#PersonalDetails_PlaceOfBirth').val("");
+
+        var dropdownlistCOB = $("#PersonalDetails_CountryOfBirth").data("kendoDropDownList");
+        dropdownlistCOB.value("");
+
+        var homeTelCountryCode = $("#Country_Code_HomeTelNoNumber").data("kendoDropDownList");
+        homeTelCountryCode.value('');
+        $('#ContactDetails_HomeTelNoNumber').val("");
+
+        var mobileTelCountryCode = $("#Country_Code_MobileTelNoNumber").data("kendoDropDownList");
+        mobileTelCountryCode.value('');
+        $('#ContactDetails_MobileTelNoNumber').val("");
+
+        var workTelCountryCode = $("#Country_Code_WorkTelNoNumber").data("kendoDropDownList");
+        workTelCountryCode.value('');
+        $('#ContactDetails_WorkTelNoNumber').val("");
+
+        var faxTelCountryCode = $("#Country_Code_FaxNoFaxNumber").data("kendoDropDownList");
+        faxTelCountryCode.value('');
+        $('#ContactDetails_FaxNoFaxNumber').val("");
+
+        $('#ContactDetails_ContactDetails_EmailAddress').val("");
+
+        var preferredCommunicationLang = $("#ContactDetails_ContactDetails_PreferredCommunicationLanguage").data("kendoDropDownList");
+        preferredCommunicationLang.value('');
+
+    }
+
+    function isAllConfirmed(menuTitle, moduleName, gridName) {
+		var searchName = "Pending";
+		var isNotCompleted = false;
+		var kendoGrid = $("#" + gridName).data("kendoGrid");
+		var searchNameFound = kendoGrid.dataSource.data().some(
+			function(dataItem) {
+				if(moduleName == 'Tax' || moduleName == 'Identification' || moduleName == 'Address') {
+					if(dataItem.StatusName == searchName) {
+						isNotCompleted = true;
+					}
+				}
+
+				if(kendoGrid.dataSource.indexOf(dataItem) == (kendoGrid.dataSource.total() - 1)) {
+					var steps = $("#ApplicationStepper").data('kendoStepper')._steps;
+					//debugger;
+					if(!isNotCompleted) {
+						$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass('k-step-error').addClass("k-step-done").addClass('k-step-success');
+
+						var arr = jQuery.grep(steps, function(n, i) {
+							if(n.options.label == menuTitle) {
+								$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = false;
+								$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "checkmark-circle";
+							}
+						});
+
+						$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-video-external').addClass('k-i-checkmark-circle');
+						$("#ApplicationStepper a[title='" + menuTitle + "' i]").removeAttr("aria-invalid");
+						$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-icon.k-i-warning").remove();
+					}
+					else {
+						$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass("k-step-done").removeClass('k-step-success').addClass('k-step-error');
+						$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-checkmark-circle').addClass('k-i-video-external');
+						$("#ApplicationStepper a[title='" + menuTitle + "' i]").attr("aria-invalid", "true");
+
+						var arr = jQuery.grep(steps, function(n, i) {
+							if(n.options.label == menuTitle) {
+								$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = true;
+								$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "video-external";
+							}
+						});
+					}
+				}
+			});
+
+
+    }
+
+    function isAllPepDetailsConfirmed() {
+		var menuTitle = '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.PEPDetails")';
+		var searchName = "Pending";
+        var isNotCompleted = false;
+
+        var ddlPepApplicant = $('#IsPepID').val();
+		var ddlPepFamily = $('#IsRelatedToPepID').val();
+		var steps = $("#ApplicationStepper").data('kendoStepper')._steps;
+
+        if(ddlPepApplicant == 'false' && ddlPepFamily == 'false') {
+			$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass('k-step-error').addClass("k-step-done").addClass('k-step-success');
+
+			var arr = jQuery.grep(steps, function(n, i) {
+				if(n.options.label == menuTitle) {
+					$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = false;
+					$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "checkmark-circle";
+				}
+			});
+
+			$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-video-external').addClass('k-i-checkmark-circle');
+			$("#ApplicationStepper a[title='" + menuTitle + "' i]").removeAttr("aria-invalid");
+			$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-icon.k-i-warning").remove();
+        }
+        else {
+            if(($("#PepApplicant").data("kendoGrid").dataSource.total() == 0 && ddlPepApplicant == 'true') || ($("#PEPAssociates").data("kendoGrid").dataSource.total() == 0 && ddlPepFamily == 'true')) {
+                $("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass("k-step-done").removeClass('k-step-success').addClass('k-step-error');
+                $("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-checkmark-circle').addClass('k-i-video-external');
+                $("#ApplicationStepper a[title='" + menuTitle + "' i]").attr("aria-invalid", "true");
+
+                var arr = jQuery.grep(steps, function(n, i) {
+                    if(n.options.label == menuTitle) {
+                        $("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = true;
+                        $("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "video-external";
+                    }
+                });
+            }
+            else {
+				if($("#PepApplicant").data("kendoGrid").dataSource.total() >= $("#PEPAssociates").data("kendoGrid").dataSource.total()) {
+					var kendoGrid = $("#PepApplicant").data("kendoGrid");
+					var kendoGrid2 = $("#PEPAssociates").data("kendoGrid");
+				}
+				else {
+					var kendoGrid = $("#PEPAssociates").data("kendoGrid");
+					var kendoGrid2 = $("#PepApplicant").data("kendoGrid");
+				}
+
+
+				var searchNameFound = kendoGrid.dataSource.data().some(
+					function(dataItem) {
+						if(dataItem.StatusName == searchName) {
+							isNotCompleted = true;
+						}
+
+						if(kendoGrid.dataSource.indexOf(dataItem) == (kendoGrid.dataSource.total() - 1)) {
+
+							//debugger;
+							if(!isNotCompleted) {
+
+								if(kendoGrid2.dataSource.total() > 0) {
+									var searchItem2 = kendoGrid2.dataSource.data().some(
+										function(dataItem2) {
+											if(dataItem2.StatusName == searchName) {
+												isNotCompleted = true;
+											}
+
+											if(kendoGrid2.dataSource.indexOf(dataItem2) == (kendoGrid2.dataSource.total() - 1)) {
+												var steps = $("#ApplicationStepper").data('kendoStepper')._steps;
+												//debugger;
+
+												if(!isNotCompleted) {
+													$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass('k-step-error').addClass("k-step-done").addClass('k-step-success');
+
+													var arr = jQuery.grep(steps, function(n, i) {
+														if(n.options.label == menuTitle) {
+															$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = false;
+															$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "checkmark-circle";
+														}
+													});
+
+													$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-video-external').addClass('k-i-checkmark-circle');
+													$("#ApplicationStepper a[title='" + menuTitle + "' i]").removeAttr("aria-invalid");
+													$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-icon.k-i-warning").remove();
+												}
+												else {
+													$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass("k-step-done").removeClass('k-step-success').addClass('k-step-error');
+													$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-checkmark-circle').addClass('k-i-video-external');
+													$("#ApplicationStepper a[title='" + menuTitle + "' i]").attr("aria-invalid", "true");
+
+													var arr = jQuery.grep(steps, function(n, i) {
+														if(n.options.label == menuTitle) {
+															$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = true;
+															$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "video-external";
+														}
+													});
+												}
+											}
+										});
+								}
+								else {
+									$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass('k-step-error').addClass("k-step-done").addClass('k-step-success');
+
+									var arr = jQuery.grep(steps, function(n, i) {
+										if(n.options.label == menuTitle) {
+											$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = false;
+											$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "checkmark-circle";
+										}
+									});
+
+									$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-video-external').addClass('k-i-checkmark-circle');
+									$("#ApplicationStepper a[title='" + menuTitle + "' i]").removeAttr("aria-invalid");
+									$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-icon.k-i-warning").remove();
+								}
+
+
+							}
+							else {
+								$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass("k-step-done").removeClass('k-step-success').addClass('k-step-error');
+								$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-checkmark-circle').addClass('k-i-video-external');
+								$("#ApplicationStepper a[title='" + menuTitle + "' i]").attr("aria-invalid", "true");
+
+								var arr = jQuery.grep(steps, function(n, i) {
+									if(n.options.label == menuTitle) {
+										$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = true;
+										$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "video-external";
+									}
+								});
+							}
+						}
+					});
+			}
+		}
+	}
+
+	function setMenuSuccess(menuTitle) {
+		if(menuTitle.indexOf('&amp;') > 0) {
+			menuTitle = menuTitle.replace('&amp;', '&');
+		}
+		$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass('k-step-error').addClass("k-step-done").addClass('k-step-success');
+		var steps = $("#ApplicationStepper").data('kendoStepper')._steps;
+
+		var arr = jQuery.grep(steps, function(n, i) {
+			if(n.options.label == menuTitle) {
+				$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = false;
+				$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "checkmark-circle";
+			}
+		});
+
+		$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-video-external').addClass('k-i-checkmark-circle');
+		$("#ApplicationStepper a[title='" + menuTitle + "' i]").removeAttr("aria-invalid");
+		$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-icon.k-i-warning").remove();
+	}
+
+	function setMenuError(menuTitle) {
+		if(menuTitle.indexOf('&amp;') > 0) {
+			menuTitle = menuTitle.replace('&amp;', '&');
+		}
+		$("#ApplicationStepper a[title='" + menuTitle + "' i]").parent().removeClass("k-step-done").removeClass('k-step-success').addClass('k-step-error');
+		$("#ApplicationStepper a[title='" + menuTitle + "' i]").find("span .k-step-indicator-icon.k-icon").removeClass('k-i-checkmark-circle').addClass('k-i-video-external');
+		$("#ApplicationStepper a[title='" + menuTitle + "' i]").attr("aria-invalid", "true");
+		var steps = $("#ApplicationStepper").data('kendoStepper')._steps;
+
+		var arr = jQuery.grep(steps, function(n, i) {
+			if(n.options.label == menuTitle) {
+				$("#ApplicationStepper").data('kendoStepper')._steps[i].options.error = true;
+				$("#ApplicationStepper").data('kendoStepper')._steps[i].options.icon = "video-external";
+			}
+		});
+	}
+</script>
+
+<script>
+	$("#accordionPersonalDetails").kendoPanelBar({
+		expandMode: "multiple" //options are 'single' and 'multiple'. 'multiple' is the default value
+	});
+
+	var accordion = $("#accordionPersonalDetails").data("kendoPanelBar");
+	if($("#Id").val() > 0) {
+		accordion.collapse("#chartSection");
+	}
+
+</script>
+<script>
+	$("#accordionCompanyDetails").kendoPanelBar({
+		expandMode: "multiple" //options are 'single' and 'multiple'. 'multiple' is the default value
+	});
+
+	var accordion = $("#accordionCompanyDetails").data("kendoPanelBar");
+
+	if($("#Id").val() > 0) {
+		accordion.collapse("#chartSection");
+	}
+
+	//Validation ajax
+	function validateContactDetailsIndividual() {
+        $.ajax({
+					url: '@Url.Action("ValidateContactDetailsIndividual", "Applicant")',
+					cache: false,
+					type: "POST",
+					data: $('form').serialize(),
+            success: function(result) {
+                if(result.IsValid == true) {
+                    setMenuSuccess('@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.ContactDetails")');
+                }
+                else {
+                    setMenuError('@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.ContactDetails")');
+				}
+					}
+				});
+	}
+
+	//Validation ajax
+</script>
+<script>
+	$("#accordionEmploymentDetails").kendoPanelBar({
+		expandMode: "multiple" //options are 'single' and 'multiple'. 'multiple' is the default value
+	});
+
+	var accordion = $("#accordionEmploymentDetails").data("kendoPanelBar");
+	accordion.collapse("#chartSection");
+
+	$(document).ready(function() {
+		if(isApplicationPermisssionEdit == "False") {
+			setAllInputElementDisabled('app-body-per');
+		}
+	});
+
+</script>
+
+@if(isLegalEntity)
+{
+	@*<script>
+			$(document).ready(function() {
+				validateContactDetailsLegal();
+			});
+		</script>*@
+}
+else
+{
+	<script>
+		$(document).ready(function() {
+			validateContactDetailsIndividual();
+		});
+	</script>
+}
+
+

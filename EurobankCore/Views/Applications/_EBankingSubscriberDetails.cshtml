@@ -1,0 +1,156 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Validation;
+@{
+    bool isLegalEntity = string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+    string applicationNumber = string.Empty;
+    int applicationId = 0;
+    if (ViewBag.ApplicationNumber != null)
+    {
+        applicationNumber = Convert.ToString(ViewBag.ApplicationNumber);
+    }
+    if (ViewBag.ApplicationId != null)
+    {
+        applicationId = Convert.ToInt32(ViewBag.ApplicationId);
+    }
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.EBANKING_SUBSCRIBERS))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: center;
+    }
+</style>
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionEBankingSubscriber">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.EBankingSubscriberDetails")
+                </span>
+                @Html.HiddenFor(x => x.ApplicationDetails.ApplicationDetails_ApplicationTypeName, new { id = "ApplicationDetails_ApplicationTypeName" })
+                <div id="accordionEBankingSubscriberContentOne">
+
+                    @(Html.Kendo().Grid<Eurobank.Models.Application.EBankingSubscriberDetailsModel>
+		()
+		.Name("EBankingSubscriber")
+		.Columns(columns =>
+		{
+							columns.Template
+							(
+							@"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+							).Width(30);
+			//columns.Bound(p => p.rowID).Title("ID").Width(70);
+							columns.Bound(p => p.SubscriberName).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+							columns.Bound(p => p.AccessLevelName).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+							columns.Bound(p => p.AccessToAllPersonalAccountsValue).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.AccessToAllPersonalAccounts")).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+			if (!isLegalEntity)
+			{
+								columns.Bound(p => p.AutomaticallyAddFuturePersonalAccountsValue).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+			}
+			columns.Bound(p => p.Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+			
+		})
+		 .Events(e =>
+		 {
+			 e.Edit("addConfirmButton_Ebanking");
+			 e.DataBound("onEBankingDataBound");
+			 e.Cancel("onGridCancel");
+		 })
+		.ToolBar(toolbar => { if(Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+		.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(isLegalEntity==true?"AddEditEBankingSubscriber": "AddEditEBankingSubscriberIndividual").DisplayDeleteConfirmation(false).Window(w=>w.Title("Designated User").Width(800))).EnableCustomBinding(true)
+		.Pageable()
+		.Sortable()
+		.Scrollable()
+		.HtmlAttributes(new { style = "max-height:550px;" })
+		.DataSource(dataSource => dataSource
+		.Ajax()
+		.PageSize(10)
+		 .Sort(x => x.Add("Status_Name").Descending())
+		//.Events(e => e.RequestStart("hideIdField"))
+		.Model(model =>
+		{
+
+			model.Id(p => p.Id);
+			model.Field(p => p.Subscriber);
+			model.Field(p => p.SubscriberName);
+			model.Field(p => p.AccessLevel);
+			model.Field(p => p.AccessLevelName);
+			model.Field(p => p.AccessToAllPersonalAccounts);
+			model.Field(p => p.AutomaticallyAddFuturePersonalAccounts);
+			model.Field(p => p.AccessToAllPersonalAccountsValue);
+			model.Field(p => p.AutomaticallyAddFuturePersonalAccountsValue);
+			//model.Field(p => p.nodePath);
+		})
+		  //.Model(model => model.Id(p => p.AddressGuid))
+		  .Events(events => events.Error("error_handlerEBankingSubscriber"))
+		.ServerOperation(true)
+		.Create(update => update.Action("EBankingSubscriberDetailPopup_Create", "Applications",new { apID = Model.Id, isLegalEntity= isLegalEntity }))
+		.Read(read => read.Action("EBankingSubscriberDetail_Read", "Applications",new {  isLegalEntity = isLegalEntity }))
+		.Update(update => update.Action("EBankingSubscriberDetailPopup_Update", "Applications",new { apID = Model.Id, isLegalEntity = isLegalEntity }))
+		.Destroy(update => update.Action("EBankingSubscriberDetailPopup_Destroy", "Applications"))
+		//.Events(events => events.RequestEnd("onRequestEnd"))
+		)
+		)
+
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@Html.Hidden("hdnApplication_LeftMenu_EBanking", @ResHelper.GetString("Eurobank.Application.LeftMenu.EBanking"))
+@Html.Hidden("ApplicantEntityType", Model.ApplicantEntityType)
+@Html.Hidden("GetSubscriberIdentityUrl", Url.Action("GetIdentityCard", "Applications"))
+@Html.Hidden("ApplicationNumber", applicationNumber)
+@Html.Hidden("ApplicationId", applicationId)
+@Html.Hidden("GetSignatoryGroupForEBankingBySeletedPersonUrl", Url.Action("GetSignatoryGroupForEBankingBySeletedPerson", "Applications"))
+<ul id="context-menuEBankingSubscriber">
+
+    @if (Model.ApplicationDetails.IsEdit)
+    {
+		<li id="editRowEbank">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowEbank">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-preview"></span></li>
+    }
+</ul>
+<script src="~/Scripts/Custom/Application/EbankingSubscriberDetails.js"></script>
+

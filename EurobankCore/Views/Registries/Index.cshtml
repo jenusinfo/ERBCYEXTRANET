@@ -1,0 +1,297 @@
+﻿
+@using Kendo.Mvc.UI
+@{
+    ViewBag.Title = ResHelper.GetString("EuroBank.PageTitle.Registries");
+}
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 100%;
+    }
+
+        div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+            width: 100%;
+            max-width: none;
+        }
+
+    .k-grid th, .k-grid td {
+        text-transform: uppercase;
+    }
+</style>
+<span id="loader"></span>
+<div class="application">
+    <div class="shadow-box">
+        <h4>@ResHelper.GetString("Eurobank.PersonsRegistry")</h4>
+
+        @(
+            Html.Kendo().Grid<Eurobank.Models.Registries.PersonsRegistry>()
+        .Name("Registry")
+        .Columns(columns =>
+        {
+            columns.Template
+            (
+            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+            ).Width(30);
+            //columns.Bound("").ClientTemplate("#=GetCountIt()#").Title("ID").Width(70);
+        //columns.Bound(p => p.AddressType).Hidden();
+        columns.Bound(p => p.RowID).Title("ID").Width(80);
+                columns.Bound(p => p.ApplicationTypeName).Title("Type").Width(200);
+                columns.Bound(p => p.Name).Title("Name").Width(200);
+        columns.Bound(p => p.IdentificationNumber).Title("Identification Number").Width(200);
+        columns.Bound(p => p.CreatedDate).Width(170).ClientTemplate("#= (CreatedDate == null) ? ' ' : kendo.toString(CreatedDate, \"dd/MM/yyyy \") #");
+        columns.Bound(p => p.ModyfiedDate).Width(170).ClientTemplate("#= (ModyfiedDate == null) ? ' ' : kendo.toString(ModyfiedDate, \"dd/MM/yyyy \") #");
+        //columns.Bound(p => p.ModyfiedDate).Width(170).Format("{0:dd/MM/yyyy}");//.ClientTemplate("#= (ModyfiedDate == null) ? ' ' : kendo.toString(ModyfiedDate, \"dd/MM/yyyy \") #");
+        //columns.Bound(p => p.CitizenshipName).Title("Citizenship");
+        
+    })
+    .Events(e =>
+    {
+        e.Edit("onEditButtonChangesPersonRegistry");
+        e.DataBound("onGridDataBound");
+        e.Cancel("onGridCancel");
+    })
+            .ToolBar(toolbar =>
+            {
+                toolbar.ClientTemplate(@"<div class='toolbar'>
+								<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <select id='column-list'  class='form-control'></select>
+
+									</div>
+
+								</div>
+
+							</div>
+							</div>
+<div class='toolbar'>
+							<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <input type = 'text' class='form-control' id='searchbox' placeholder='Search All'>
+
+				                        </div>
+				                    </div>
+				                </div>
+				            </div>
+<div  style='margin-left: auto;'>
+<a class='new-contact k-grid-add'><span class='k-icon k-i-plus-circle mr-1'></span>NEW</a>
+        <a class='new-contact k-grid-excel'   onclick='applicationRedirect()'><span class='k-icon k-i-export mr-1'></span>Export</a>
+</div>
+
+");
+
+            })
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditPersonsRegistry").DisplayDeleteConfirmation(false).Window(w=>w.Title("Persons Registry"))).EnableCustomBinding(true)
+    .Pageable()
+    .Sortable()
+    .Scrollable()
+    .Excel(excel => excel
+        .FileName("Person Registry.xlsx")
+        .Filterable(true)
+        .AllPages(true)
+        .ProxyURL(Url.Action("Excel_Export_Save", "Registries"))
+    )
+    .HtmlAttributes(new { style = "height:550px;" })
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+
+            model.Id(p => p.NodeGUID);
+            model.Field(p => p.NodeID);
+            model.Field(p => p.Title);
+            model.Field(p => p.TitleName);
+            model.Field(p => p.FirstName);
+            model.Field(p => p.LastName);
+            model.Field(p => p.FatherName);
+            model.Field(p => p.Gender);
+            model.Field(p => p.GenderName);
+            model.Field(p => p.DateofBirth);
+            model.Field(p => p.PlaceofBirth);
+            model.Field(p => p.CountryofBirth);
+            model.Field(p => p.CountryofBirthName);
+            model.Field(p => p.EducationLevel);
+            model.Field(p => p.EducationLevelName);
+            model.Field(p => p.Citizenship);
+            model.Field(p => p.CitizenshipName);
+            model.Field(p => p.TypeofIdentification);
+            model.Field(p => p.TypeofIdentificationName);
+            model.Field(p => p.IssuingCountry);
+            model.Field(p => p.IssuingCountryName);
+            model.Field(p => p.IssueDate);
+            model.Field(p => p.ExpiryDate);
+            model.Field(p => p.IdentificationNumber);
+            model.Field(p => p.Name);
+            model.Field(p => p.WorkTelNoNumber);
+            model.Field(p => p.HomeTelNoNumber);
+            model.Field(p => p.MobileTelNoNumber);
+            model.Field(p => p.FaxNoFaxNumber);
+            model.Field(p => p.EmailAddress);
+            model.Field(p => p.ConsentforMarketingPurposes);
+            model.Field(p => p.PreferredCommunicationLanguage);
+            model.Field(p => p.PreferredCommunicationLanguageName);
+            model.Field(p => p.CreatedDate);
+            model.Field(p => p.ModyfiedDate);
+            model.Field(p => p.NodeAliaspath);
+        })
+            .Events(events => events.Error("error_handlerPersonRegistry").Sync("Sync_handlerPersonRegistry"))
+            .ServerOperation(true)
+        .Create(update => update.Action("RegistryPopup_Create", "Registries"))
+        .Read(read => read.Action("Registry_Read", "Registries"))
+      .Update(update => update.Action("RegistryPopup_Update", "Registries"))
+      .Destroy(update => update.Action("RegistryPopup_Destroy", "Registries"))
+    )
+)
+
+    </div>
+    <div class="shadow-box">
+        <h4>@ResHelper.GetString("Eurobank.AddressRegistry")</h4>
+
+        @(Html.Kendo().Grid<Eurobank.Models.Registries.AddressRegistryModel>()
+    .Name("AddressRegistry")
+    .Columns(columns =>
+    {
+                columns.Template
+                (
+                @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                ).Width(30);
+        columns.Bound(p => p.RowID).Title("ID").Width(70);
+                //columns.Bound(p => p.Country).Hidden().Width(150);
+                columns.Bound(p => p.LocationName).Title("Name").Width(150);
+        columns.Bound(p => p.AddresLine1).Title("Address Line 1").Width(150);
+        columns.Bound(p => p.AddresLine2).Title("Address Line 2").Width(150);
+                columns.Bound(p => p.POBox).Title("POBox").Width(150);
+        columns.Bound(p => p.PostalCode).Width(150);
+        columns.Bound(p => p.City).Title("City").Width(150);
+        columns.Bound(p => p.CountryName).Title("Country").Width(150);
+        columns.Bound(p => p.CreatedDate).Width(170).ClientTemplate("#= (CreatedDate == null) ? ' ' : kendo.toString(CreatedDate, \"dd/MM/yyyy \") #");
+        columns.Bound(p => p.ModyfiedDate).Width(170).ClientTemplate("#= (ModyfiedDate == null) ? ' ' : kendo.toString(ModyfiedDate, \"dd/MM/yyyy \") #");
+        
+    })
+
+    .Events(e =>
+    {
+        e.Edit("onAddressGridEditing");
+        e.DataBound("onGridDataBound");
+        e.Cancel("onGridCancel");
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.ClientTemplate(@"<div class='toolbar'>
+								<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <select id='column-listAdress'  class='form-control'></select>
+
+									</div>
+
+								</div>
+
+							</div>
+							</div>
+<div class='toolbar'>
+							<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <input type = 'text' class='form-control' id='searchboxAddres' placeholder='Search All'>
+
+				                        </div>
+				                    </div>
+				                </div>
+				            </div>
+<div  style='margin-left: auto;'>
+<a class='new-contact k-grid-add'   ><span class='k-icon k-i-plus-circle mr-1'></span>NEW</a>
+        <a class='new-contact k-grid-excel'   onclick='applicationRedirect()' ><span class='k-icon k-i-export mr-1'></span>Export</a>
+</div>
+
+");
+
+    })
+    @*<a class='new-contact'   ><span class='k-icon k-i-sort-asc-sm
+Unicode: e127'></span>Import</a>*@
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditAddressRegistry").Window(w=>w.Title("Address Registry"))).EnableCustomBinding(true)
+    .Pageable()
+    .Sortable()
+    .Scrollable()
+    .Excel(excel => excel
+        .FileName("Address Registry.xlsx")
+        .Filterable(true)
+            .AllPages(true)
+        .ProxyURL(Url.Action("Excel_Export_Save", "Registries"))
+    )
+    .HtmlAttributes(new { style = "height:550px;" })
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+
+            model.Id(p => p.NodeGUID);
+            model.Field(p => p.NodeID);
+            model.Field(p => p.Country);
+            model.Field(p => p.AddresLine1);
+            model.Field(p => p.LocationName);
+            model.Field(p => p.AddresLine2);
+            model.Field(p => p.POBox);
+            model.Field(p => p.City);
+            model.Field(p => p.AddressType);
+            model.Field(p => p.CountryCode_PhoneNo);
+            model.Field(p => p.PhoneNo);
+            model.Field(p => p.CountryCode_FaxNo);
+            model.Field(p => p.FaxNo);
+        })
+        //.Model(model => model.Id(p => p.AddressGuid))
+            .Events(events => events.Error("error_handlerAddressRegistry").Sync("Sync_handlerAddressRegistry"))
+        .ServerOperation(true)
+        .Create(update => update.Action("AddressRegistryPopup_Create", "Registries"))
+        .Read(read => read.Action("AddressRegistry_Read", "Registries"))
+      .Update(update => update.Action("AddressRegistryPopup_Update", "Registries"))
+      .Destroy(update => update.Action("AddressRegistryPopup_Destroy", "Registries"))
+    )
+)
+        @(Html.Kendo().Window()
+.Name("registryWindow") //The name of the window is mandatory. It specifies the "id" attribute of the widget.
+.Title("Import To Excel") //set the title of the window
+.Draggable() //Enable dragging of the window
+.Resizable() //Enable resizing of the window
+.Modal(true)
+.Visible(false)
+)
+    </div>
+
+    @(Html.Kendo().Window()
+.Name("identification") //The name of the window is mandatory. It specifies the "id" attribute of the widget.
+.Title("Identification Details") //set the title of the window
+.Draggable() //Enable dragging of the window
+.Resizable() //Enable resizing of the window
+.Modal(true)
+.Visible(false)
+)
+    <ul id="context-menu">
+
+        <li id="editAddressRow">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+       @* <li id="">Print Detailed<span class="k-icon k-i-print"></span></li>
+        <li id="">Print Summary<span class="k-icon k-i-print"></span></li>
+        <li id="">Share<span class="k-icon k-i-share"></span></li>*@
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-close"></span></li>
+    </ul>
+    <ul id="context-menuRegistry">
+
+        <li id="editPersonRow">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        @*<li id="">Print Detailed<span class="k-icon k-i-print"></span></li>
+        <li id="">Print Summary<span class="k-icon k-i-print"></span></li>
+        <li id="">Share<span class="k-icon k-i-share"></span></li>*@
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-close"></span></li>
+    </ul>
+</div>
+@Html.Hidden("ValidateIdentificationDatesUrl",Url.Action("ValidateIdentificationDates", "Identifications"))
+<script src="~/Scripts/KendoProcess/RegistryProcess.js"></script>
+<script src="~/Scripts/Custom/Registries/RegistriesIndex.js"></script>
+

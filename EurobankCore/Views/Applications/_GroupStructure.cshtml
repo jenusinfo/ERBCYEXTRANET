@@ -1,0 +1,170 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Models.Application.Common;
+@using Eurobank.Helpers.Validation;
+@{
+    string DoesTheEntityBelongToAGroup = Model.GroupStructureLegalParent.DoesTheEntityBelongToAGroup == true ? "true" : "false";
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.GROUP_STRUCTURE))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+        padding: 0.75rem 0.0rem;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: left;
+    }
+</style>
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionGroupStructure">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.AccordionHeader")
+                </span>
+                <div id="accordionGroupStructureContentOne">
+                    <div class="form-group">
+                        <label asp-for="GroupStructureLegalParent.DoesTheEntityBelongToAGroupName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.DoesTheEntityBelongToAGroup")</label>
+                        @(Html.Kendo().DropDownListFor(m => m.GroupStructureLegalParent.DoesTheEntityBelongToAGroupName).BindTo((System.Collections.IEnumerable)ViewBag.EntityBelongToAGroup)
+	//.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+	.DataValueField("Value")
+                            .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "ShowGroupStructureGrid();validateGroupStructure()", id = "DoesTheEntityBelongToAGroupNameID" }))
+                        @*@Html.ValidationMessageFor(X => X.GroupStructureLegalParent.DoesTheEntityBelongToAGroup)*@
+                    </div>
+                    <div id="GroupStructureGridID" style="display:none">
+                        <div class="form-group">
+                            <label asp-for="GroupStructureLegalParent.GroupName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.GroupName")</label>
+                            @Html.Kendo().TextBoxFor(model => model.GroupStructureLegalParent.GroupName).HtmlAttributes(new { @class = "form-control",@onchange = "validateGroupStructure()", @onkeyup = "return limitlength(this,50,'GroupStructureLegalParentGroupNameError')", @onKeyDown = "return limitlength(this,50,'GroupStructureLegalParentGroupNameError')" })
+                            @Html.ValidationMessageFor(X => X.GroupStructureLegalParent.GroupName)
+                            <span id="GroupStructureLegalParentGroupNameError" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group decision-commnt">
+                            <label asp-for="GroupStructureLegalParent.GroupActivities" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.GroupActivities")</label>
+                            @*@Html.Kendo().TextBoxFor(model => model.GroupStructureLegalParent.GroupActivities).HtmlAttributes(new { @class = "form-control" })*@
+                            @Html.Kendo().TextAreaFor(model => model.GroupStructureLegalParent.GroupActivities).Rows(3).Resizable("both").HtmlAttributes(new { @class = "form-control k-textbox", @onchange = "validateGroupStructure()" })
+                            @Html.ValidationMessageFor(X => X.GroupStructureLegalParent.GroupActivities)
+                        </div>
+                        @if (string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationStatusName, ApplicationWorkflowStatus.PENDING_INITIATOR.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationStatusName, ApplicationWorkflowStatus.DRAFT.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationStatusName, ApplicationWorkflowStatus.PENDING_SIGNATURES.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationStatusName, ApplicationWorkflowStatus.PENDING_OMMISSIONS.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase))
+                        {
+                            <div class="pb-3">
+                                <button id="btnApplicationSaveAsDraft" form="applicationsForm" name="appplicationButton" value="SAVE_AS_DRAFT" type="submit" class="btn btn-success mr-3 btnShowLoader">Save AS DRAFT</button>
+                            </div>
+                        }
+                        @(Html.Kendo().Grid<Eurobank.Models.Application.Applicant.LegalEntity.CompanyGroupStructureModel>
+		()
+		.Name("GroupStructure")
+		.Columns(columns =>
+                            {
+                                columns.Template
+                            (
+                            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                            ).Width(30);
+			//columns.Bound(p => p.SlNo).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.Id")).Width(30);
+                                columns.Bound(p => p.EntityName).Title(ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.GridHeader.EntityName")).Width(200);
+			//columns.Bound(p => p.ParentName).Title(ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.GridHeader.ParentName"));
+                                columns.Bound(p => p.EntityTypeName).Title(ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.GridHeader.EntityTypeName")).Width(150);
+			//columns.Bound(p => p.GroupName).Title(ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.GridHeader.GroupName")).Width(150);
+			//columns.Bound(p => p.GroupActivities).Title(ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.GridHeader.GroupActivities"));
+                                columns.Bound(p => p.StatusName).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(50).HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align: center;" });
+			
+		})
+		 .Events(e =>
+		 {
+			 e.Edit("addGSConfirmButton");
+			 e.DataBound("onGroupStructureDataBound");
+			 e.Cancel("onGridCancel");
+		 })
+		.ToolBar(toolbar => { if(Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+		.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditGroupStructure").DisplayDeleteConfirmation(false).Window(w=>w.Title(ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.PopUp.Title")).Width(800))).EnableCustomBinding(true)
+		.Pageable()
+		.Sortable()
+		.Scrollable()
+		.HtmlAttributes(new { style = "max-height:550px;" })
+		.DataSource(dataSource => dataSource
+		.Ajax()
+		.PageSize(10)
+		//.Events(e => e.RequestStart("hideIdField"))
+		.Model(model =>
+		{
+
+			model.Id(p => p.Id);
+			model.Field(p => p.EntityName);
+			model.Field(p => p.BusinessActivities);
+			//model.Field(p => p.DoestheEntitybelongtoaGroup);
+			model.Field(p => p.EntityType);
+			model.Field(p => p.EntityTypeName);
+			//model.Field(p => p.GroupName);
+			model.Field(p => p.Parent);
+			model.Field(p => p.ParentName);
+			//model.Field(p => p.GroupActivities);
+			model.Field(p => p.SlNo);
+			model.Field(p => p.Status);
+			model.Field(p => p.StatusName);
+
+		})
+		//.Model(model => model.Id(p => p.AddressGuid))
+		.Events(events => events.Error("error_handlerCompanyGroupStructure"))
+		.ServerOperation(true)
+		.Create(update => update.Action("CompanyGroupStructurePopup_Create", "Applications",new { apID = Model.Id, applicationNumber = Model.ApplicationNumber }))
+		.Read(read => read.Action("CompanyGroupStructure_Read", "Applications", new { apID = Model.Id,applicationNumber=Model.ApplicationNumber }))
+		.Update(update => update.Action("CompanyGroupStructurePopup_Update", "Applications", new { apID = Model.Id, applicationNumber = Model.ApplicationNumber }))
+		.Destroy(update => update.Action("CompanyGroupStructurePopup_Destroy", "Applications"))
+		)
+		)
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+</div>
+<ul id="context-menuGroupStructure">
+
+    @if (Model.ApplicationDetails.IsEdit)
+    {
+        <li id="editRowGpStruc">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowGpStruc">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+    }
+</ul>
+@Html.Hidden("hdnApplication_LeftMenu_GroupStructure", @ResHelper.GetString("Eurobank.Application.LeftMenu.GroupStructure"))
+<script src="~/Scripts/Custom/Application/GroupStructure.js"></script>

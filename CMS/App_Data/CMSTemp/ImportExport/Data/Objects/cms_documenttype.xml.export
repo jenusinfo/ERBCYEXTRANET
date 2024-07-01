@@ -1,0 +1,250 @@
+﻿<cms_documenttype version="13.0">
+  <NewDataSet>
+    <cms_class>
+      <ClassID>5569</ClassID>
+      <ClassDisplayName>Address Details</ClassDisplayName>
+      <ClassName>Eurobank.AddressDetails</ClassName>
+      <ClassUsesVersioning>false</ClassUsesVersioning>
+      <ClassIsDocumentType>true</ClassIsDocumentType>
+      <ClassIsCoupledClass>true</ClassIsCoupledClass>
+      <ClassXmlSchema>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"&gt;
+  &lt;xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true"&gt;
+    &lt;xs:complexType&gt;
+      &lt;xs:choice minOccurs="0" maxOccurs="unbounded"&gt;
+        &lt;xs:element name="Eurobank_AddressDetails"&gt;
+          &lt;xs:complexType&gt;
+            &lt;xs:sequence&gt;
+              &lt;xs:element name="AddressDetailsID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" /&gt;
+              &lt;xs:element name="AddressDetails_AddressType" msdata:DataType="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" type="xs:string" minOccurs="0" /&gt;
+              &lt;xs:element name="AddressDetails_AddressLine1" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="500" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_AddressLine2" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="500" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_PostalCode" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="500" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_City" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="500" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_Country" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="200" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_SaveInRegistry" type="xs:boolean" minOccurs="0" /&gt;
+              &lt;xs:element name="AddressDetails_Status" type="xs:boolean" minOccurs="0" /&gt;
+              &lt;xs:element name="AddressDetails_POBox" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="500" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_Is_Legal" type="xs:boolean" minOccurs="0" /&gt;
+              &lt;xs:element name="AddressDetails_Phone_No" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="15" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_Fax_No" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="15" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_CountryCode_PhoneNo" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="5" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_CountryCode_FaxNo" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="5" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_RegistryId" type="xs:int" minOccurs="0" /&gt;
+              &lt;xs:element name="AddressDetails_MainCorrespondenceAddress" type="xs:boolean" minOccurs="0" /&gt;
+              &lt;xs:element name="AddressDetails_Email" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="200" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_LocationName" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="200" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="AddressDetails_NumberOfStaffEmployed" minOccurs="0"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="200" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+            &lt;/xs:sequence&gt;
+          &lt;/xs:complexType&gt;
+        &lt;/xs:element&gt;
+      &lt;/xs:choice&gt;
+    &lt;/xs:complexType&gt;
+    &lt;xs:unique name="Constraint1" msdata:PrimaryKey="true"&gt;
+      &lt;xs:selector xpath=".//Eurobank_AddressDetails" /&gt;
+      &lt;xs:field xpath="AddressDetailsID" /&gt;
+    &lt;/xs:unique&gt;
+  &lt;/xs:element&gt;
+&lt;/xs:schema&gt;</ClassXmlSchema>
+      <ClassFormDefinition>&lt;form version="2"&gt;&lt;field column="AddressDetailsID" columntype="integer" guid="7f6a3b72-424a-4f5c-8e5c-e5f5bb7d99ee" isPK="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;AddressDetailsID&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_NumberOfStaffEmployed" columnsize="200" columntype="text" guid="0efb2dba-883f-4ffe-8b4c-53ce9e15495b" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Number of staff employed&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_CountryCode_PhoneNo" columnsize="5" columntype="text" guid="66fdd8a1-3509-4881-9b60-a9e6ef7239f5" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Country Code PhoneNo&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_CountryCode_FaxNo" columnsize="5" columntype="text" guid="21f0da34-e429-42ec-8cc0-9b57df68d75a" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Country Code FaxNo&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_Is_Legal" columntype="boolean" guid="ca3839a2-53f9-427e-8fad-e3ec884ac3bb" visible="true"&gt;&lt;properties&gt;&lt;defaultvalue&gt;false&lt;/defaultvalue&gt;&lt;fieldcaption&gt;Address Details Is Legal&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;controlname&gt;CheckBoxControl&lt;/controlname&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_Phone_No" columnsize="15" columntype="text" guid="3b2f4ec1-15f4-432e-a951-8e567812dd14" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Address Details Phone No&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_Fax_No" columnsize="15" columntype="text" guid="9b470a81-9e58-426a-a987-8e26ce19250b" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Address Details Fax No&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_Status" columntype="boolean" guid="fc4ffa23-158f-4dc7-9d16-f8a049b9f4e1" visible="true"&gt;&lt;properties&gt;&lt;defaultvalue&gt;false&lt;/defaultvalue&gt;&lt;fieldcaption&gt;Status&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;controlname&gt;CheckBoxControl&lt;/controlname&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_AddressType" columntype="guid" guid="dddf562b-1268-4078-8f25-eeee4c76533b" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Address Type&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;controlname&gt;DropDownListControl&lt;/controlname&gt;&lt;DisplayActualValueAsItem&gt;False&lt;/DisplayActualValueAsItem&gt;&lt;EditText&gt;False&lt;/EditText&gt;&lt;Query&gt;SELECT CAST(CAST(0 AS BINARY) AS UNIQUEIDENTIFIER) AS NodeGUID, '-- SELECT --' AS NodeName, 0 AS NodeOrder
+UNION
+SELECT NodeGUID, NodeName, NodeOrder
+FROM View_CMS_Tree_Joined
+WHERE NodeAliasPath LIKE '/Lookups/General/ADDRESS-TYPE-(Physical-Person)/%'
+ORDER BY NodeOrder&lt;/Query&gt;&lt;SortItems&gt;False&lt;/SortItems&gt;&lt;TextFormat&gt;{%NodeName%}&lt;/TextFormat&gt;&lt;ValueFormat&gt;{%NodeGUID%}&lt;/ValueFormat&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_AddressLine1" columnsize="500" columntype="text" guid="01079939-5308-4f29-b36a-05d2190b271c" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Address Line 1&lt;/fieldcaption&gt;&lt;fielddescription&gt;Please enter Street Name and Details:  No, Flat No&lt;/fielddescription&gt;&lt;validationerrormessage&gt;Please enter a Street&lt;/validationerrormessage&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_AddressLine2" columnsize="500" columntype="text" guid="d25736bc-1118-4e2a-b475-949aa35a49b5" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Address Line 2 &lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_PostalCode" columnsize="500" columntype="text" guid="8f925d52-3b0f-43be-91ba-646c1fbf1f71" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Postal Code&lt;/fieldcaption&gt;&lt;validationerrormessage&gt;Please enter a Postal Code&lt;/validationerrormessage&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_POBox" columnsize="500" columntype="text" guid="f6108438-f2b2-444d-b4c9-c1362499ab99" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Address Details PO Box&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_City" columnsize="500" columntype="text" guid="e36a4ecb-2d51-433d-a7a2-f786cc07c896" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Town / City / Village&lt;/fieldcaption&gt;&lt;validationerrormessage&gt;Please enter a City&lt;/validationerrormessage&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_Country" columnsize="200" columntype="text" guid="a8e74ad8-50bf-415d-b814-c30dac5e8b03" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Country&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AddAllItemsRecord&gt;False&lt;/AddAllItemsRecord&gt;&lt;AddNoneRecord&gt;False&lt;/AddNoneRecord&gt;&lt;AddSelectCountryRecord&gt;True&lt;/AddSelectCountryRecord&gt;&lt;controlname&gt;countrySelector&lt;/controlname&gt;&lt;EnableStateSelection&gt;True&lt;/EnableStateSelection&gt;&lt;ReturnType&gt;1&lt;/ReturnType&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_SaveInRegistry" columntype="boolean" guid="3a056d23-b3d6-4cd1-af57-8149df2ba740" visible="true"&gt;&lt;properties&gt;&lt;defaultvalue&gt;true&lt;/defaultvalue&gt;&lt;fieldcaption&gt;Save In Registry&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;controlname&gt;CheckBoxControl&lt;/controlname&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_MainCorrespondenceAddress" columntype="boolean" guid="ee3adb10-0496-444e-94c8-b431a99a2bdf" visible="true"&gt;&lt;properties&gt;&lt;defaultvalue&gt;false&lt;/defaultvalue&gt;&lt;fieldcaption&gt;Main Correspondence Address&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;controlname&gt;CheckBoxControl&lt;/controlname&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_Email" columnsize="200" columntype="text" guid="d31b9d75-2667-4481-b896-06bf651e9476" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Email&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_LocationName" columnsize="200" columntype="text" guid="2371a1f0-c679-4080-863d-b98cf1e0875f" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Location Name&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="AddressDetails_RegistryId" columntype="integer" guid="ec2f11e1-3641-44f8-bbf6-44551fce177d" visible="true"&gt;&lt;settings&gt;&lt;AutoCompleteEnableCaching&gt;False&lt;/AutoCompleteEnableCaching&gt;&lt;AutoCompleteFirstRowSelected&gt;False&lt;/AutoCompleteFirstRowSelected&gt;&lt;AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;False&lt;/AutoCompleteShowOnlyCurrentWordInCompletionListItem&gt;&lt;controlname&gt;TextBoxControl&lt;/controlname&gt;&lt;FilterMode&gt;False&lt;/FilterMode&gt;&lt;Trim&gt;False&lt;/Trim&gt;&lt;/settings&gt;&lt;/field&gt;&lt;/form&gt;</ClassFormDefinition>
+      <ClassNodeNameSource></ClassNodeNameSource>
+      <ClassTableName>Eurobank_AddressDetails</ClassTableName>
+      <ClassShowAsSystemTable>false</ClassShowAsSystemTable>
+      <ClassUsePublishFromTo>true</ClassUsePublishFromTo>
+      <ClassLastModified>2022-09-27T11:20:22.0867832+00:00</ClassLastModified>
+      <ClassGUID>cd680651-bf2c-4f71-8cf3-7c18f718ac8b</ClassGUID>
+      <ClassIsCustomTable>false</ClassIsCustomTable>
+      <ClassSearchTitleColumn>DocumentName</ClassSearchTitleColumn>
+      <ClassSearchCreationDateColumn>DocumentCreatedWhen</ClassSearchCreationDateColumn>
+      <ClassSearchSettings>&lt;search&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="96379cc8-e580-4939-ba25-e6fa8fb1d3c4" name="AddressDetailsID" searchable="True" tokenized="False" /&gt;&lt;/search&gt;</ClassSearchSettings>
+      <ClassSearchEnabled>true</ClassSearchEnabled>
+      <ClassVersionGUID>2a31446f-f632-4d91-acde-c4dbd69ff2ce</ClassVersionGUID>
+      <ClassIsForm>false</ClassIsForm>
+      <ClassCodeGenerationSettings>&lt;Data&gt;&lt;NameSpace&gt;Eurobank&lt;/NameSpace&gt;&lt;/Data&gt;</ClassCodeGenerationSettings>
+      <ClassIconClass>icon-message</ClassIconClass>
+      <ClassUsesPageBuilder>false</ClassUsesPageBuilder>
+      <ClassIsNavigationItem>false</ClassIsNavigationItem>
+      <ClassHasURL>true</ClassHasURL>
+      <ClassHasMetadata>false</ClassHasMetadata>
+    </cms_class>
+    <cms_permission>
+      <PermissionID>16509</PermissionID>
+      <PermissionDisplayName>{$permissionnames.read$}</PermissionDisplayName>
+      <PermissionName>Read</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>4e559b0d-4e85-4103-9408-1702f8eeee71</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0024069+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.read$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>1</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16514</PermissionID>
+      <PermissionDisplayName>{$permissionnames.destroy$}</PermissionDisplayName>
+      <PermissionName>Destroy</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>19e95bb0-dbb8-4f1b-a36a-4dc683429496</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0344048+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.destroy$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>6</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16515</PermissionID>
+      <PermissionDisplayName>{$permissionnames.exploretree$}</PermissionDisplayName>
+      <PermissionName>ExploreTree</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>e3e7d102-b0b4-4ec3-810e-56ff1de1be38</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0394052+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.exploretree$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>7</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16516</PermissionID>
+      <PermissionDisplayName>{$permissionnames.modifypermissions$}</PermissionDisplayName>
+      <PermissionName>ModifyPermissions</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>75846606-d3d5-45c2-8376-6d9d1c3dc09b</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0453963+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.modifypermissions$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>8</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16512</PermissionID>
+      <PermissionDisplayName>{$permissionnames.createanywhere$}</PermissionDisplayName>
+      <PermissionName>Create</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>6e6dca5a-4bfc-4fe2-907a-72fbd6ce20e9</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0244045+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.createanywhere$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>4</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16510</PermissionID>
+      <PermissionDisplayName>{$permissionnames.modify$}</PermissionDisplayName>
+      <PermissionName>Modify</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>80abb063-7633-470b-84fd-8ac3d045df15</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0133988+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.modify$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>2</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16511</PermissionID>
+      <PermissionDisplayName>{$permissionnames.create$}</PermissionDisplayName>
+      <PermissionName>CreateSpecific</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>b5ed26b3-3f5f-4095-8fc1-a98d8e494f08</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0194056+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.create$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>3</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16513</PermissionID>
+      <PermissionDisplayName>{$general.delete$}</PermissionDisplayName>
+      <PermissionName>Delete</PermissionName>
+      <ClassID>5569</ClassID>
+      <PermissionGUID>5f02057f-0947-4a3f-bdc0-e14e51d14351</PermissionGUID>
+      <PermissionLastModified>2021-07-20T13:02:30.0294045+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.document.delete$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>5</PermissionOrder>
+    </cms_permission>
+    <cms_classsite>
+      <ClassID>5569</ClassID>
+      <SiteID>1</SiteID>
+    </cms_classsite>
+    <cms_allowedchildclasses>
+      <ParentClassID>5383</ParentClassID>
+      <ChildClassID>5569</ChildClassID>
+    </cms_allowedchildclasses>
+  </NewDataSet>
+</cms_documenttype>

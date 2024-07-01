@@ -1,0 +1,58 @@
+﻿@model Eurobank.Models.Applications.ApplicationDetailsModelView
+@using Kendo.Mvc.UI
+
+<div class="row">
+	<div class="col-lg-3"> </div>
+	<div class="col-lg-9 fixapp-info">
+		<div class="shadow-box mb-2">
+			<div class="row">
+				<div class="col">
+					<label>APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+				</div>
+				<div class="col">
+					<label>STATUS :  @Model.ApplicationDetails_ApplicationStatus</label>
+				</div>
+				<div class="col">
+					<label>TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+				</div>
+				<div class="col">
+					<label>INTRODUCER : @Model.ApplicationDetails_IntroducerName</label>
+				</div>
+				<div class="col text-right">
+					<div class="dropdown">
+						<button type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="material-icons-outlined mr-2">info </span> INFO
+						</button>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+							<label>APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+							<label>APPLICATION TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+							<label>SUBMITTED ON : @Model.ApplicationDetails_SubmittedOn</label>
+							<label>CREATED BY : @Model.ApplicationDetails_SubmittedBy</label>
+							<label>CREATED ON : @Model.ApplicationDetails_CreatedOn</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			@*<h5 class="mb-3">INFO</h5>*@
+			@*<div class="row">
+				<div class="col">
+					<label>APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+				</div>
+				<div class="col">
+					<label>APPLICATION TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+				</div>
+				<div class="col">
+					<label>Submitted On : @Model.ApplicationDetails_SubmittedOn</label>
+				</div>
+				<div class="col">
+					<label>Created By : @Model.ApplicationDetails_SubmittedBy</label>
+				</div>
+				<div class="col">
+					<label>Created On : @Model.ApplicationDetails_CreatedOn</label>
+				</div>
+			</div>*@
+		</div>
+	</div>
+</div>
+

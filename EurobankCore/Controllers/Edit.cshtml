@@ -1,0 +1,68 @@
+﻿@using CMS.DataEngine
+@using CMS.SiteProvider
+@model Eurobank.Models.Application.ApplicationViewModel
+@using Kendo.Mvc.UI
+@{
+	ViewData["Title"] = "Edit";
+}
+
+<div class="application-details">
+
+	@*<div class="shadow-box">
+		<div id="validation-success" class="alert alert-success" role="alert"></div>
+		<form asp-action="Edit" class="row">
+			@Html.HiddenFor(model => model.ApplicationNumber)
+			<div class="col-md-6">
+				<div class="form-group">
+					<label asp-for="Title" class="control-label"></label>
+					@(Html.Kendo().CheckBoxFor(m => m.Title).BindTo((System.Collections.IEnumerable)ViewBag.titles)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+
+					@Html.ValidationMessageFor(X => X.Title)
+				</div>
+				<div class="form-group">
+					<label asp-for="FirstName" class="control-label"></label>
+					@Html.Kendo().TextBoxFor(model => model.FirstName).HtmlAttributes(new { @class = "form-control" })
+					@Html.ValidationMessageFor(X => X.FirstName)
+				</div>
+				<div class="form-group">
+					<label asp-for="LastName" class="control-label"></label>
+					@Html.Kendo().TextBoxFor(model => model.LastName).HtmlAttributes(new { @class = "form-control" })
+					@Html.ValidationMessageFor(X => X.LastName)
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label asp-for="FatherName" class="control-label"></label>
+					@Html.Kendo().TextBoxFor(model => model.FatherName).HtmlAttributes(new { @class = "form-control" })
+					@Html.ValidationMessageFor(X => X.FatherName)
+				</div>
+				<div class="form-group">
+					<label asp-for="DateofBirth" class="control-label w-100"></label>
+					@Html.Kendo().TextBoxFor(model => model.DateofBirth).HtmlAttributes(new { @class = " datepicker1" })
+				</div>
+				<div class="form-group">Ed
+					<label asp-for="Gender" class="control-label"></label>
+					@(Html.Kendo().DropDownListFor(m => m.Gender).BindTo((System.Collections.IEnumerable)ViewBag.gender)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+				</div>
+				<div class="form-group">
+					<input type="checkbox" name="Isactive" checked data-toggle="toggle" data-size="sm" data-on="True" data-off="False" data-onstyle="success">
+					<label asp-for="Isactive" class="control-label ml-2"></label>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+
+
+
+		</form>
+	</div>*@
+
+</div>

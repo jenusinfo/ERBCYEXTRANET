@@ -1,0 +1,42 @@
+﻿@using Eurobank.InlineEditors
+@using Eurobank.Widgets
+
+@model Eurobank.Widgets.UseFulLinksWidgetViewModel
+
+@{
+    var i = 1;
+}
+
+@if (Context.Kentico().PageBuilder().EditMode)
+{
+    <partial name="~/Components/InlineEditors/SpinnerEditor/_SpinnerEditor.cshtml"
+        model="new SpinnerEditorViewModel
+               {
+                   PropertyName = nameof(UseFulLinksWidgetProperties.Count),
+                   Count = Model.Count
+               }" />
+
+   
+}
+   
+<div class="h-100 shadow-box">
+    <h3 class="mb-4">Useful links</h3>
+    <ul class="e-bullet">
+        @foreach (var link in Model.UseFulLink)
+        {
+            if(link.LinkOpenInNewTab)
+            {
+                <li>  <a href="@link.LinkURL" target="_blank">@link.LinkText</a></li>
+            }
+            else
+            {
+                <li>  <a href="@link.LinkURL">@link.LinkText</a></li>
+            }            
+        }
+    </ul>
+</div>
+
+
+ 
+
+

@@ -1,0 +1,11 @@
+﻿@using Kentico.Forms.Web.Mvc
+@using Eurobank.Components.Widgets.Polls
+
+@model CustomDropDownComponent
+
+@{
+	var htmlAttributes = ViewData.Kentico().GetEditorHtmlAttributes();
+}
+
+ 
+@Html.DropDownListFor(x => x.SelectedValue, Model.HtmlOptions.ToSelectListItems(), null, htmlAttributes)

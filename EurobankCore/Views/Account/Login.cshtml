@@ -1,0 +1,206 @@
+﻿@using CMS.DataEngine
+@using CMS.SiteProvider
+
+@model Eurobank.Models.LoginRegisterViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout_LoginPage.cshtml";
+    ViewBag.Title = HtmlLocalizer["Sign in"].Value;
+    ViewData["PageClass"] = "inverted";
+}
+<style>
+    .InvalidUser {
+        color: red;
+    }
+
+    .btn-modal {
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+</style>
+<div id="tabs" class="login-tab">
+    <h1 class="mb-5"> Welcome to the Digital <br> Self Service Platform </h1>
+    @*	<div class="tabnav">
+        <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+        <li class="nav-item">
+        <a class="nav-link @ViewBag.LoginActive" id="existing-booking-tab" data-toggle="tab" href="#ExistingBooking" role="tab" aria-controls="nav-home" aria-selected="true">Sign In </a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link @ViewBag.RegisterActive" id="past-booking-tab" data-toggle="tab" href="#PastBooking" role="tab" aria-controls="nav-profile" aria-selected="false">Sign Up</a>
+        </li>
+        </ul>
+        </div>*@
+
+    <div class="tab-content1" id="nav-tabContent">
+        <div class="login-sec @ViewBag.LoginActive @ViewBag.LoginShow" id="ExistingBooking" role="tabpanel" aria-labelledby="existing-booking-tab">
+            <form id="frmLogin" asp-action="Login" method="post" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]">
+                <input type="hidden" asp-for="@Model.BrowserName" />
+                <input type="hidden" asp-for="@Model.IpAddress" />
+                <input type="hidden" asp-for="@Model.IsPreviousLogout" />
+                @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+                {
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                }
+                <div class="form-group">
+                    <label asp-for="@Model.Login.UserName" class="control-label"></label>
+                    <input type="text" asp-for="@Model.Login.UserName" class="form-control" />
+                    <span asp-validation-for="@Model.Login.UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.Login.Password" class="control-label"></label>
+                    <input type="password" asp-for="@Model.Login.Password" class="form-control" />
+                    <span asp-validation-for="@Model.Login.Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group1">
+                    <div class="d-flex justify-content-between align-items-center remember-me">
+                        @*<label class="custom-chk">
+                                Remember Me
+                                <input type="checkbox" id="remember-me" name="remember-me">
+                                <span class="checkmark"></span>
+                            </label>*@
+
+                        <a asp-action="RetrievePassword" asp-controller="Account" class="logon-password-retrieval-link" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#retrievePasswordWrap">
+                            @HtmlLocalizer["Forgot Your Password?"]
+                        </a>
+                    </div>
+
+                </div>
+
+                <input id="btnLoginSubmit" type="submit" value="@HtmlLocalizer["Login"]" class="btn btn-primary" />
+            </form>
+
+            <div class="mt-4 signup-box">
+                <div class="signup-icon">
+                    <span> Don't have an account? </span>
+                    <a href="#" class="signup-link"> Sign Up</a>
+                </div>
+            </div>
+
+            <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="loginModalLabel">Invalid Login</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="InvalidUser">
+                                @TempData["UserLoginFailed"]<br />
+                                If you continue, the previous session will be logged out.
+                            </div>
+                            <div id="continueMsg"> <h3><span>Please wait...</span></h3></div>
+                        </div>
+                        <div class="modal-footer">
+                            <h6>Do you want to proceed?</h6>
+                            <input id="btnContinue" onclick="return btnContinue_OnClick();" type="button" value="@HtmlLocalizer["Yes"]" class="btn-modal" />
+                            <button type="button" class="btn-modal" data-dismiss="modal">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="retrievePasswordWrap"></div>
+        </div>
+
+        <div class="signup @ViewBag.RegisterActive @ViewBag.RegisterShow" id="PastBooking" role="tabpanel" aria-labelledby="past-booking-tab">
+            <form id="frmRegistration" asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="@Model.Register.FirstName" class="control-label"></label>
+                    <input type="text" asp-for="@Model.Register.FirstName" class="form-control" />
+                    <span asp-validation-for="@Model.Register.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.Register.LastName" class="control-label"></label>
+                    <input type="text" asp-for="@Model.Register.LastName" class="form-control" />
+                    <span asp-validation-for="@Model.Register.LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.Register.Email" class="control-label"></label>
+                    <input type="email" asp-for="@Model.Register.Email" class="form-control" />
+                    <span asp-validation-for="@Model.Register.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.Register.RegPassword" class="control-label"></label>
+                    <input type="password" asp-for="@Model.Register.RegPassword" class="form-control" />
+                    <span asp-validation-for="@Model.Register.RegPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.Register.RegPasswordConfirmation" class="control-label"></label>
+                    <input type="password" asp-for="@Model.Register.RegPasswordConfirmation" class="form-control" />
+                    <span asp-validation-for="@Model.Register.RegPasswordConfirmation" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="g-recaptcha" data-sitekey="@SettingsKeyInfoProvider.GetValue(SiteContext.CurrentSiteName + ".CMSReCaptchaPublicKey")"></div>
+                    <span id="Register_ReCaptcha_Error" class="text-danger"></span>
+                </div>
+                <div class="d-flex signup-tc">
+                    <label class="custom-chk">
+                        I confirm, agree, declare and assume under penalty of perjury or fraud, that I have read, understood and accept 
+                        <span>
+                            <a href="https://www.eurobank.com.cy/en-us/special-pages/legal-notice" target="_blank">the Terms And Conditions of the Use of Self Service Platform</a>
+                        </span> and the <span>
+                            <a href="https://www.eurobank.com.cy/en-us/special-pages/privacy-notice" target="_blank">Privacy Notice.</a>
+                        </span>
+                        <input id="chkAcceptTermsAndConditions" type="checkbox" class="form-check-input">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+
+                <div class="d-flex signup-tc" style="display:none !important;">
+                    <label class="custom-chk">
+                        I Accept
+                        <input id="chkAcceptPrivacyPolicy" type="checkbox" class="form-check-input">
+                        <span class="checkmark"></span>
+                    </label>
+
+                    <span>
+                        <a href="https://www.eurobank.com.cy/en-us/special-pages/privacy-notice" target="_blank">Privacy Policy</a>
+                    </span>
+                </div>
+
+                <input id="btnRegistrationSubmit" type="submit" value="@HtmlLocalizer["Sign Up"]" class="btn btn-primary" onclick="return btnRegistrationSubmit_OnClick();" />
+            </form>
+            <a href="#" class="backtologin"> <i class="fa fa-angle-left mr-1" aria-hidden="true"></i> Back to Login </a>
+        </div>
+    </div>
+</div>
+@Html.Hidden("iSCuncurrentLoginActive", TempData["iSCuncurrentLoginActive"])
+@Html.Hidden("UserLoginFailed", TempData["UserLoginFailed"])
+@Html.Hidden("UserPassword", TempData["UserPassword"])
+@Html.Hidden("ReturnUrl", Context.Request.Query["ReturnUrl"])
+@Html.Hidden("LoginUrl", Url.Action("Login", "Account"))
+@Html.Hidden("PageUrl", Url.Kentico().PageUrl(ContentItemIdentifiers.HOME))
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        if ($("#iSCuncurrentLoginActive").val() != "TRUE") {
+            $('#continueMsg').hide();
+            $('#BrowserName').val(getBrowserName(navigator.userAgent));
+            //$.getJSON("https://api.ipify.org?format=json", function (data) {
+            //    $('#IpAddress').val(data.ip);
+            //})
+            if ($("#UserLoginFailed").val() === null || $("#UserLoginFailed").val() === "") {
+                $('#loginModal').modal('hide');
+            }
+            else {
+                $('#loginModal').modal('show');
+            }
+        }
+    })
+</script>
+<script src="~/Scripts/Custom/Account/Login.js"></script>
+

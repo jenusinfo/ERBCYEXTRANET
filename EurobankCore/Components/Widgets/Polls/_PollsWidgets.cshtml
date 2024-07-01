@@ -1,0 +1,76 @@
+﻿@using Eurobank.InlineEditors
+@using Eurobank.Widgets
+
+@model Eurobank.Widgets.PollsWidgetViewModel
+
+<div class="row h-100">
+	<div class="col-lg-8">
+		<div class="h-100 shadow-box">
+			<img src="~/Content/Images/our-story.jpg" />
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="h-100 shadow-box opinion-poll"> 
+			@if (Model.Isactive == false)
+			{
+				<div class="mb-3">
+					<h3>@ResHelper.GetString("Eurobank.Polls")</h3>
+				</div>
+				<form id="friendform" asp-action="Polls" asp-controller="CommonForm"
+					  method="post">
+					<div class="mb-3">
+						<h5>@Model.PollQuestion</h5>
+						@Html.HiddenFor(x => x.PollQuestionID)
+						@if (TempData["Massage"] != null)
+						{
+							<h5>@(TempData["Massage"])</h5>
+						}
+
+					</div>
+					@{ int i = 0;}
+					@foreach (var answer in Model.AnswerList)
+					{
+						<div class="media">
+							<div class="d-flex">
+								<div class="pr-4 news-date">
+									<div class="d-flex">
+
+										<span class="font-weight-bold"> @(Html.Kendo().RadioButton().Name("answer" + i++).Checked(false).Value(answer.AnswerID).HtmlAttributes(new { @name = "Answer" }).Label(answer.AnswerText))</span>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+
+					<input type="submit" value="Vote" class="k-button k-button-icontext" id="Answer">
+
+				</form>
+			}
+			else
+			{
+				<div class="poll">
+					<span class="alert alert-success w-100 mb-2 d-block text-center">@Model.PollResponseMessage</span>
+				</div>
+			}
+			@if (Model.Isactive == true)
+			{
+				<div class="poll">
+					<h2 class="display-2 mb-2">@ResHelper.GetString("Eurobank.PollsResult")</h2>
+					<h4 class="mb-2">@Model.PollQuestion</h4>
+					@foreach (var answer in Model.AnswerList)
+					{
+						<div class="poll-shadow mb-2">
+							<h5 class="mb-2">@(answer.AnswerText)</h5>
+							<div class="progress">
+								<div class="progress-bar progress-bar-striped bg-success" style="width:@(answer.VotePercentage + "%")" role="progressbar" aria-valuenow="@(answer.VotePercentage)" aria-valuemin="0" aria-valuemax="100">@(answer.VotePercentage)</div>
+							</div>
+						</div>
+					}
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+

@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Eurobank.Models.ContactDetailViewModel>
+@using Kendo.Mvc.UI
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="contacts-page">
+	<div class="col-md-12">
+		@(Html.Kendo().Grid(Model)
+				.Name("Grid")
+				.Columns(columns =>
+				{
+					columns.Bound(a => a.FirstName).Title("First Name").Width(200);
+					columns.Bound(a => a.LastName).Title("Last Name");
+					columns.Bound(a => a.DateofBirth).Title("Date Of Birth").Width(200);
+				})
+				.Pageable()
+				.Sortable()
+				//.Scrollable(scr=>scr.Height(430))
+				.Filterable()
+				.DataSource(dataSource => dataSource
+					.Ajax()
+					.PageSize(3)
+					.ServerOperation(false)
+					)
+			)
+	</div>
+</div>

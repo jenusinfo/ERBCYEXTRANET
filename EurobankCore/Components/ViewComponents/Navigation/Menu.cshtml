@@ -1,0 +1,30 @@
+﻿@using Eurobank.Models
+
+@model IEnumerable<MenuItemViewModel>
+
+@using Eurobank.Helpers.Process;
+@using Microsoft.AspNetCore.Mvc;
+@using Eurobank.Models.Application.Common;
+@{
+	var userModel = UserProcess.GetUser(User.Identity.Name);
+	bool isIntroducer = userModel != null && string.Equals(userModel.UserType, ApplicationUserType.INTRODUCER.ToString(), StringComparison.OrdinalIgnoreCase);
+}
+<nav class="navbar navbar-expand-md">
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+		<i class="fa fa-bars" aria-hidden="true"></i>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarNavDropdown">
+		<ul class="nav-menu navbar-nav">
+			@foreach (var menuItem in Model)
+			{
+				@if (!(!isIntroducer && string.Equals(menuItem.Caption, "Registries", StringComparison.OrdinalIgnoreCase)))
+				{
+					<li class="@(ViewContext.RouteData.Values["Controller"].ToString() == menuItem.Caption.ToString()?"active":"" )">
+						<a href="@menuItem.Url">@HtmlLocalizer[menuItem.Caption]</a>
+					</li>
+				}
+
+			}
+		</ul>
+	</div>
+</nav>

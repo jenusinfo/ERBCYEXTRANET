@@ -1,0 +1,130 @@
+﻿@model Eurobank.Models.Application.RelatedParty.RelatedPartyModel
+@using Eurobank.Helpers.Validation;
+@{
+    bool isLegalEntity = string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+    string applicationType = Model.ApplicationTypeName;
+    bool isRelatedLegal = ViewBag.isRelatedLegal;
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.ADDRESS_DETAILS))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionAddressDetails">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.Applicant.AddressDetails")
+                </span>
+                <div id="accordionAddressContentOne">
+
+
+                    @(Html.Kendo().Grid<Eurobank.Models.Application.Common.AddressDetailsModel>
+()
+.Name("AddressDetails")
+.Columns(columns =>
+{
+							columns.Template
+							(
+							@"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+							).Width(30);
+							columns.Bound(p => p.AddressTypeName).Title("Type").Width(100);
+							columns.Bound(p => p.AddressLine1).Width(100);
+							columns.Bound(p => p.AddressLine2).Width(100);
+							columns.Bound(p => p.PostalCode).Width(100);
+							columns.Bound(p => p.POBox).Width(100);
+							columns.Bound(p => p.City).Width(100);
+							columns.Bound(p => p.CountryName).Title("Country").Width(100);
+	if (isLegalEntity == true)
+	{
+								columns.Bound(p => p.PhoneNo).Width(100);
+								columns.Bound(p => p.FaxNo).Width(100);
+	}
+	columns.Bound(p => p.StatusName).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+	
+
+})
+.ToolBar(toolbar => { if(Model.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+.Events(e =>
+{
+	e.Edit("addConfirmButton_AddressDetails");
+	e.DataBound("onAddressDataBound");
+	e.Cancel("onGridCancel");
+})
+.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(isLegalEntity == false ? "AddEditAddressDetails" : "AddEditAddressDetailsLegal").DisplayDeleteConfirmation(false).Window(w => w.Title(ResHelper.GetString("Eurobank.Application.Applicant.Address.PopUp.Title")).Width(800))).EnableCustomBinding(true)
+.Pageable()
+.Sortable()
+.Scrollable()
+.HtmlAttributes(new { style = "max-height:550px;" })
+.DataSource(dataSource => dataSource
+.Ajax()
+.PageSize(10)
+ .Sort(x => x.Add("StatusName").Descending())
+//.Events(e => e.RequestStart("hideIdField"))
+.Model(model =>
+{
+
+	model.Id(p => p.Id);
+	model.Field(p => p.AddressType);
+	model.Field(p => p.AddressTypeName);
+	model.Field(p => p.AddressLine1);
+	model.Field(p => p.AddressLine2);
+	model.Field(p => p.PostalCode);
+	model.Field(p => p.City);
+	model.Field(p => p.Country);
+	model.Field(p => p.CountryName);
+	model.Field(p => p.Status);
+	//model.Field(p => p.nodePath);
+})
+//.Model(model => model.Id(p => p.AddressGuid))
+.Events(events => events.Error("error_handlerAddressDetailsRelated"))
+.ServerOperation(true)
+.Create(update => update.Action("AddressDetailsPopup_Create", "RelatedParty", new { apID = Model.Id, applicationType = Model.Type }))
+.Read(read => read.Action("AddressDetails_Read", "RelatedParty", new { apID = Model.Id, applicationType = Model.Type }))
+.Update(update => update.Action("AddressDetailsPopup_Update", "RelatedParty", new { apID = Model.Id, applicationType = Model.Type }))
+.Destroy(update => update.Action("AddressDetailsPopup_Destroy", "RelatedParty"))
+))
+
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@Html.Hidden("hdnApplication_RelatedParty_LeftMenu_AddressDetails", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.AddressDetails"))
+@Html.Hidden("ApplicationType", applicationType)
+@Html.Hidden("IsRelatedLegal", isRelatedLegal)
+<ul id="context-menuAddressDetails">
+
+    @if (Model.IsEdit)
+    {
+		<li id="editRowAdd">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowAdd">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-preview"></span></li>
+    }
+</ul>
+<script src="~/Scripts/Custom/RelatedParty/RelatedParty_AddressDetails.js"></script>

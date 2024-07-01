@@ -1,0 +1,419 @@
+﻿@using Eurobank.Helpers
+@using Eurobank.Models.Application.Common
+@using Eurobank.Widgets
+@using Kendo.Mvc.UI
+@model Eurobank.Models.ContactDetailViewModel
+@using Kentico.PageBuilder.Web.Mvc
+@using Eurobank.Models.User;
+@using Eurobank.Helpers.Process;
+@using Kentico.Content.Web.Mvc
+@using Kentico.Web.Mvc
+@{
+    ViewBag.Title = ResHelper.GetString("EuroBank.PageTitle.Home");
+    //ViewData["Title"] = HtmlLocalizer["Home"];
+    List<Eurobank.Models.ContactDetailViewModel> contactDetailViewModels = (List<Eurobank.Models.ContactDetailViewModel>)TempData["PersonalDetails"];
+    UserModel user = UserProcess.GetUser(User.Identity.Name);
+    //Layout = "~/Views/Shared/_Layout_Applications.cshtml";
+
+    //ViewData["total"] = 1;
+    //Eurobank.Models.HomeIndexViewModel homeIndexViewModel = (Eurobank.Models.HomeIndexViewModel)ViewBag.HomeChartValue;
+}
+<style>
+    .k-link {
+        text-decoration: underline;
+    }
+
+    .k-grid th {
+        padding: 0.75rem 0.3rem;
+    }
+
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+    .k-grid-header .k-header > .k-link {
+        padding: 0.75rem 0.50rem;
+        text-overflow: initial;
+    }
+
+    .k-master-row > td {
+        text-overflow: initial;
+        word-wrap: break-word;
+    }
+
+    
+</style>
+<span id="loader"></span>
+<div class="row">
+    <div class="col-lg-9">
+        <div class="mb-4 shadow-box h-100">
+            <div class="d-flex justify-content-between application-row">
+                <h3>@ResHelper.GetString("Applications")</h3>
+                <ul class="d-flex filter-tab StatusCl">
+                    <li class="HeaderTextColor"><a class='k-link tab-active' onclick='statusCommand("")'>All</a></li>
+                    <li><a class='k-link tab-active' onclick='statusCommand("Draft")'>Draft</a></li>
+                    <li><a class='k-link tab-active' onclick='statusCommand("Pending")'>Pending</a></li>
+                    <li><a class='k-link tab-active' onclick='statusCommand("Completed")'>Completed</a></li>
+                </ul>
+
+                <a class="viewall" href="@Url.Action("Index", "Applications")">View All</a>
+
+                @*<a class='k-link' onclick='statusCommand("Draft")'>Draft</a>*@
+
+            </div>
+
+            <!--@*<a class='k-link' onclick='statusCommand("Draft")'>Draft</a>*@-->
+            <!--<a class='k-link' onclick='statusCommand("No")'>Pending</a>
+            <a class='k-link' onclick='statusCommand("Yes")'>Completed</a>-->
+            <!--<a class="new-contact" href="@Url.Action("Index", "Application")">
+                    <span class="k-icon k-i-plus-circle mr-1"></span>
+                    New
+                </a>
+            </div>-->
+            <!--<div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <a class='k-link' onclick='customCommand()'>All</a>-->
+            @*@Html.Kendo().TextBoxFor(m => m.Title).HtmlAttributes(new
+            {
+            @class = "form-control",
+            placeholder = "Title",
+            onkeyup = "TitleKeyup(this);"
+            })*@
+
+            <!--</div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <a class='k-link' onclick='customCommand()'>Draft</a>-->
+            @*<a class='k-button' onclick='customCommand()'>Button Here</a>
+            @Html.Kendo().TextBoxFor(m => m.FirstName).HtmlAttributes(new
+            {
+            @class = "form-control",
+            placeholder = "First Name",
+            onkeyup = "NameKeyup(this);"
+            })*@
+            <!--</div>
+            </div>
+            <div class="col">
+
+                <div class="form-group">
+                    <a class='k-link' onclick='customCommand()'>Pending</a>-->
+            @*@(Html.Kendo().DropDownList()
+            .Name("activeDDL")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .Events(e => e.Change("onChange"))
+            .BindTo(new List<SelectListItem>() {
+            new SelectListItem() {
+            Text = "Select",
+            Value = ""
+            },
+            new SelectListItem() {
+            Text = "Active",
+            Value = "Yes"
+            },
+            new SelectListItem() {
+            Text = "Inactive",
+            Value = "No"
+            }
+            })
+            .HtmlAttributes(new { style = "width: 100%" })
+            )*@
+
+            <!--</div>
+                </div>
+            </div>-->
+            @Html.Hidden("RedirectTo", Url.Action("Create", "Applications"))
+            @Html.Hidden("RedirectToApplication", Url.Action("Edit", "Applications"))
+            @Html.Hidden("RedirectPrintSummary", Url.Action("PrintSummary", "Applications"))
+            @Html.Hidden("RedirectPrintFriendly", Url.Action("PrintFriendly", "Applications"))
+            <div class="mt-3 grid-container">
+                @(
+                    Html.Kendo().Grid<Eurobank.Models.Applications.ApplicationDetailsModelView>()
+                    .Name("GridApplications")
+                    .EnableCustomBinding(true)
+                    .NoRecords(n => n.Template(@"<div class='w-100 p-4'>" + ResHelper.GetString("Eurobank.common.grid.Norecord") + "</div>"))
+                    .Columns(columns =>
+                    {
+                        columns.Template
+                        (
+                        @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                        ).Width(30);
+                        columns.Bound(p => p.ApplicationDetails_ApplicationNumber).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.ApplicationID")).Width("190px").ClientTemplate("<a href='/applications/edit?application=#= Application_NodeGUID #'>" + "#: ApplicationDetails_ApplicationNumber #<br/><span class=HeaderTextColor>#: ApplicationDetails_ApplicationStatusName #</span>");
+                        columns.Bound(p => p.ApplicationDetails_ApplicationTypeName).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.Type")).Width("130px");
+                        columns.Bound(p => p.FullNameOfApplicant).Encoded(false).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.ApplicantName")).Width("190px");
+                        columns.Bound(p => p.ApplicationDetails_Introducer).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.Initiator")).Width("160px");
+                        columns.Bound(p => p.ApplicationDetails_ResponsibleBankingCenterUnit).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.BankCenter")).Width("140px").HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align:center;" });
+                        columns.Bound(p => p.ApplicationDetails_SubmittedBy).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.SubmittedBy")).Width("150px");
+                        columns.Bound(p => p.ApplicationDetails_SubmittedOn).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.SubmittedOn")).Width("150px").ClientTemplate("#= (ApplicationDetails_SubmittedOn == '01/01/0001 00:00:00') ? ' ' : kendo.toString(ApplicationDetails_SubmittedOn, \"dd/MM/yyyy \") #");
+                        columns.Bound(p => p.ApplicationDetails_CreatedOn).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.CreatedOn")).Width("150px");
+
+                        //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                    })
+                    .Events(e => e.DataBound("onApplicationHomeDataBound"))
+                    .ToolBar(toolbar =>
+                    {
+                        if (string.Equals(user.UserType, ApplicationUserType.INTRODUCER.ToString(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            toolbar.ClientTemplate(@"<div class='toolbar'>
+                <div class='row'>
+                <div class='col-md-12'>
+                <div class='input-group'>
+                <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+                <select id='column-list'  class='form-control'></select>
+
+                </div>
+
+                </div>
+
+                </div>
+                </div>
+                <div class='toolbar'>
+                <div class='row'>
+                <div class='col-md-12'>
+                <div class='input-group'>
+                <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+                <input type = 'text' class='form-control' id='searchbox' placeholder='Search for...'>
+
+                </div>
+                </div>
+                </div>
+                </div>
+                <div class='d-flex' style='margin-left: auto;'>
+                <a class='new-contact mr-2' onclick='showHideLoader();applicationRedirectNew()' style='margin-left: auto;'><span class='k-icon k-i-plus-circle mr-1'></span>New</a>
+                <a class='new-contact mr-2' onclick='downloadXLSX();' style='margin-left: auto;'><span class='k-icon k-i-export mr-1'></span>Export</a></div>
+                ");
+                        }
+                        else //Bank user (Internal/Corporate)
+                        {
+                            toolbar.ClientTemplate(@"<div class='toolbar'>
+                <div class='row'>
+                <div class='col-md-12'>
+                <div class='input-group'>
+                <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+                <select id='column-list'  class='form-control'></select>
+
+                </div>
+
+                </div>
+
+                </div>
+                </div>
+                <div class='toolbar'>
+                <div class='row'>
+                <div class='col-md-12'>
+                <div class='input-group'>
+                <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+                <input type = 'text' class='form-control' id='searchbox' placeholder='Search for...'>
+
+                </div>
+                </div>
+                </div>
+                </div>
+                <div class='d-flex' style='margin-left: auto;'>
+                <a class='new-contact mr-2' onclick='downloadXLSX()' style='margin-left: auto;'><span class='k-icon k-i-export mr-1'></span>Export</a></div>
+                ");
+                        }
+                    })
+                    .Pageable()
+                    .Sortable()
+                    .Scrollable()
+                    .Excel(excel => excel
+                    .FileName("Application.xlsx")
+                    .Filterable(true)
+                    .AllPages(true)
+                    .ProxyURL(Url.Action("Excel_Export_Save", "Applications"))
+                    )
+                    .HtmlAttributes(new { style = "max-height:550px;" })
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .PageSize(10)
+                    //.Total((int)ViewData["total"])
+                    //.ServerOperation(false)  //the grid will try to get the entire data and later perform paging, sorting, filtering and etc on the client.// Dev comment : Default is true, to implement server side pagination remove it
+                    .Model(model =>
+                    {
+                        model.Id(p => p.Application_NodeGUID);
+                    })
+                    .Create(update => update.Action("ApplicationPopup_Create", "Applications"))
+                    .Read(read => read.Action("Applications_Read", "Applications").Data("onReadApplications"))
+                    .Update(update => update.Action("RegistryPopup_Update", "Applications"))
+                    .Destroy(update => update.Action("Applications_Destroy", "Applications"))
+                    )
+                    )
+
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        @*<editable-area area-identifier="areaNews" />*@
+        @*@{
+            // Prepares properties for the Form widget
+            var NewswidgetProperties = new NewsWidgetProperties()
+            {
+                Count = 5,
+                ViewAllLinkUrl = "/News",
+                NodeAliasPath = "",
+                OpenInNewTab = true
+            };
+        }
+        @await Html.Kentico().RenderStandaloneWidgetAsync(ComponentIdentifiers.NEWS_WIDGET, NewswidgetProperties)*@
+        @{
+            // Prepares properties for the Form widget
+            var UsefullLinkswidgetProperties = new UseFulLinksWidgetProperties()
+            {
+                Count = 5,
+                LinkUrl = "",
+                NodeAliasPath = "",
+                OpenInNewTab = true
+            };
+        }
+        @await Html.Kentico().RenderStandaloneWidgetAsync(ComponentIdentifiers.USEFULL_LINKS, UsefullLinkswidgetProperties)
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-9">
+        <div class="row">
+            <div class="col-lg-6 equalgrid">
+                <div class="shadow-box">
+                    <div class="d-flex justify-content-between mb-5 title-wrapper">
+                        <h2>@ResHelper.GetString("Application By Status") </h2>
+                        <a class="viewall" href="@Url.Action("Index", "Applications")">View All</a>
+                    </div>
+                    <div class="demo-section k-content wide">
+                        @*@(Html.Kendo().Chart<Eurobank.Models.Home.HomeChartViewModel>()
+                            .Name("chart")
+                            .ChartArea(chartArea => chartArea.Background("transparent"))
+                            .Legend(legend => legend.Position(ChartLegendPosition.Bottom))
+                            .SeriesDefaults(series => series.Donut().StartAngle(90))
+                            .DataSource(ds => ds.Read(read => read.Action("GetApplicationByType", "Home")))
+                            .Tooltip(tooltip => tooltip
+                            .Visible(true)
+                            .Template("#= category # (#= series.name #): #= value #%")
+                            .Format("{0}%")
+                            )
+                            .Series(series => series.Donut(model => model.value, model => model.category))
+                            )*@
+                        @(Html.Kendo().Chart<Eurobank.Models.Home.HomeChartViewModel>()
+                            .Name("chart")
+                            .Events(events => events.Render("onRender"))
+                            .ChartArea(chartArea => chartArea.Background("transparent"))
+                            //.Title(title => title
+                            //	//.Text("Application By Status")
+                            //	//.Position(ChartTitlePosition.Top)
+                            //)
+                            .Legend(legend => legend.Position(ChartLegendPosition.Bottom))
+                            .SeriesDefaults(series => series.Donut().StartAngle(90))
+                            .DataSource(ds => ds.Read(read => read.Action("GetApplicationByStatus", "Home")))
+                            .Series(series =>
+                            {
+                                series.Donut(model => model.value, model => model.category)
+                                .Name(ResHelper.GetString("Eurobank.Home.Chart.ApplicationStatus.Name"))
+                                .Labels(labels => labels
+                                .Visible(true)
+                                .Position(ChartSeriesLabelsPosition.OutsideEnd)
+                                .Template("#= category #: \n #= value#%")
+                                .Background("transparent")
+                                )
+                                .ColorField("color");
+                            })
+                            .Tooltip(tooltip => tooltip
+                            .Visible(true)
+                            .Template("#= category # (#= series.name #): #= value #%")
+                            .Format("{0}%")
+                            )
+                            )
+                        <div class="chart-loading"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 equalgrid">
+                <div class="shadow-box">
+                    <div class="d-flex justify-content-between mb-5 title-wrapper">
+                        <h2>@ResHelper.GetString("Application By Type") </h2>
+                        <a class="viewall" href="@Url.Action("Index", "Applications")">View All</a>
+                    </div>
+                    <div class="demo-section k-content wide">
+                        @(
+                            Html.Kendo().Chart<Eurobank.Models.Home.HomeChartViewModel>()
+                                .Name("chart1")
+                            .Events(events => events.Render("onRender"))
+                                .ChartArea(chartArea => chartArea.Background("transparent"))
+                                .Legend(legend => legend.Position(ChartLegendPosition.Bottom))
+                                .SeriesDefaults(series =>series.Donut().StartAngle(90))
+                            .DataSource(ds => ds.Read(read => read.Action("GetApplicationByType", "Home")))
+                            .Series(series =>
+                            {
+                                series.Donut(model => model.value, model => model.category)
+                                .Name(ResHelper.GetString("Eurobank.Home.Chart.ApplicationType.Name"))
+                                .Labels(labels => labels
+                                .Visible(true)
+                                .Position(ChartSeriesLabelsPosition.OutsideEnd)
+                                .Template("#= category #: \n #= value#%")
+                                .Background("transparent")
+                                )
+                                .ColorField("color");
+                            })
+                            .Tooltip(tooltip => tooltip
+                            .Visible(true)
+                            .Template("#= category # (#= series.name #): #= value #%")
+                            .Format("{0}%")
+                            )
+                            )
+                        <div class="chart-loading"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="h-100 shadow-box p-0">
+            <img src="~/CMSPages/GetFile.aspx?guid=@ViewBag.SideBannerHome" />
+        </div>
+        @*<div class="shadow-box col-lg-12">
+            <h3>Whats New</h3>
+        </div>*@
+        @*<div class="h-100 col-lg-12">
+            @{
+                // Prepares properties for the Form widget
+                var WhatsNewwidgetProperties = new WhatsNewsWidgetProperties()
+            {
+                Count = 5,
+                LinkUrl = "",
+                NodeAliasPath = "/eurobank/whats-new/",
+                OpenInNewTab = true
+            };
+            }
+            @await Html.Kentico().RenderStandaloneWidgetAsync(ComponentIdentifiers.WHATS_NEW, WhatsNewwidgetProperties)
+        </div>*@
+    </div>
+</div>
+@*<div class="row">
+    <div class="col-lg-9">
+        @{
+            // Prepares properties for the Form widget
+            var OpinionPollswidgetProperties = new PollsWidgetsProperties()
+            {
+                PollsID = "1"
+            };
+        }
+        @await Html.Kentico().RenderStandaloneWidgetAsync(ComponentIdentifiers.OPINION_POLLS, OpinionPollswidgetProperties)
+    </div>
+    <div class="col-lg-3">
+        
+    </div>
+</div>*@
+<ul id="context-menu">
+    <li id="editRow">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+    <li id="btnprintFriendly">Print Detailed<span class="k-icon k-i-print"></span></li>
+    <li id="printSummary">Print Summary<span class="k-icon k-i-print"></span></li>
+    @*<li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>*@
+</ul>
+@Html.Hidden("ApplicationCreateUrl",Url.Action("Create", "Applications"))
+@Html.Hidden("ApplicationDownloadUrl",Url.Action("DownloadApplications", "Applications"))
+@Html.Hidden("ApplicationDownloadUrlJS",Url.Action("GetApplicationRecords", "Applications"))
+<script src="~/Scripts/Custom/Home/HomeIndex.js"></script>
+<script src="~/Scripts/KendoProcess/HomeProcess.js"></script>
+
+

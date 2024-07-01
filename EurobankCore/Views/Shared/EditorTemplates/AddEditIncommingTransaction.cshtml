@@ -1,0 +1,36 @@
+﻿@model Eurobank.Models.Applications.SourceofIncommingTransactions.SourceOfIncomingTransactionsViewModel
+@using Kendo.Mvc.UI
+
+<div id="IncomingPopFrom">
+	<div class="form-group">
+		<label asp-for="SourceOfIncomingTransactions_NameOfRemitter" class="control-label"></label>
+		@Html.Kendo().TextBoxFor(model => model.SourceOfIncomingTransactions_NameOfRemitter).HtmlAttributes(new { @class = "form-control" ,@onkeyup="return limitlength(this,65,'SourceOfIncomingTransactionsNameOfRemitterError')",@onKeyDown="return limitlength(this,65,'SourceOfIncomingTransactionsNameOfRemitterError')" })
+		@Html.ValidationMessageFor(X => X.SourceOfIncomingTransactions_NameOfRemitter)
+		<span id="SourceOfIncomingTransactionsNameOfRemitterError" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="SourceOfIncomingTransactions_CountryOfRemitter" class="control-label"></label>
+		@(Html.Kendo().DropDownListFor(m => m.SourceOfIncomingTransactions_CountryOfRemitter).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+		@Html.ValidationMessageFor(X => X.SourceOfIncomingTransactions_CountryOfRemitter)
+	</div>
+	<div class="form-group">
+		<label asp-for="SourceOfIncomingTransactions_CountryOfRemitterBank" class="control-label"></label>
+		@(Html.Kendo().DropDownListFor(m => m.SourceOfIncomingTransactions_CountryOfRemitterBank).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+		@Html.ValidationMessageFor(X => X.SourceOfIncomingTransactions_CountryOfRemitterBank)
+	</div>
+</div>
+
+
+
+
+
+
+

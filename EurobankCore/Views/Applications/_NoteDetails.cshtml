@@ -1,0 +1,139 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Validation;
+@*@{
+    List<ValidationResultModel> validationResults = null;
+    string sectionValidationClass = "";
+    if (ViewBag.ErrorSummaryMsgs != null)
+    {
+        validationResults = ViewBag.ErrorSummaryMsgs;
+        if (validationResults.Any(j => !j.IsValid))
+        {
+            validationResults = validationResults.Where(j => !j.IsValid).ToList();
+        }
+
+        if (validationResults != null && validationResults.Count > 0)
+        {
+            if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.APPLICATION_NOTE_DETAILS))
+            {
+                sectionValidationClass = "bg-danger-row";
+            }
+            else
+            {
+                sectionValidationClass = "bg-success-row";
+            }
+        }
+        else
+        {
+            sectionValidationClass = "bg-success-row";
+        }
+    }
+}*@
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: center;
+    }
+</style>
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionNoteDetails">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.NoteDetails")
+                </span>
+                <div id="accordionNoteDetailsContentOne">
+
+
+                    @(
+                        Html.Kendo().Grid<Eurobank.Models.Application.NoteDetailsModel>
+        ()
+        .Name("NoteDetails")
+        .Columns(columns =>
+        {
+            columns.Template
+            (
+            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+            ).Width(30);
+            //columns.Bound(p => p.Id).Width(70).Title("ID");
+                            columns.Bound(p => p.rowID).Title("ID").Width(100);
+                            columns.Bound(p => p.NoteDetailsTypeName).Title(ResHelper.GetString("Eurobank.Application.NoteDetail.GridHeader.Type")).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+                            columns.Bound(p => p.SubjectName).Title("Subject").HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+                            columns.Bound(p => p.Details).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+                            columns.Bound(p => p.PendingOnName).Title("Pending On").HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+            columns.Bound(p => p.ExpectedDate).ClientTemplate("#= (ExpectedDate == null) ? ' ' : kendo.toString(ExpectedDate, \"dd/MM/yyyy \") #").Width(150);
+            columns.Bound(p => p.Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+            
+        })
+         .Events(e =>
+         {
+             e.Edit("addConfirmButton_Notes");
+             e.DataBound("onNoteDataBound");
+             e.Cancel("onGridCancel");
+         })
+        .ToolBar(toolbar => { if(Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditNoteDetails").DisplayDeleteConfirmation(false).Window(w=>w.Title("NOTE DETAIL").Width(800))).EnableCustomBinding(true)
+        .Pageable()
+        .Sortable()
+        .Scrollable()
+        .HtmlAttributes(new { style = "max-height:550px;" })
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+         .Sort(x => x.Add("Status_Name").Descending())
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+            model.Id(p => p.Id);
+            model.Field(p => p.NoteDetailsType);
+            model.Field(p => p.NoteDetailsTypeName);
+            model.Field(p => p.Subject);
+            model.Field(p => p.SubjectName);
+            model.Field(p => p.Details);
+            model.Field(p => p.PendingOn);
+            model.Field(p => p.PendingOnName);
+            model.Field(p => p.ExpectedDate);
+            model.Field(p => p.Status_Name);
+            //model.Field(p => p.nodePath);
+        })
+         //.Model(model => model.Id(p => p.AddressGuid))
+         .Events(events => events.Error("error_handlerNoteDetails"))
+        .ServerOperation(true)
+        .Create(update => update.Action("NoteDetailsPopup_Create", "Applications",new { apID = Model.Id}))
+        .Read(read => read.Action("NoteDetails_Read", "Applications"))
+        .Update(update => update.Action("NoteDetailsPopup_Update", "Applications"))
+        .Destroy(update => update.Action("NoteDetailsPopup_Destroy", "Applications"))
+        //.Events(events => events.RequestEnd("onRequestEnd"))
+        )
+		)
+
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@Html.Hidden("hdnApplication_LeftMenu_Notes", @ResHelper.GetString("Eurobank.Application.LeftMenu.Notes"))
+<ul id="context-menuNoteDetails">
+    @if (Model.ApplicationDetails.IsEdit)
+    {
+        <li id="editRowNotes">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowNotes">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+    }
+</ul>
+<script src="~/Scripts/Custom/Application/NoteDetails.js"></script>
+

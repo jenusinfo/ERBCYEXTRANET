@@ -1,0 +1,68 @@
+[
+  {
+    "outputFileName": "wwwroot/Scripts/Custom/Application.js",
+    "inputFiles": [
+      "wwwroot/Scripts/Custom/Application/AccountDetails.js",
+      "wwwroot/Scripts/Custom/Application/Applicant.js",
+      "wwwroot/Scripts/Custom/Application/ApplicationDetails.js",
+      "wwwroot/Scripts/Custom/Application/ApplicationEdit.js",
+      "wwwroot/Scripts/Custom/Application/BankDocuments.js",
+      "wwwroot/Scripts/Custom/Application/DebitCardDetails.js",
+      "wwwroot/Scripts/Custom/Application/DecisionHistory.js",
+      "wwwroot/Scripts/Custom/Application/EbankingSubscriberDetails.js",
+      "wwwroot/Scripts/Custom/Application/ExpectedDocuments.js",
+      "wwwroot/Scripts/Custom/Application/GroupStructure.js",
+      "wwwroot/Scripts/Custom/Application/NoteDetails.js",
+      "wwwroot/Scripts/Custom/Application/RelatedParties.js",
+      "wwwroot/Scripts/Custom/Application/SignatoryGroup.js",
+      "wwwroot/Scripts/Custom/Application/SignatureMandateIndividuals.js",
+      "wwwroot/Scripts/Custom/Application/SignatureMandateLegal.js",
+      "wwwroot/Scripts/Custom/Application/SourceOfOutgoingTransaction.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/Scripts/Custom/Applicant.js",
+    "inputFiles": [
+      "wwwroot/Scripts/Custom/Applicant/Applicant_Index.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_AddressDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_BankRelationShip.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_ContactDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_ContactDetailsLegal.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_CRSDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_FATCACRSDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_IdentificationDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_OriginOfTotalAssets.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_PepDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_SourceOfIncome.js",
+      "wwwroot/Scripts/Custom/Applicant/Applicant_TaxDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/Scripts/Custom/RelatedParty.js",
+    "inputFiles": [
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_Index.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_AddressDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_ContactDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_Identifications.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_OriginOfTotalAssets.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_PartyRoles.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_PartyRolesLegal.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_PepDetails.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_SourceOfIncome.js",
+      "wwwroot/Scripts/Custom/Applicant/RelatedParty_TaxDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": false
+    }
+
+  }
+]

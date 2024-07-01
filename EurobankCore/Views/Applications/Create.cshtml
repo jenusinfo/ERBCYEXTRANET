@@ -1,0 +1,183 @@
+﻿@using Kendo.Mvc.UI
+@model Eurobank.Models.Applications.ApplicationDetailsModelView
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .checked-readonly > input[type="checkbox"] {
+        pointer-events: none;
+    }
+</style>
+<span id="loader"></span>
+<div class="application">
+    <div class="shadow-box">
+
+        @*<div id="validation-success" class="alert alert-success" role="alert"></div>*@
+        <form asp-action="Create" class="row">
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ApplicationDetails_SubmittedBy" class="control-label"></label>
+                    @Html.Kendo().TextBoxFor(model => model.ApplicationDetails_SubmittedBy).HtmlAttributes(new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                @if (Model.IsEditingByIntroducer)
+                {
+
+                    <div class="form-group">
+                        <label asp-for="ApplicationDetails_ResponsibleOfficer" class="control-label"></label>
+                        @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ResponsibleOfficer).BindTo((System.Collections.IEnumerable)ViewBag.responsibleOfficer)
+.OptionLabel(new { Text = "-Select-" })
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", @readonly= "readonly" }))
+                        @Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleOfficer)
+                    </div>
+
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label asp-for="ApplicationDetails_ResponsibleOfficer" class="control-label"></label>
+                        @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ResponsibleOfficer).BindTo((System.Collections.IEnumerable)ViewBag.responsibleOfficer)
+.OptionLabel(new { Text = "-Select-" })
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                        @Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleOfficer)
+                    </div>
+                }
+                @if (Model.IsLegalOnly)
+                {
+                    <div class="form-group">
+                        <label asp-for="ApplicationDetails_ApplicationType" class="control-label"></label>
+                        @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ApplicationType).BindTo((System.Collections.IEnumerable)ViewBag.applicationType)
+//.OptionLabel(new { Text = "-Select-", Value = "" })
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", @readonly = "readonly" }))
+                        @Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicationType)
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label asp-for="ApplicationDetails_ApplicationType" class="control-label"></label>
+                        @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ApplicationType).BindTo((System.Collections.IEnumerable)ViewBag.applicationType)
+.OptionLabel(new { Text = "-Select-", Value = "" })
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                        @Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicationType)
+                    </div>
+                }
+
+            </div>
+
+
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ApplicationDetails_SubmittedOn" class="control-label"></label>
+                    @Html.Kendo().TextBoxFor(model => model.ApplicationDetails_SubmittedOn).HtmlAttributes(new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                @if (Model.IsEditingByIntroducer)
+                {
+                    <div class="form-group">
+                        <label asp-for="ApplicationDetails_ResponsibleBankingCenter" class="control-label w-100"></label>
+                        @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ResponsibleBankingCenter).BindTo((System.Collections.IEnumerable)ViewBag.bankingService)
+.OptionLabel(new { Text = "-Select-", Value = "" })
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", @readonly= "readonly" }))
+                        @Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleBankingCenter)
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label asp-for="ApplicationDetails_ResponsibleBankingCenter" class="control-label w-100"></label>
+                        @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ResponsibleBankingCenter).BindTo((System.Collections.IEnumerable)ViewBag.bankingService)
+.OptionLabel(new { Text = "-Select-", Value = "" })
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                        @Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleBankingCenter)
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label asp-for="ApplicationDetails_ApplicatonServices" class="control-label"></label>
+                    <br />
+                    @(Html.Kendo().CheckBoxGroup()
+            .Name("ApplicationDetails_ApplicatonServices")
+            .Layout("horizontal")
+            .Value(Model.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue)
+            .BindTo(Model.ApplicationDetails_ApplicatonServicesGroup.Items)
+        )
+                    @*@{ int id = 0;}
+                        @foreach(var item in ViewBag.applicatonServices)
+                        {
+                            id = id + 1;
+                            <label for="inputAuthorize">@item.NodeName</label>
+                            <input type="checkbox" id="@(item.NodeName+id)" name="ApplicationDetails_ApplicatonServices" value="@item.NodeGUID" />
+
+                        }*@
+                    @*@Html.Kendo().CheckBoxGroupFor(X => X.ApplicationDetails_ApplicatonServices).Layout("horizontal").BindTo((System.Collections.IEnumerable)ViewBag.applicatonServices)*@
+
+
+                    @*@Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicatonServicesGroup, "",new { @class = "text-danger" })*@
+                </div>
+
+                @*@Html.TextBox("DebitCardDetails_MobileNumber")*@
+
+            </div>
+            <div class="col-md-12 row justify-content-between pt-3">
+                @Html.HiddenFor(i => i.ApplicationDetails_IntroducerName)
+                @Html.HiddenFor(i => i.ApplicationDetails_ResponsibleOfficer)
+                @Html.HiddenFor(i => i.ApplicationDetails_IntroducerCIF)
+                @Html.HiddenFor(i=>i.ApplicationDetails_ApplicationType)
+                <div class="col-6">
+                    <a href="@Url.Action("Index", "Applications")">
+                        <button id="btnApplicationClose" type="button" class="btn btn-link">Close</button>
+                    </a>
+
+                </div>
+                <div class="col-6 text-right">
+                    @*<div class="form-group">*@
+                    @*<button type="submit" onclick="return ChangeEvent()" class="btn btn-primary float-lg-right">Proceed</button>*@
+                    <button id="btnCreateApplication" type="submit" class="btn btn-primary float-lg-right">Proceed</button>
+                    @*</div>*@
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+<script src="~/Scripts/intlTelInput.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".checked-readonly input").prop('disabled', true);
+    });
+    var loadingPanelVisible = false;
+    $("#loader").kendoLoader({
+        visible: false
+    });
+    function showHideLoader() {
+        var loader = $("#loader").data("kendoLoader");
+        loadingPanelVisible = !loadingPanelVisible;
+        if (loadingPanelVisible) {
+            loader.show();
+        } else {
+            loader.hide();
+        }
+    }
+    $("#btnApplicationClose").click(function () {
+        showHideLoader()
+    })
+    $("#btnCreateApplication").click(function () {
+        showHideLoader()
+    })
+    //Menu
+    $("#navbarNavDropdown > ul > li").click(function () {
+        showHideLoader()
+    })
+    //Logo
+    $(".logo-image").click(function () {
+        showHideLoader()
+    })
+</script>

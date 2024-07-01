@@ -1,0 +1,25 @@
+﻿@model Eurobank.Models.WhatsNew.WhatsNewViewModel
+
+@{
+	ViewData["Title"] = "Details";
+}
+<h4>@Model.Title</h4>
+<hr />
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="form-group">
+			@Model.Title
+
+		</div>
+		<div class="form-group">
+			<img src="~/CMSPages/GetFile.aspx?guid=@Model.Teaser" width="200" height="200" />
+
+		</div>
+		
+	</div>
+</div>
+
+<div>
+	<a href="@Url.Kentico().PageUrl(ContentItemIdentifiers.HOME)">@ResHelper.GetString("Eurobank.News.BackToHome")</a>
+</div>

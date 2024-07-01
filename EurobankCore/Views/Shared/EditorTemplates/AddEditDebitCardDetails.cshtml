@@ -1,0 +1,192 @@
+﻿@model Eurobank.Models.Applications.DebitCard.DebitCardDetailsViewModel
+@using Kendo.Mvc.UI
+@{
+	int appID = 0;
+	if(ViewBag.ApplicationId != null)
+	{
+		appID = Convert.ToInt32(ViewBag.ApplicationId);
+	}
+}
+<style type="text/css">
+	.k-widget k-window k-display-inline-flex {
+		height: 950px;
+	}
+
+	.textcasenone {
+		text-transform : none;
+	}
+</style>
+
+<div class="form-group">
+	@Html.HiddenFor(x => x.DebitCardDetails_DispatchMethodName)
+	<label asp-for="DebitCardDetails_CardType" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.DebitCardDetails_CardType)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+		.Events(e =>
+		{
+			e.DataBound("onCardTypeDataBound");
+		})
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("CardType_Read", "Applications");
+			});
+		})
+    )
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_CardType)
+</div>
+<div class="form-group">
+	<label asp-for="DebitCardDetails_CardholderName" class="control-label"></label>
+	@*@(Html.Kendo().DropDownListFor(m => m.DebitCardDetails_CardholderName)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("CollectedBy_Read", "Applications");
+			});
+		}))*@
+	@(Html.Kendo().DropDownListFor(m => m.DebitCardDetails_CardholderName).BindTo((System.Collections.IEnumerable)ViewBag.CardHolderNameLegal)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", @onchange="FillIdentification()" }))
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_CardholderName)
+</div>
+<div class="form-group">
+	<label asp-for="DebitCardDetails_CardHolderIdentityNumber" class="control-label"></label>
+	@Html.Kendo().TextBoxFor(model => model.DebitCardDetails_CardHolderIdentityNumber).HtmlAttributes(new { @class = "form-control" })
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_CardHolderIdentityNumber)
+</div>
+<div class="form-group">
+	<label asp-for="DebitCardDetails_CardHolderCountryOfIssue" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.DebitCardDetails_CardHolderCountryOfIssue).BindTo((System.Collections.IEnumerable)ViewBag.CountryIdentification)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_CardHolderCountryOfIssue)
+</div>
+<div class="form-group">
+	<label asp-for="AssociatedAccount" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.AssociatedAccount)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("AssociatedAccountType_Read", "Applications", new { applicationId = appID });
+			});
+		})
+    )
+	@Html.ValidationMessageFor(X => X.AssociatedAccount)
+</div>
+<div class="form-group">
+	<label asp-for="DebitCardDetails_FullName" class="control-label"></label>
+	@Html.Kendo().TextBoxFor(model => model.DebitCardDetails_FullName).HtmlAttributes(new { @class = "form-control", title = "Please enter Latin and Capital characters -maximum up to 26 characters" })
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_FullName)
+</div>
+<div class="form-group">
+	<label asp-for="DebitCardDetails_MobileNumber" class="control-label "></label>
+	<div class="row">
+		<div class="col-5">
+			@(Html.Kendo().DropDownListFor(m => m.Country_Code)
+        .OptionLabel("Country Code")
+        .DataTextField("Text")
+        .DataValueField("Value")
+		.Filter("startswith")
+				.HtmlAttributes(new { @id = "Country_Code", @class = "form-control", @placeholder = "Type Country", @onchange = "ChangeMaxLengthLegalCardPhone()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Applications");
+            });
+        }))
+			@Html.ValidationMessageFor(X => X.Country_Code)
+		</div>
+		<div class="col-7">
+			@*<label class="control-label" style="padding-top:20px"></label>*@
+			@Html.TextBoxFor(model => model.DebitCardDetails_MobileNumber, new { @class = "form-control MobileNumber phone", @id = "DebitCardDetails_MobileNumber", @onkeypress = "return isNumberKey1(event);",@onKeyDown="return limitlengthAccToCountry(this,'DebitCardDetails_MobileNumberError','Country_Code')",@onkeyup="return limitlengthAccToCountry(this,'DebitCardDetails_MobileNumberError','Country_Code')" })
+			@*@Html.Kendo().TextBoxFor(model => model.DebitCardDetails_MobileNumber).HtmlAttributes(new { @class = "form-control MobileNumber phone", @id = "DebitCardDetails_MobileNumber", @type = "tel" })*@
+			@Html.ValidationMessageFor(X => X.DebitCardDetails_MobileNumber)
+			<span id="DebitCardDetails_MobileNumberError" class="text-danger"></span>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+	<label asp-for="DebitCardDetails_CompanyNameAppearOnCard" class="control-label"></label>
+	@Html.Kendo().TextBoxFor(model => model.DebitCardDetails_CompanyNameAppearOnCard).HtmlAttributes(new { @class = "form-control textcasenone", @maxlength = "200", @onkeypress = "return allowAlphaNumericSpaceN(event);" }) @*allowAlphaNumericSpaceN(event);*@
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_CompanyNameAppearOnCard)
+</div>
+
+
+<div class="form-group">
+	<label asp-for="DebitCardDetails_DispatchMethod" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.DebitCardDetails_DispatchMethod)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" }) @* ,onchange = "ShowRespectedFieldLegalCard()" *@
+		.Events(e =>
+		{
+			e.DataBound("LegalDispatchMethodOnDatabound");
+		})
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("DispatchMethod_Read", "Applications");
+            });
+        })
+    )
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_DispatchMethod)
+</div>
+<div class="form-group" style="display:none" id="DeliveryAddressID">
+	<label asp-for="DebitCardDetails_DeliveryAddress" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.DebitCardDetails_DeliveryAddress)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control", onchange = "onDeliveryAddressChange()" })
+    )
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_DeliveryAddress)
+</div>
+@*<div class="form-group" style="display:none" id="CollectedByID">
+	<label asp-for="DebitCardDetails_CollectedBy" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.DebitCardDetails_CollectedBy).BindTo((System.Collections.IEnumerable)ViewBag.CollectedByLegal)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "GetIdentificationNumber()" }))
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_CollectedBy)
+</div>*@
+<div class="form-group" style="display:none" id="CollectedByID">
+    <label asp-for="DebitCardDetails_CollectedBy" class="control-label"></label>
+    @Html.Kendo().TextBoxFor(model => model.DebitCardDetails_CollectedBy).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.DebitCardDetails_CollectedBy)
+</div>
+<div class="form-group" style="display:none" id="IdentityNumberID">
+	<label asp-for="DebitCardDetails_IdentityNumber" class="control-label"></label>
+	@Html.Kendo().TextBoxFor(model => model.DebitCardDetails_IdentityNumber).HtmlAttributes(new { @class = "form-control" })
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_IdentityNumber)
+</div>
+<div class="form-group" style="display:none" id="otherDeliveryAddress">
+	<label asp-for="DebitCardDetails_OtherDeliveryAddress" class="control-label"></label>
+	@Html.Kendo().TextBoxFor(model => model.DebitCardDetails_OtherDeliveryAddress).HtmlAttributes(new { @class = "form-control" })
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_OtherDeliveryAddress)
+</div>
+@*<div class="form-group">
+	<label asp-for="DebitCardDetails_DeliveryDetails" class="control-label"></label>
+	@Html.Kendo().TextBoxFor(model => model.DebitCardDetails_DeliveryDetails).HtmlAttributes(new { @class = "form-control" })
+	@Html.ValidationMessageFor(X => X.DebitCardDetails_DeliveryDetails)
+</div>*@
+<script src="~/Scripts/Custom/Editor/AddEditDebitCardDetails.js"></script>
+
+
+

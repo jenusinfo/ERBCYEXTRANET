@@ -1,0 +1,23 @@
+﻿@using Kendo.Mvc.UI
+@using System.Collections 
+@*@(
+Html.Kendo().DropDownList()
+    .Name("Country")
+    .DataTextField("Text")
+    .DataValueField("Value")
+    .OptionLabel("Select Type...")
+    .DataSource(source =>
+    {
+        source.Read(read =>
+        {
+            read.Action("Country_read", "CommonForm");
+        });
+    })
+)*@
+@(Html.Kendo().DropDownList()
+	  .BindTo((IEnumerable)ViewBag.Country)
+	  .OptionLabel("- Select - ")
+	  .DataValueField("Value")
+	  .DataTextField("Text")
+	  .Name("Country")
+)

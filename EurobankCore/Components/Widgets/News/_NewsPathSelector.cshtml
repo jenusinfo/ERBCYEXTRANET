@@ -1,0 +1,27 @@
+﻿@using Eurobank.Widgets
+
+@model NewsPathSelectorModel
+
+<form class="subscribe-form" asp-action="GetNews" asp-controller="NewsWidget" asp-antiforgery="true" onsubmit="replaceForm(event)">
+    <component-properties-data />
+
+    <div class="form-group">
+        <div class="form-group-label">
+            <label asp-for="NodeAliasPath">News Node Alias Path</label>
+        </div>
+        <div class="form-group-input">
+            <input asp-for="NodeAliasPath" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="form-group-label">
+            <label asp-for="ViewAllPagelink"> View All Page Link</label>
+        </div>
+        <div class="form-group-input">
+            <input asp-for="ViewAllPagelink" />
+        </div>
+    </div>
+    <input id="btnSubscribe" type="submit" value="Submit" class="btn btn-primary" />
+</form>
+<span asp-validation-for="NodeAliasPath" class="message message-error"></span>

@@ -1,0 +1,118 @@
+﻿@model Eurobank.Models.Application.Applicant.LegalEntity.SignatureMandateCompanyModel
+@using Kendo.Mvc.UI
+@{
+    int appID = 0;
+    if (ViewBag.ApplicationId != null)
+    {
+        appID = Convert.ToInt32(ViewBag.ApplicationId);
+    }
+}
+
+@*<div class="form-group">
+    <label asp-for="MandateType" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.MandateType")</label>
+    @Html.Kendo().TextBoxFor(model => model.MandateType).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.MandateType)
+
+</div>*@
+<div class="form-group">
+    <label asp-for="MandateType" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.MandateType")</label>
+    @(Html.Kendo().DropDownListFor(m => m.MandateType)
+        .HtmlAttributes(new { @class = "form-control" }).OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("MandateType_Read", "Applications");
+            });
+        })
+        .Events(e =>
+        {
+            e.DataBound("onSignatoryMandateLegalTypeDataBound").Change("onSignatoryMandateLegalTypeChange");
+        })
+        )
+
+    @Html.ValidationMessageFor(X => X.MandateType)
+</div>
+@*<div class="form-group">
+    <label asp-for="Description" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.Description")</label>
+    @Html.Kendo().TextBoxFor(model => model.Description).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.Description)
+</div>*@
+
+<div class="form-group">
+    <span>(The below amount limits will be applicable ONLY for ebanking transactions mandate. For the manual transactions signature mandate, the amounts limits will be applicable as follows: Up to Amount X and so on.)</span><br>
+    <label asp-for="LimitFrom" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.LimitFrom")</label>
+    @Html.Kendo().TextBoxFor(model => model.LimitFrom).HtmlAttributes(new { @class = "form-control custom-numeric",@onkeyup = "return limitlength(this,14,'CompanySignatureMandateLimitFrom')", @onKeyDown = "return limitlength(this,14,'CompanySignatureMandateLimitFrom')" })
+    @Html.ValidationMessageFor(X => X.LimitFrom)
+    <span id="CompanySignatureMandateLimitFrom" class="text-danger"></span>
+
+</div>
+<div class="form-group">
+    <label asp-for="LimitTo" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.LimitTo")</label>
+    @Html.Kendo().TextBoxFor(model => model.LimitTo).HtmlAttributes(new { @class = "form-control custom-numeric",@onkeyup = "return limitlength(this,14,'CompanySignatureMandateLimitTo')", @onKeyDown = "return limitlength(this,14,'CompanySignatureMandateLimitTo')" })
+    @Html.ValidationMessageFor(X => X.LimitTo)
+    <span id="CompanySignatureMandateLimitTo" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="TotalNumberofSignature" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.TotalNumberofSignature")</label>
+    @Html.Kendo().TextBoxFor(model => model.TotalNumberofSignature).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.TotalNumberofSignature)
+    @*<label>@ViewBag.TotalSignvalid</label>*@
+    @*@Html.Label((string)ViewBag.TotalSignvalid)*@
+</div>
+
+
+<div class="form-group">
+    <label asp-for="AuthorizedSignatoryGroup" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.AuthorizedSignatoryGroup")</label>
+
+    @(Html.Kendo().MultiSelectFor(m => m.AuthorizedSignatoryGroupList)
+            .AutoClose(false).DataValueField("Value")
+        .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }).Placeholder(ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.AuthorizedSignatoryGroup"))
+        @*.DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("AuthorizeGroup_Read", "Applications",new  {id= appID });
+            });
+        })*@
+        )
+    @Html.ValidationMessageFor(X => X.AuthorizedSignatoryGroupList)
+    @Html.HiddenFor(x=>x.AuthorizedSignatoryGroup)
+</div>
+<div class="form-group">
+    <label asp-for="NumberofSignatures" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.NumberofSignatures")</label>
+    @Html.Kendo().TextBoxFor(model => model.NumberofSignatures).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.NumberofSignatures)
+
+</div>
+<div class="form-group">
+    <label asp-for="Rights" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.Rights")</label>
+    @(Html.Kendo().DropDownListFor(m => m.Rights).BindTo((System.Collections.IEnumerable)ViewBag.SignatureRights)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+    @Html.ValidationMessageFor(X => X.Rights)
+</div>
+<div class="form-group">
+    <label asp-for="AuthorizedSignatoryGroup1" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.AuthorizedSignatoryGroup1")</label>
+
+    @(Html.Kendo().MultiSelectFor(m => m.AuthorizedSignatoryGroup1List)
+            .AutoClose(false).DataValueField("Value")
+        .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }).Placeholder(ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.AuthorizedSignatoryGroup"))
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("AuthorizeGroup_Read", "Applications", new { id = appID });
+            });
+        }))
+    @Html.ValidationMessageFor(X => X.AuthorizedSignatoryGroup1List)
+</div>
+<div class="form-group">
+    <label asp-for="NumberofSignatures1" class="control-label">@ResHelper.GetString("Eurobank.Application.SignatureMandateCompany.Label.NumberofSignatures1")</label>
+    @Html.Kendo().TextBoxFor(model => model.NumberofSignatures1).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.NumberofSignatures1)
+
+</div>
+@Html.HiddenFor(m => m.AuthorizedSignatoryGroupValueList)
+@Html.HiddenFor(m => m.AuthorizedSignatoryGroupOneValueList)
+

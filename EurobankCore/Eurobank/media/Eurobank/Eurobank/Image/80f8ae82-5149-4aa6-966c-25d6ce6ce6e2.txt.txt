@@ -1,0 +1,11 @@
+http://kentico.citytechsoftware.com/Eurobank/admin
+
+http://kentico.citytechsoftware.com/Eurobank/account/login
+Username: "EuroIntA_Power1"
+Password: "C1tytech"
+	
+
+Local:
+http://localhost:61384/
+entity1poweruser
+C1tytech

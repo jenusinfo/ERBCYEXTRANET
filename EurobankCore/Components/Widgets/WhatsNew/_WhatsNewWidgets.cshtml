@@ -1,0 +1,63 @@
+﻿@using Eurobank.InlineEditors
+@using Eurobank.Widgets
+
+@model Eurobank.Widgets.WhatsNewWidgetViewModel
+
+@{
+    var i = 0;
+}
+
+<div class="whatsnew-slider h-100">
+	<div id="demo" class="carousel slide" data-ride="carousel">
+
+		<ul class="carousel-indicators">
+			@{
+				int j = 0;
+				@foreach (var item in Model.WhatsNewList)
+				{
+					if (j == 0)
+					{
+						<li data-target="#demo" data-slide-to="0" class="active"></li>
+						j++;
+					}
+					else
+					{
+						<li data-target="#demo" data-slide-to="@j"></li>
+					}
+				}
+			}
+
+		</ul>
+		<div class="carousel-inner">
+
+			@foreach (var item in Model.WhatsNewList)
+			{
+				if (i == 0)
+				{
+					<div class="carousel-item active">
+						<a href="@Url.Action("Details","WhatsNew",new{id=item.NodeAlias})"><img class="w-100" src="~/CMSPages/GetFile.aspx?guid=@item.Teaser" alt="@item.Title"></a>
+					</div>
+					
+				}
+				else
+				{
+					<div class="carousel-item">
+						<a href="@Url.Action("Details","WhatsNew",new{id=item.NodeAlias})">	<img class="w-100" src="~/CMSPages/GetFile.aspx?guid=@item.Teaser" alt="@item.Title"></a>
+</div>
+				}
+				i++;
+			}
+			<!-- The slideshow -->
+
+
+		</div>
+
+		<!-- Left and right controls -->
+		<a class="carousel-control-prev" href="#demo" data-slide="prev">
+			<span class="carousel-control-prev-icon"></span>
+		</a>
+		<a class="carousel-control-next" href="#demo" data-slide="next">
+			<span class="carousel-control-next-icon"></span>
+		</a>
+	</div>
+</div>

@@ -1,0 +1,566 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@using Kentico.Activities.Web.Mvc
+@using Kentico.Membership.Web.Mvc
+@using Kentico.OnlineMarketing.Web.Mvc
+@using CMS.Localization;
+@using Eurobank.Helpers
+@using Eurobank.Widgets
+@using CMS.Membership;
+
+@inject IHtmlLocalizer<SharedResources> HtmlLocalizer
+
+@{
+	//const string ENGLISH = "English";
+	//const string ESPANOL = "Español";
+
+	//var currentCultureCode = Convert.ToString(@ViewContext.RouteData.Values["culture"]);
+	//var currentLanguage = currentCultureCode.Equals("es-es", StringComparison.OrdinalIgnoreCase) ? "ES" : "EN";
+	var currentCult = LocalizationContext.CurrentCulture.CultureCode;
+	string userFullName = string.Empty;
+
+	UserInfo user = UserInfoProvider.GetUserInfo(User.Identity.Name);
+	if (user != null)
+	{
+		userFullName = user.FirstName+" "+user.LastName;
+	}
+}
+
+<!DOCTYPE html>
+
+<html>
+<head id="head">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta charset="UTF-8" />
+	<link rel="shortcut icon" href="~/Content/Images/favicon-euro.ico" type="image/x-icon">
+	<link rel="icon" href="~/Content/Images/favicon-euro.ico" type="image/x-icon">
+    @Html.Kentico().PageDescription()
+    @Html.Kentico().PageKeywords()
+    @*@Html.Kentico().PageTitle(ViewBag.Title as string)*@
+    <title> @(ViewBag.Title as string) </title>
+    @*<link rel="icon" href="~/content/images/favicon.svg" type="image/svg+xml" />*@
+    <link href="~/Content/Styles/Site.css" rel="stylesheet" type="text/css" />
+
+    <!-- --------------------------------------------------------------------------------------------------- -->
+    <!-- Custom -->
+    <!-- --------------------------------------------------------------------------------------------------- -->
+    @*<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">*@
+    @*<link href="~/Content/Styles/googlecss1.css" rel="stylesheet" type="text/css" />
+        <link href="~/Content/Styles/googlecss2.css" rel="stylesheet" type="text/css" />
+        <link href="~/Content/Styles/googlecss3.css" rel="stylesheet" type="text/css" />*@
+
+    <link href="~/Content/Styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Styles/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/Content/Styles/intlTelInput.css" rel="stylesheet" />
+    <!-- --------------------------------------------------------------------------------------------------- -->
+
+    <link rel="canonical" href="@Url.Kentico().PageCanonicalUrl()" />
+    @RenderSection("styles", required: false)
+    @Html.Kentico().ABTestLoggerScript()
+    @Html.Kentico().ActivityLoggingScript()
+    @Html.Kentico().WebAnalyticsLoggingScript()
+    <style type="text/css">
+        .customdelete {
+            background-color: #e92535 !important;
+            border-color: #e92535 !important;
+        }
+
+        .contextpopup {
+            background-color: #381c1c30;
+            height: 1px;
+        }
+
+        .form-group > input {
+            background-color: #E5F4FF;
+        }
+    </style>
+    @* Add the Kendo Bootstrap v4 theme: *@
+    @*<link href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.bootstrap-v4.min.css" rel="stylesheet" type="text/css" />*@
+
+    @* Add the the jQuery script from the Telerik CDN: *@
+    @* Add the Kendo UI scripts: *@
+    <page-builder-styles />
+    @*<link href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.bootstrap-v4.min.css" rel="stylesheet" type="text/css" />*@
+    <link href="~/Content/Styles/Kendu-Eurobank.css" rel="stylesheet" />
+    <link href="~/Content/Styles/eurobank.css" rel="stylesheet" type="text/css" />
+    @*<script src="https://kendo.cdn.telerik.com/2021.2.616/js/jquery.min.js"></script>
+        <script src="https://kendo.cdn.telerik.com/2021.2.616/js/jszip.min.js"></script>
+        <script src="https://kendo.cdn.telerik.com/2021.2.616/js/kendo.all.min.js"></script>
+        <script src="https://kendo.cdn.telerik.com/2021.2.616/js/kendo.aspnetmvc.min.js"></script>*@
+    @*<script src="https://kendo.cdn.telerik.com/2021.2.616/js/cultures/kendo.culture.en-US.min.js"></script>*@
+    @*<script src="https://kendo.cdn.telerik.com/2021.2.616/js/cultures/kendo.culture.en-GB.min.js"></script>*@
+
+    <script src="~/Scripts/KendoProcess/jquery.min.js"></script>
+    <script src="~/Scripts/KendoProcess/jszip.min.js"></script>
+    <script src="~/Scripts/KendoProcess/kendo.all.min.js"></script>
+    <script src="~/Scripts/KendoProcess/kendo.aspnetmvc.min.js"></script>
+    <script>
+        //kendo.culture("en-US");
+        //var culture = kendo.culture();
+        //culture.calendar.patterns.d = "dd/MM/yyyy";
+        //culture.calendar.patterns.D = "dd/MM/yyyy";
+        //culture.calendar.patterns.t = "HH:mm";
+        //culture.calendar.patterns.T = "HH:mm";
+        //culture.calendar.patterns.g = "dd/MM/yyyy HH:mm";
+        //      culture.calendar.patterns.G = "dd/MM/yyyy HH:mm";
+
+        //Commented for their server
+        //kendo.culture("en-GB");
+        //var culture = kendo.culture();
+        //culture.calendar.patterns.d = "dd MMM yyyy";
+        //culture.calendar.patterns.D = "dd MMM yyyy";
+        //culture.calendar.patterns.t = "HH:mm";
+        //culture.calendar.patterns.T = "HH:mm";
+        //culture.calendar.patterns.g = "dd MMM yyyy HH:mm";
+        //culture.calendar.patterns.G = "dd MMM yyyy HH:mm";
+
+        //Commented for their server
+
+
+        //var unsaved = false;
+        //$(document).ready(function () {
+        //	$(document).on('change', ':input', function () { //triggers change in all input fields including text type
+        //		unsaved = true;
+        //	});
+        //	function unloadPage() {
+        //		if (unsaved) {
+        //			return "You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?";
+        //		}
+        //	}
+
+        //	window.onbeforeunload = unloadPage;
+        //});
+
+        //function ChangeEvent() {
+        //	unsaved = false;
+        //}
+    </script>
+
+</head>
+<body class="@ViewData["PageClass"] appsidebar">
+	@Html.Hidden("PrintFriendlyDownloadStartMessage", ResHelper.GetString("EuroBank.PrintFriendlyDownloadStart.Message"))
+	@Html.Hidden("PrintSummaryDownloadStartMessage", ResHelper.GetString("EuroBank.PrintSummaryDownloadStart.Message"))
+	<header>
+		<div class="topHeader">
+			<div class="d-flex pl-5 pr-5">
+				<h5 class="whitetext">Self Service Platform</h5>
+				<ul class="additional-menu">
+					<h6 class="whitetext">Hi @userFullName</h6>
+					<li class="dropdown">
+
+						<a title="User" class="dropbtn">
+							@if(User.Identity.IsAuthenticated)
+							{
+								<img src="@Url.Kentico().AvatarUrl(User.Identity.Name, pathToDefaultAvatar: "~/Content/Images/default-avatar.png")" class="dropdown-desktop-avatar" alt="avatar" />
+							}
+							else
+							{
+								<svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M5.44934 14H15.4493C18.2108 14 20.4493 16.2386 20.4493 19C20.4493 19.5523 20.0016 20 19.4493 20C18.9365 20 18.5138 19.614 18.4561 19.1166L18.4442 18.8237C18.3564 17.3072 17.1421 16.093 15.6256 16.0051L15.4493 16H5.44934C3.79249 16 2.44934 17.3431 2.44934 19C2.44934 19.5523 2.00163 20 1.44934 20C0.897056 20 0.449341 19.5523 0.449341 19C0.449341 16.3112 2.57165 14.1182 5.23245 14.0046L5.44934 14H15.4493H5.44934ZM10.4493 0C13.763 0 16.4493 2.68629 16.4493 6C16.4493 9.31371 13.763 12 10.4493 12C7.13563 12 4.44934 9.31371 4.44934 6C4.44934 2.68629 7.13563 0 10.4493 0ZM10.4493 2C8.2402 2 6.44934 3.79086 6.44934 6C6.44934 8.20914 8.2402 10 10.4493 10C12.6585 10 14.4493 8.20914 14.4493 6C14.4493 3.79086 12.6585 2 10.4493 2Z" fill="currentColor" />
+								</svg>
+							}
+						</a>
+						<div class="dropdown-content">
+							@if(User.Identity.IsAuthenticated)
+							{
+								<a asp-controller="Account" asp-action="YourAccount">@HtmlLocalizer["Your&nbsp;account"]</a>
+								<form method="post" asp-controller="Account" asp-action="Logout">
+									<input type="submit" value="@ResHelper.GetString("Eurobank.common.button.SignOut")" class="sign-out-button" />
+								</form>
+							}
+							else
+							{
+								<a asp-controller="Account" asp-action="Register">@ResHelper.GetString("Eurobank.common.button.Register")</a>
+								<a asp-controller="Account" asp-action="Login">@ResHelper.GetString("Eurobank.common.button.Login")</a>
+							}
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="navigation-sec">
+			<div class="container-fluid">
+				<div class="navigation">
+					<div class="nav-logo">
+						<div class="logo-wrapper">
+							<a href="@Url.Kentico().PageUrl(ContentItemIdentifiers.HOME)" class="logo-link">
+								<img class="logo-image" alt="Eurobank" src="~/Content/Images/logo.jpg" width="150" />
+							</a>
+						</div>
+					</div>
+					<vc:navigation footer-navigation="false" />
+					<!--<ul class="additional-menu">-->
+					@*<li class="search-menu-item">
+							<form asp-action="Index" asp-controller="Search" method="get" id="searchForm" class="searchBox">
+								<input id="searchtext" name="searchtext" type="text" placeholder="@HtmlLocalizer["Search"]" autocomplete="off" />
+								<input type="submit" value="" class="search-box-btn" />
+							</form>
+						</li>*@
+					@*<li class="dropdown">
+							<a title="User" class="dropbtn">
+								@if(User.Identity.IsAuthenticated)
+								{
+									<img src="@Url.Kentico().AvatarUrl(User.Identity.Name, pathToDefaultAvatar: "~/Content/Images/default-avatar.png")" class="dropdown-desktop-avatar" alt="avatar" />
+								}
+								else
+								{
+									<svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M5.44934 14H15.4493C18.2108 14 20.4493 16.2386 20.4493 19C20.4493 19.5523 20.0016 20 19.4493 20C18.9365 20 18.5138 19.614 18.4561 19.1166L18.4442 18.8237C18.3564 17.3072 17.1421 16.093 15.6256 16.0051L15.4493 16H5.44934C3.79249 16 2.44934 17.3431 2.44934 19C2.44934 19.5523 2.00163 20 1.44934 20C0.897056 20 0.449341 19.5523 0.449341 19C0.449341 16.3112 2.57165 14.1182 5.23245 14.0046L5.44934 14H15.4493H5.44934ZM10.4493 0C13.763 0 16.4493 2.68629 16.4493 6C16.4493 9.31371 13.763 12 10.4493 12C7.13563 12 4.44934 9.31371 4.44934 6C4.44934 2.68629 7.13563 0 10.4493 0ZM10.4493 2C8.2402 2 6.44934 3.79086 6.44934 6C6.44934 8.20914 8.2402 10 10.4493 10C12.6585 10 14.4493 8.20914 14.4493 6C14.4493 3.79086 12.6585 2 10.4493 2Z" fill="currentColor" />
+									</svg>
+								}
+							</a>
+							<div class="dropdown-content">
+								@if(User.Identity.IsAuthenticated)
+								{
+									<a asp-controller="Account" asp-action="YourAccount">@HtmlLocalizer["Your&nbsp;account"]</a>
+									<form method="post" asp-controller="Account" asp-action="Logout">
+										<input type="submit" value="@HtmlLocalizer["Sign out"]" class="sign-out-button" />
+									</form>
+								}
+								else
+								{
+									<a asp-controller="Account" asp-action="Register">@HtmlLocalizer["Register"]</a>
+									<a asp-controller="Account" asp-action="Login">@HtmlLocalizer["Login"]</a>
+								}
+							</div>
+						</li>*@
+					@*@if (Context.Response.StatusCode == (int)System.Net.HttpStatusCode.OK)
+						{
+							<li class="dropdown">
+								<a class="dropbtn">@currentLanguage</a>
+								<div class="dropdown-content">
+									<culture-link link-text="@ENGLISH" culture-name="en-US" />
+									<culture-link link-text="@ESPANOL" culture-name="es-ES" />
+								</div>
+							</li>
+						}*@
+					@*<li>
+							<a asp-controller="Checkout" asp-action="ShoppingCart" class="navigation__cta">
+								<svg width="26" height="24" viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M9.94934 19C10.7778 19 11.4493 19.6716 11.4493 20.5C11.4493 21.3284 10.7778 22 9.94934 22C9.12091 22 8.44934 21.3284 8.44934 20.5C8.44934 19.6716 9.12091 19 9.94934 19ZM18.9493 19C19.7778 19 20.4493 19.6716 20.4493 20.5C20.4493 21.3284 19.7778 22 18.9493 22C18.1209 22 17.4493 21.3284 17.4493 20.5C17.4493 19.6716 18.1209 19 18.9493 19ZM4.44934 2H6.44934C6.90494 2 7.29765 2.30684 7.4144 2.73774L7.43771 2.84794L7.92264 6H22.4493C23.0491 6 23.5043 6.52068 23.4445 7.10035L23.4255 7.21693L21.7736 14.6508C21.4818 15.9637 20.3552 16.9143 19.0273 16.9945L18.845 17H10.1652C8.74369 17 7.52631 16.0044 7.23199 14.6299L7.20006 14.4562L5.59142 4H4.44934C3.89706 4 3.44934 3.55228 3.44934 3C3.44934 2.48716 3.83538 2.06449 4.33272 2.00673L4.44934 2H6.44934H4.44934ZM21.2027 8H8.23034L9.17681 14.1521C9.24608 14.6024 9.60907 14.9438 10.0527 14.9937L10.1652 15H18.845C19.2746 15 19.6514 14.7265 19.7896 14.3285L19.8212 14.2169L21.2027 8Z" fill="currentColor" />
+								</svg>
+							</a>
+						</li>*@
+					<!--<li class="nav-toggle">
+							<div class="nav-toggle-inner">
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</div>
+						</li>
+					</ul>-->
+				</div>
+			</div>
+			<div class="search-mobile">
+				<form asp-action="Index" asp-controller="Search" method="get" id="searchForm" class="searchBox">
+					<input id="searchtext" name="searchtext" type="text" placeholder="@HtmlLocalizer["Search"]" autocomplete="off" />
+					<input type="submit" value="" class="search-box-btn" />
+				</form>
+			</div>
+
+		</div>
+	</header>
+
+	<div class="page-wrap">
+		<vc:tracking-consent />
+
+		<div class="fullpage">
+			<div class="page-container-inner">
+				<div id="successDisplay" class="toast-popup" aria-live="polite" aria-atomic="true" style="display: none;">
+					<div class="toast alert alert-success" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+						<div class="toastheader">
+							@*<strong class="mr-auto"></strong>*@
+							<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="toastbody"></div>
+
+					</div>
+				</div>
+				@RenderBody()
+
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--Footer-->
+	<footer id="main_footer">
+		@*<div class="footer_top_part fix">
+			<div class="container">
+				<div class="row fototerwidgetsr">
+					<div class="col-lg-3 col-md-6 col-sm-12 footerwidget">
+						<h3>BANK WITH US</h3>
+						<ul class="wids_menu">
+							<li><a href="/en-us/topnav/corporate-banking">Corporate Banking</a></li>
+							<li><a href="/en-us/topnav/international-banking">International Banking</a></li>
+							<li><a href="/en-us/topnav/wealth-management">Wealth Management</a></li>
+							<li><a href="/en-us/topnav/global-markets">Global Markets</a></li>
+							<li><a href="/en-us/topnav/affluent-banking">Affluent Banking</a></li>
+						</ul>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 footerwidget">
+						<h3>USEFUL TOOLS &amp; RATES</h3>
+						<ul class="wids_menu">
+							<li><a href="/en-us/contact-support/usefull-information/general-terms-for-customer-transactions">General Terms for Customer Bank Transactions</a></li>
+							<li><a href="/en-us/contact-support/usefull-information/commissions-and-charges">Commissions and Charges</a></li>
+							<li><a href="/en-us/contact-support/usefull-information/interest-rates">Interest Rates</a></li>
+						</ul>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 footerwidget">
+						<h3>CONNECT WITH US</h3>
+						<ul class="wids_menu">
+							<li><a href="/en-us/contact-support/contact/contact-us">Contact Us</a></li>
+							<li><a href="/en-us/location">Business Centers</a></li>
+							<li><a href="/en-us/contact-support/contact-information/office-hours-and-banking-holidays">Office Hours &amp; Bank Holidays</a></li>
+							<li><a href="/en-us/about-our-bank/our-announcements/announcements">Announcements</a></li>
+						</ul>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 footerwidget">
+						<h3>GET OUR APP</h3>
+						<ul class="wids_menu">
+							<li><a href="#"><i class="fab fa-google-play"></i> Android</a></li>
+							<li><a href="#"><i class="fab fa-apple"></i> IOS</a></li>
+							<li><a href="#"><i></i> <img id="Huawei2" src="/getmedia/0f14fa53-425e-4505-aed0-c46d4e814af1/huaweilogo.png"> Huawei </a></li>
+						</ul>
+						<style>
+							#Huawei2 {
+								width: 25px;
+								margin-left: -5px;
+							}
+						</style>
+					</div>
+				</div>
+				<div class="row footerbottos">
+					<div class="col-lg-12 col-md-12 col-sm-12 text-center">
+						<ul class="footeusl">
+							<li><a href="/en-us/about-our-bank">About us</a></li>
+							<li><a href="/en-us/contact-support/hr-information/careers">Careers</a></li>
+							<li><a href="/en-us/laws-regulations/code-of-conduct">Code of Conduct</a></li>
+							<li><a href="/en-us/laws-regulations">Laws &amp; Regulations</a></li>
+							<li><a href="/en-us/contact-support/contact/report-a-misconduct">Fraud &amp; Misconduct</a></li>
+							<li><a href="/en-us/contact-support/contact/report-a-complaint">Complaints</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>*@
+		<div class="footer_bottom_part fix">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 text-center footerbottommenu">
+						<ul class="unifiednav__container  ">
+							<li class="unifiednav__item-wrap"><span class="nav-item-text " data-link-text="COPYRIGHT© EUROBANK CYPRUS">COPYRIGHT© EUROBANK CYPRUS&nbsp; &nbsp;</span>&nbsp;&nbsp;</li>
+							<li class="unifiednav__item-wrap"><a class="unifiednav__item" data-target-page-alias="" href="https://www.eurobank.com.cy/special-pages/legal-notice" target="_blank"><span class="nav-item-text " data-link-text="TERMS OF USE">TERMS OF USE</span> </a></li>
+							@*<li class="unifiednav__item-wrap"><a class="unifiednav__item" data-target-page-alias="" href="https://www.eurobank.com.cy/special-pages/legal-notice" target="_blank"><span class="nav-item-text " data-link-text="LEGAL">LEGAL </span> </a></li>*@
+							<li class="unifiednav__item-wrap"><a class="unifiednav__item" data-target-page-alias="" href="https://www.eurobank.com.cy/special-pages/privacy-notice" target="_blank"><span class="nav-item-text " data-link-text="PRIVACY">PRIVACY </span> </a></li>
+							<li class="unifiednav__item-wrap"><a class="unifiednav__item" data-target-page-alias="" href="https://www.eurobank.com.cy/special-pages/cookie-policy" target="_blank"><span class="nav-item-text " data-link-text="COOKIE POLICY">COOKIE POLICY </span> </a></li>
+						</ul>
+					</div>
+					@*<div class="col-lg-4 col-md-4 col-sm-12 footersocials">
+						<ul class="socials_icon text-center">
+							<li><a href="#"><i class="fa fa-facebook"></i></a></li>
+							<li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+							<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+							<li><a href="#"><i class="fa fa-youtube-play"></i></a></li>
+						</ul>
+					</div>*@
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	@(Html.Kendo().Window().Name("DeleteWindow")
+	.Title("Delete Record")
+	.Visible(false)
+	.Modal(true)
+	.Draggable(true)
+	.Width(300))
+	@*<script src="~/Scripts/jquery-3.5.1.min.js"></script>*@
+	<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+	<script src="~/Scripts/jquery.validate.min.js"></script>
+	<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+	<script src="~/Scripts/responsiveMenuDropdown.js"></script>
+	<script src="~/Scripts/mobileMenu.js"></script>
+
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	<!-- Custom -->
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	@*<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>*@
+	<script src="~/Scripts/popper.min.js"></script>
+	<script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	<page-builder-scripts />
+	@RenderSection("scripts", required: false)
+	@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>*@
+	<script src="~/Scripts/jquery.nicescroll.min.js"></script>
+	<script src="~/Scripts/KendoProcess/MasterProcess.js"></script>
+    
+
+	<script>
+		(function($) {
+			function fixButtonHeights() {
+				var heights = new Array();
+
+				// Loop to get all element heights
+				$('.equalgrid').each(function() {
+					// Need to let sizes be whatever they want so no overflow on resize
+					$(this).css('min-height', '0');
+					$(this).css('max-height', 'none');
+					$(this).css('height', 'auto');
+
+					// Then add size (no units) to array
+					heights.push($(this).height());
+				});
+
+				// Find max height of all elements
+				var max = Math.max.apply(Math, heights);
+
+				// Set all heights to max height
+				$('.equalgrid').each(function() {
+					$(this).css('height', max + 'px');
+					// Note: IF box-sizing is border-box, would need to manually add border and padding to height (or tallest element will overflow by amount of vertical border + vertical padding)
+				});
+			}
+
+			$(document).ready(function () {
+				// Fix heights on page load
+				fixButtonHeights();
+
+				// Fix heights on window resize
+				$(window).on('resize', function () {
+					// Needs to be a timeout function so it doesn't fire every ms of resize
+					setTimeout(function() {
+						fixButtonHeights();
+					}, 120);
+				});
+			});
+		})(jQuery);
+
+	</script>
+
+	<script type="text/x-kendo-template" id="windowTemplate">
+		@*<p> Delete <strong>#= ProductName #</strong> ? </p>
+			<p> We have #= UnitsInStock # units in stock. </p>*@
+		<p>@ResHelper.GetString("EuroBank.common.DeleteConfirmation")</p>
+		<button class="btn btn-danger" id="yesButton">@ResHelper.GetString("EuroBank.common.DeleteConfirmation.button.yes")</button>
+		<button class="k-button" id="noButton"> @ResHelper.GetString("EuroBank.common.DeleteConfirmation.button.no")</button>
+	</script>
+	<script>
+		var windowTemplate = kendo.template($("#windowTemplate").html());
+
+		function DisplayDeleteConfirmation(e) {  //add a click event listener on the delete button
+
+			e.preventDefault(); //prevent page scroll reset
+			var tr = $(e.target).closest("tr"); //get the row for deletion
+			var data = this.dataItem(tr); //get the row data so it can be referred later
+			var window = $("#DeleteWindow").data("kendoWindow");
+			window.content(windowTemplate(data)); //send the row data object to the template and render it
+			window.wrapper.addClass("middle-popup");
+			window.center().open();
+
+			var grid = $("#" + this.element[0].id).data("kendoGrid");
+
+			$("#yesButton").click(function() {
+				grid.dataSource.remove(data)  //prepare a "destroy" request
+				grid.dataSource.sync()  //actually send the request (might be ommited if the autoSync option is enabled in the dataSource)
+				window.close();
+			})
+			$("#noButton").click(function() {
+				window.close();
+			})
+		}
+		function DisplayDeleteConfirmationContextMenu(e, data, grideName, headerMsg, successMsg) {  //add a click event listener on the delete button
+			//debugger;
+			e.preventDefault(); //prevent page scroll reset
+			var tr = $(e.target).closest("tr"); //get the row for deletion
+			//var data = this.dataItem(tr); //get the row data so it can be referred later
+			var window = $("#DeleteWindow").data("kendoWindow");
+			window.content(windowTemplate(data)); //send the row data object to the template and render it
+			window.wrapper.addClass("middle-popup");
+			window.center().open();
+
+			var grid = $("#" + grideName).data("kendoGrid");
+			//console.log(grid);
+			$("#yesButton").click(function() {
+			//	grid.removeRow(data);//prepare a "destroy" request
+				grid.dataSource.remove(data)  //prepare a "destroy" request
+				grid.dataSource.sync()  //actually send the request (might be ommited if the autoSync option is enabled in the dataSource)
+				window.close();
+				//$("#successDisplay .mr-auto").html(headerMsg);
+				if(successMsg != undefined && successMsg != '') {
+					$("#successDisplay .toastbody").html(successMsg);
+					$("#successDisplay").show().delay(15000).fadeOut();
+				}
+			})
+			$("#noButton").click(function() {
+				window.close();
+			})
+		}
+
+		function onGridRequestEnd(e) {
+			if(e.type == "update" && !e.response.Errors) {
+				//alert("Updated successfully");
+				$("#successDisplay .toastbody").html("Updated successfully");
+				$("#successDisplay").show().delay(12000).fadeOut();
+			}
+
+			if(e.type == "create" && !e.response.Errors) {
+				//alert("Created successfully");
+				$("#successDisplay .toastbody").html("Created successfully");
+				$("#successDisplay").show().delay(12000).fadeOut();
+			}
+		}
+
+		@*function DisplayDeleteConfirmationContextMenu(e, gridName) {  //add a click event listener on the delete button
+
+			e.preventDefault(); //prevent page scroll reset
+			//var tr = $(e.target).closest("tr"); //get the row for deletion
+			var data = e; //get the row data so it can be referred later
+			var window = $("#DeleteWindow").data("kendoWindow");
+			window.content(windowTemplate(data)); //send the row data object to the template and render it
+			window.wrapper.addClass("middle-popup");
+			window.center().open();
+
+			var grid = $("#" + gridName).data("kendoGrid");
+
+			$("#yesButton").click(function() {
+				grid.dataSource.remove(data)  //prepare a "destroy" request
+				grid.dataSource.sync()  //actually send the request (might be ommited if the autoSync option is enabled in the dataSource)
+				window.close();
+			})
+			$("#noButton").click(function() {
+				window.close();
+			})
+		}*@
+	</script>
+    <script>
+		$(document).ready(function() {
+			$(".pushmenu").click(function() {
+				$('body').toggleClass('sidenav-toggled');
+			});
+
+			//$(".sidebarhover").hover(function () {
+			//	if ($('.appsidebar').hasClass('sidenav-toggled')) {
+			//		$('.appsidebar').addClass('sidenav-toggled1');
+			//	}
+			//}, function () {
+			//	if ($('.appsidebar').hasClass('sidenav-toggled')) {
+			//		$('.appsidebar').removeClass('sidenav-toggled1');
+			//	}
+			//});
+
+			$('.toast').toast('show');
+
+
+		});
+		
+    </script>
+</body>
+</html>
+

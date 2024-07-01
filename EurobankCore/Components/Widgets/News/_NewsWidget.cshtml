@@ -1,0 +1,54 @@
+﻿@using Eurobank.InlineEditors
+@using Eurobank.Widgets
+@model Eurobank.Widgets.NewsWidgetViewModel
+
+
+@{
+    var i = 1;
+}
+
+@if (Context.Kentico().PageBuilder().EditMode)
+{
+    <partial name="~/Components/InlineEditors/SpinnerEditor/_SpinnerEditor.cshtml"
+             model="new SpinnerEditorViewModel
+                    {
+                        PropertyName = nameof(NewsWidgetProperties.Count),
+                        Count = Model.Count
+                    }" />
+}
+
+<div class="h-100 shadow-box news-announcement">
+	<div class="d-flex justify-content-between mb-5 title-wrapper">
+		<h3>@HtmlLocalizer["News And Announcement"]</h3>
+		<a class="viewall" href="~@Model.ViewAllLink">@HtmlLocalizer["View All"]</a>
+	</div>
+	
+	
+		@foreach(var news in Model.NewsList)
+		{
+			<div class="media">
+				<div class="d-flex">
+					<div class="pr-4 news-date">
+						<div class="d-flex">
+							<span class="font-weight-bold">@news.PublishedMonth</span>
+							<span>,@news.PublishedYear</span><br />
+						</div>
+						<span>@news.PublishedTime</span>
+					</div>
+					@*<div class="news-pic">
+						<img src="~/CMSPages/GetFile.aspx?guid=@news.Teaser" width="50" height="50" />
+					</div>*@
+				</div>
+				<div class="pl-5 media-body">
+					<p> @news.Title</p>
+					@*<div class="d-flex justify-content-end">
+						<a href="~/News/Details/@news.NodeAlias">@HtmlLocalizer["View"]</a>
+					</div>*@
+				</div>
+			</div>
+		}
+	
+</div>
+
+
+

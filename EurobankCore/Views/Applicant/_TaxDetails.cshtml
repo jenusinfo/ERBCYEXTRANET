@@ -1,0 +1,153 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Eurobank.Helpers.Validation;
+
+@{
+    string isLiableTaxCyprus = string.Empty;
+    if (Model.PersonalDetails != null && !string.IsNullOrEmpty(Model.PersonalDetails.IsLiableToPayDefenseTaxInCyprusName))
+    {
+        isLiableTaxCyprus = string.Equals(Model.PersonalDetails.IsLiableToPayDefenseTaxInCyprusName, "YES", StringComparison.OrdinalIgnoreCase) ? "true" : "false";
+    }
+    bool isLegalEntity = string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.TAX_DETAILS))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<div class="shadow-box col-md-12">
+    <ul id="accordionTaxDetails">
+        <li id="chartSection" class="k-state-active">
+            <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                @ResHelper.GetString("Eurobank.TaxDetails")
+            </span>
+
+            <div class="row m-0" id="accordionTaxDetailsContentOne">
+                <div>
+
+                    @(Html.Kendo().Grid<Eurobank.Models.Applications.TaxDetails.TaxDetailsViewModel>
+    ()
+    .Name("TaxDetails")
+
+    .Columns(columns =>
+    {
+                            columns.Template
+                            (
+                            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                            ).Width(30);
+                            columns.Bound(p => p.TaxDetails_CountryOfTaxResidencyName).Width(200);
+        columns.Bound(p => p.TaxDetails_TaxIdentificationNumber).Width(260);
+        //columns.Bound(p => p.TaxDetails_JustificationForTinUnavalability).Width(300).Media("(min-width: 1024px)");
+                            columns.Bound(p => p.TaxDetails_TinUnavailableReasonName).Width(300);
+        columns.Bound(p => p.StatusName).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+        //columns.Command(command => { command.Edit().IconClass("fa fa-edit").UpdateText("Save").CancelText("Close"); command.Custom("Delete").Click("DisplayDeleteConfirmation"); }).Width(200).HtmlAttributes(new { style = "text-align: center;" }).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.Actions")).HeaderHtmlAttributes(new { style = "text-align: center;" });
+        
+
+    })
+    .Events(e =>
+    {
+        e.Edit("addConfirmButton_TaxDetails");
+        e.DataBound("onTaxDataBound");
+        e.Cancel("onGridCancel");
+    })
+    .ToolBar(toolbar => { if(Model.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditTaxDetails").DisplayDeleteConfirmation(false).Window(w => w.Title("Tax Details").Width(800))).EnableCustomBinding(true)
+    .Pageable()
+    .Sortable()
+    .Scrollable()
+
+     .HtmlAttributes(new { style = "max-height:550px;" })
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .PageSize(10)
+    .Sort(x => x.Add("StatusName").Descending())
+    //.Events(e => e.RequestStart("onEdit"))
+    .Model(model =>
+    {
+
+        model.Id(p => p.TaxDetailsID);
+    })
+
+    //.Model(model => model.Id(p => p.AddressGuid))
+    .Events(events => events.Error("error_handlerTaxDetails"))
+    .ServerOperation(true)
+    .Create(update => update.Action("TaxDetailsPopup_Create", "Applicant", new {id=Model.Id,applicationType=Model.Type }))
+    .Read(read => read.Action("TaxDetails_Read", "Applicant", new { id = Model.Id, applicationType = Model.Type }))
+    .Update(update => update.Action("TaxDetailsPopup_Update", "Applicant", new {id=Model.Id }))
+    .Destroy(update => update.Action("TaxDetailsPopup_Destroy", "Applicant"))
+    )
+	)
+                </div>
+
+                <div class="pt-5">
+                    <div class="col-md-6">
+                        @if (!isLegalEntity)
+                        {
+                            <div class="form-group">
+                                <label asp-for="PersonalDetails.IsLiableToPayDefenseTaxInCyprusName" class="control-label"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.PersonalDetails.IsLiableToPayDefenseTaxInCyprusName).BindTo((System.Collections.IEnumerable)ViewBag.IsLiableToPayDefenseTaxInCyprus)
+    .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+    .DataValueField("Value")
+                                    .DataTextField("Text").HtmlAttributes(new { @class = "form-control", @onchange = "ValidateMenuTaxDetailsLegal()", @id = "PersonalDetails_IsLiableToPayDefenseTaxInCyprusName" }))
+                                @Html.ValidationMessageFor(X => X.PersonalDetails.IsLiableToPayDefenseTaxInCyprus)
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label asp-for="CompanyDetails.IsLiableToPayDefenseTaxInCyprusName" class="control-label"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.CompanyDetails.IsLiableToPayDefenseTaxInCyprusName).BindTo((System.Collections.IEnumerable)ViewBag.IsLiableToPayDefenseTaxInCyprus)
+    .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+    .DataValueField("Value")
+                                    .DataTextField("Text").HtmlAttributes(new { @class = "form-control", @onchange = "ValidateMenuTaxDetailsLegal()", @id = "CompanyDetails_IsLiableToPayDefenseTaxInCyprusName" }))
+                                @Html.ValidationMessageFor(X => X.CompanyDetails.IsLiableToPayDefenseTaxInCyprus)
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+
+        </li>
+
+
+
+    </ul>
+</div>
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_TaxDetails", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.TaxDetails"))
+@Html.Hidden("ValidateTaxDetailsUrl",Url.Action("ValidateTaxDetails", "Applicant"))
+<ul id="context-menuTaxDetails">
+
+    @if (Model.IsEdit)
+    {
+        <li id="editRowTax">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowTax">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-preview"></span></li>
+    }
+</ul>
+<script src="~/Scripts/Custom/Applicant/Applicant_TaxDetails.js"></script>

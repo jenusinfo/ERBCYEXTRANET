@@ -1,0 +1,155 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Validation;
+@{
+    bool isIndividual = string.Equals(Model.EntityTypeCode, "INDIVIDUAL", StringComparison.OrdinalIgnoreCase);
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.SIGNATURE_MANDATE))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: center;
+    }
+</style>
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionSignatureMandateIndividual">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.SignatureMandateIndividual")
+                </span>
+                <div id="accordionSignatureMandateIndContentOne">
+                    <div class="form-group">
+
+
+                        @(Html.Kendo().RadioGroup()
+            .Name("SignatureMandateTypeGroup")
+            .Layout("vertical")
+            .Value(Model.PurposeAndActivity.SignatureMandateTypeGroup.RadioGroupValue)
+            .BindTo(Model.PurposeAndActivity.SignatureMandateTypeGroup.Items)
+        )
+                    </div>
+                    @if (!isIndividual)
+                    {
+                        <div id="signatureMandateDIV" style="display:none">
+                            @(Html.Kendo().Grid<Eurobank.Models.Application.SignatureMandateIndividualModel>
+		()
+		.Name("SignatureMandateIndividual")
+
+		.Columns(columns =>
+		{
+									columns.Template
+									(
+									@"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+									).Width(30);
+			//columns.Bound(p => p.rowID).Title("ID").Width(70);
+									columns.Bound(p => p.SignatoryPersonNames).Title(ResHelper.GetString("Eurobank.Application.SignatureMandateIndividual.GridHeader.SignatoryPersonNames")).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(300);
+			columns.Bound(p => p.AccessRightsName).Title(ResHelper.GetString("Eurobank.Application.SignatureMandateIndividual.GridHeader.AccessRightsName")).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(200);
+			columns.Bound(p => p.NumberOfSignatures).Title(ResHelper.GetString("Eurobank.Application.SignatureMandateIndividual.GridHeader.NumberOfSignatures")).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(200);
+			//columns.Bound(p => p.AmountFrom).Title(ResHelper.GetString("Eurobank.Application.SignatureMandateIndividual.GridHeader.AmountFrom")).HtmlAttributes(new { style = "text-align: right;" }).HeaderHtmlAttributes(new { style = "text-align:right;" }).Width(150).Media("(min-width: 1024px)");
+			//columns.Bound(p => p.AmountTo).Title(ResHelper.GetString("Eurobank.Application.SignatureMandateIndividual.GridHeader.AmountTo")).HtmlAttributes(new { style = "text-align: right;" }).HeaderHtmlAttributes(new { style = "text-align:right;" }).Width(150).Media("(min-width: 1024px)");
+			columns.Bound(p => p.Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+			
+		})
+		 .Events(e =>
+		 {
+			 e.Edit("addConfirmButton_SMI");
+			 e.DataBound("onSignatureMandateDataBound");
+			 e.Cancel("onGridCancel");
+		 })
+		.ToolBar(toolbar => { if(Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+		.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditSignatureMandateIndividual").DisplayDeleteConfirmation(false).Window(w=>w.Title("SIGNATURE MANDATE").Width(800))).EnableCustomBinding(true)
+		.Pageable()
+		.Sortable()
+		.Scrollable()
+		 .HtmlAttributes(new { style = "max-height:550px;" })
+		.DataSource(dataSource => dataSource
+		.Ajax()
+		.PageSize(10)
+		.Sort(x => x.Add("Status_Name").Descending())
+		//.Events(e => e.RequestStart("hideIdField"))
+		.Model(model =>
+		{
+
+			model.Id(p => p.Id);
+			model.Field(p => p.SignatoryPersons);
+			model.Field(p => p.SignatoryPersonNames);
+			model.Field(p => p.SignatoryPersonsList);
+			model.Field(p => p.AccessRights);
+			model.Field(p => p.AccessRightsName);
+			model.Field(p => p.NumberOfSignatures);
+			model.Field(p => p.AmountFrom);
+			model.Field(p => p.AmountTo);
+			model.Field(p => p.Status_Name);
+			//model.Field(p => p.nodePath);
+		})
+		 //.Model(model => model.Id(p => p.AddressGuid))
+		 .Events(events => events.Error("error_handlerSignatureMandate"))
+		.ServerOperation(true)
+		.Create(update => update.Action("SignatureMandateIndividual_Create", "Applications",new { apID = Model.Id}))
+		.Read(read => read.Action("SignatureMandateIndividual_Read", "Applications"))
+		.Update(update => update.Action("SignatureMandateIndividualPopup_Update", "Applications",new { applicationNumber=Model.ApplicationNumber}))
+		.Destroy(update => update.Action("SignatureMandateIndividualPopup_Destroy", "Applications"))
+		//.Events(events => events.RequestEnd("onRequestEnd"))
+		)
+		)
+                        </div>
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@Html.Hidden("hdnApplication_LeftMenu_SignatureMandate", @ResHelper.GetString("Eurobank.Application.LeftMenu.SignatureMandate"))
+@Html.Hidden("hdnApplication_LeftMenu_SignatureMandateIndividual", @ResHelper.GetString("Eurobank.Application.SignatureMandateIndividual"))
+
+<ul id="context-menuSignatureMandateIndividual">
+
+    @if (Model.ApplicationDetails.IsEdit)
+    {
+		<li id="editRowSigManInd">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRow">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-preview"></span></li>
+    }
+</ul>
+<script src="~/Scripts/Custom/Application/SignatureMandateIndividuals.js"></script>
+

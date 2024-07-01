@@ -1,0 +1,85 @@
+﻿@using CMS.DataEngine
+@using CMS.SiteProvider
+@model Eurobank.Models.Application.Applicant.EmploymentDetailsModel
+@using Kendo.Mvc.UI
+@{
+	//ViewData["Title"] = "Applicant";
+}
+
+
+<div class="shadow-box">
+	<h4>@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails")</h4>
+	<div class="col-md-6">
+
+		<div class="form-group">
+			<label asp-for="EmploymentStatus" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.EmploymentStatus")</label>
+			@(Html.Kendo().DropDownListFor(m => m.EmploymentStatus).BindTo((System.Collections.IEnumerable)ViewBag.EmploymentStatuses)
+    .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+    .DataValueField("Value")
+    .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+			@Html.ValidationMessageFor(X => X.EmploymentStatus)
+		</div>
+
+		<div class="">
+			<div class="form-group">
+				<label asp-for="Profession" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.Profession")</label>
+				@(Html.Kendo().DropDownListFor(m => m.Profession).BindTo((System.Collections.IEnumerable)ViewBag.EmploymentProfessions)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+				@Html.ValidationMessageFor(X => X.Profession)
+			</div>
+			<div class="form-group">
+				<label asp-for="YearsInBusiness" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.YearsInBusiness")</label>
+				@Html.Kendo().TextBoxFor(model => model.YearsInBusiness).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.YearsInBusiness)
+			</div>
+			<div class="form-group">
+				<label asp-for="EmployersName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.EmployersName")</label>
+				@Html.Kendo().TextBoxFor(model => model.EmployersName).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.EmployersName)
+			</div>
+			<div class="form-group decision-commnt">
+				<label asp-for="EmployersBusiness" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.EmployersBusiness")</label>
+				@*@Html.Kendo().TextBoxFor(model => model.EmployersBusiness).HtmlAttributes(new { @class = "form-control" })*@
+				@Html.Kendo().TextAreaFor(model => model.EmployersBusiness).Rows(3).Resizable("both").HtmlAttributes(new { @class = "form-control k-textbox" })
+				@Html.ValidationMessageFor(X => X.EmployersBusiness)
+			</div>
+
+		</div>
+		
+		<div class="">
+
+			<div class="form-group">
+				<label asp-for="FormerProfession" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerProfession")</label>
+				@(Html.Kendo().DropDownListFor(m => m.FormerProfession).BindTo((System.Collections.IEnumerable)ViewBag.EmploymentProfessions)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+				@Html.ValidationMessageFor(X => X.FormerProfession)
+			</div>
+			<div class="form-group">
+				<label asp-for="FormerCountryOfEmployment" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerCountryOfEmployment")</label>
+				@(Html.Kendo().DropDownListFor(m => m.FormerCountryOfEmployment).BindTo((System.Collections.IEnumerable)ViewBag.CountriesOfEmployment)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+				@Html.ValidationMessageFor(X => X.FormerCountryOfEmployment)
+			</div>
+			<div class="form-group">
+				<label asp-for="FormerEmployersName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerEmployersName")</label>
+				@Html.Kendo().TextBoxFor(model => model.FormerEmployersName).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.FormerEmployersName)
+			</div>
+			<div class="form-group">
+				<label asp-for="FormerEmployersBusiness" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerEmployersBusiness")</label>
+				@Html.Kendo().TextBoxFor(model => model.FormerEmployersBusiness).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.FormerEmployersBusiness)
+			</div>
+
+		</div>
+		
+	</div>
+
+</div>
+

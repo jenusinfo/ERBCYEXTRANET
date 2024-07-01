@@ -1,0 +1,9 @@
+﻿@using Kendo.Mvc.UI
+@using System.Collections
+@(Html.Kendo().DropDownList()
+	  .BindTo((IEnumerable)ViewBag.addressType)
+	  .OptionLabel("- Select - ")
+	  .DataValueField("Value")
+	  .DataTextField("Text")
+	  .Name("AddressType")
+)

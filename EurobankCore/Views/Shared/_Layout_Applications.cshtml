@@ -1,0 +1,882 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@using Kentico.Activities.Web.Mvc
+@using Kentico.Membership.Web.Mvc
+@using Kentico.OnlineMarketing.Web.Mvc
+
+@using Eurobank.Helpers
+@using Eurobank.Widgets
+@using CMS.Membership;
+
+@inject IHtmlLocalizer<SharedResources> HtmlLocalizer
+
+@{ //const string ENGLISH = "English";
+	//const string ESPANOL = "Español";
+
+	//var currentCultureCode = Convert.ToString(@ViewContext.RouteData.Values["culture"]);
+	//var currentLanguage = currentCultureCode.Equals("es-es", StringComparison.OrdinalIgnoreCase) ? "ES" : "EN";
+	Eurobank.Models.Application.ApplicationViewModel applicationViewModel = new Eurobank.Models.Application.ApplicationViewModel();
+	if (TempData["Application"] != null)
+	{
+
+		applicationViewModel = (Eurobank.Models.Application.ApplicationViewModel)TempData["Application"];
+	}
+
+	string userFullName = string.Empty;
+
+	UserInfo user = UserInfoProvider.GetUserInfo(User.Identity.Name);
+	if (user != null)
+	{
+		userFullName = user.FirstName + " " + user.LastName;
+	}
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head id="head">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<meta charset="UTF-8" />
+	<link rel="shortcut icon" href="~/Content/Images/favicon-euro.ico" type="image/x-icon">
+	<link rel="icon" href="~/Content/Images/favicon-euro.ico" type="image/x-icon">
+	@Html.Kentico().PageDescription()
+	@Html.Kentico().PageKeywords()
+	@*@Html.Kentico().PageTitle(ViewBag.Title as string)*@
+	<title> @(ViewBag.Title as string) </title>
+	@*<link rel="icon" href="~/content/images/favicon.svg" type="image/svg+xml" />*@
+	<link href="~/Content/Styles/Site.css" rel="stylesheet" type="text/css" />
+
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	<!-- Custom -->
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	@*<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">*@
+	@*<link href="~/Content/Styles/googlecss1.css" rel="stylesheet" type="text/css" />
+	<link href="~/Content/Styles/googlecss2.css" rel="stylesheet" type="text/css" />
+	<link href="~/Content/Styles/googlecss3.css" rel="stylesheet" type="text/css" />*@
+
+	<link href="~/Content/Styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/Content/Styles/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+	<link href="~/Content/Styles/intlTelInput.css" rel="stylesheet" />
+	<!-- --------------------------------------------------------------------------------------------------- -->
+
+	<link rel="canonical" href="@Url.Kentico().PageCanonicalUrl()" />
+	@RenderSection("styles", required: false)
+	@Html.Kentico().ABTestLoggerScript()
+	@Html.Kentico().ActivityLoggingScript()
+	@Html.Kentico().WebAnalyticsLoggingScript()
+
+	@* Add the Kendo Bootstrap v4 theme: *@
+	@*<link href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.bootstrap-v4.min.css" rel="stylesheet" type="text/css" />*@
+
+	@* Add the the jQuery script from the Telerik CDN: *@
+	@* Add the Kendo UI scripts: *@
+	<page-builder-styles />
+	@*<link href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.bootstrap-v4.min.css" rel="stylesheet" type="text/css" />*@
+	<link href="~/Content/Styles/Kendu-Eurobank.css" rel="stylesheet" />
+	<link href="~/Content/Styles/eurobank.css" rel="stylesheet" type="text/css" />
+	@*<script src="https://kendo.cdn.telerik.com/2021.2.616/js/jquery.min.js"></script>
+		<script src="https://kendo.cdn.telerik.com/2021.2.616/js/jszip.min.js"></script>
+		<script src="https://kendo.cdn.telerik.com/2021.2.616/js/kendo.all.min.js"></script>
+		<script src="https://kendo.cdn.telerik.com/2021.2.616/js/kendo.aspnetmvc.min.js"></script>*@
+	<script src="~/Scripts/KendoProcess/jquery.min.js"></script>
+	<script src="~/Scripts/KendoProcess/jszip.min.js"></script>
+	<script src="~/Scripts/KendoProcess/kendo.all.min.js"></script>
+	<script src="~/Scripts/KendoProcess/kendo.aspnetmvc.min.js"></script>
+	<style type="text/css">
+		.customdelete {
+			background-color: #e92535 !important;
+			border-color: #e92535 !important;
+		}
+
+		.k-stepper .k-i-warning {
+			display: none;
+		}
+	</style>
+</head>
+<body class="@ViewData["PageClass"] appsidebar">
+	@Html.Hidden("PrintFriendlyDownloadStartMessage", ResHelper.GetString("EuroBank.PrintFriendlyDownloadStart.Message"))
+	@Html.Hidden("PrintSummaryDownloadStartMessage", ResHelper.GetString("EuroBank.PrintSummaryDownloadStart.Message"))
+	<header>
+		<div class="topHeader">
+			<div class="d-flex pl-5 pr-5">
+				<h5 class="whitetext">Self Service Platform</h5>
+				<ul class="additional-menu">
+					@if (!string.IsNullOrEmpty(userFullName))
+					{
+						<h6 class="whitetext">Hi @userFullName</h6>
+					}					
+					<li class="dropdown">
+						<a title="User" class="dropbtn">
+							@if(User.Identity.IsAuthenticated)
+							{
+								<img src="@Url.Kentico().AvatarUrl(User.Identity.Name, pathToDefaultAvatar: "~/Content/Images/default-avatar.png")" class="dropdown-desktop-avatar" alt="avatar" />
+							}
+							else
+							{
+								<svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M5.44934 14H15.4493C18.2108 14 20.4493 16.2386 20.4493 19C20.4493 19.5523 20.0016 20 19.4493 20C18.9365 20 18.5138 19.614 18.4561 19.1166L18.4442 18.8237C18.3564 17.3072 17.1421 16.093 15.6256 16.0051L15.4493 16H5.44934C3.79249 16 2.44934 17.3431 2.44934 19C2.44934 19.5523 2.00163 20 1.44934 20C0.897056 20 0.449341 19.5523 0.449341 19C0.449341 16.3112 2.57165 14.1182 5.23245 14.0046L5.44934 14H15.4493H5.44934ZM10.4493 0C13.763 0 16.4493 2.68629 16.4493 6C16.4493 9.31371 13.763 12 10.4493 12C7.13563 12 4.44934 9.31371 4.44934 6C4.44934 2.68629 7.13563 0 10.4493 0ZM10.4493 2C8.2402 2 6.44934 3.79086 6.44934 6C6.44934 8.20914 8.2402 10 10.4493 10C12.6585 10 14.4493 8.20914 14.4493 6C14.4493 3.79086 12.6585 2 10.4493 2Z" fill="currentColor" />
+								</svg>
+							}
+						</a>
+						<div class="dropdown-content">
+							@if(User.Identity.IsAuthenticated)
+							{
+								<a asp-controller="Account" asp-action="YourAccount">@HtmlLocalizer["Your&nbsp;Account"]</a>
+								<form method="post" asp-controller="Account" asp-action="Logout">
+									<input type="submit" value="@ResHelper.GetString("Eurobank.common.button.SignOut")" class="sign-out-button" />
+								</form>
+							}
+							else
+							{
+								<a asp-controller="Account" asp-action="Register">@ResHelper.GetString("Eurobank.common.button.Register")</a>
+								<a asp-controller="Account" asp-action="Login">@ResHelper.GetString("Eurobank.common.button.Login")</a>
+							}
+						</div>
+					</li>
+				</ul>
+				<a class="top-bell position-relative" href="javascript:void(0)" onclick="showHideApplicantErroList();">
+					
+					<svg class="whitetext" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+						<path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
+					</svg>
+					
+					<span id="notificationbadge" class="top-notification-badge position-absolute top-0 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+					</a>
+			</div>
+		</div>
+
+	</header>
+
+	<div class="page-wrap">
+		<vc:tracking-consent />
+
+		<div class="fullpage">
+			<div class="page-container-inner">
+				<div class="application-details" id="stPageBeginApplication">
+					@Html.Partial("_ApplicationHeader", applicationViewModel.ApplicationDetails)
+					<div class="row">
+						@Html.Partial("_ApplicationMenu", applicationViewModel)
+						<div class="col-lg-9 col-lg-offset-3 side-leftpanel">
+							<div class="shadow-box leftpanel-info app-body-per">
+								<div id="successDisplay" class="toast-popup p-3" aria-live="polite" aria-atomic="true" style="display: none;">
+									<div class="toast alert alert-success" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+										<div class="toastheader">
+											@*<strong class="mr-auto"></strong>*@
+											<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="toastbody"></div>
+									</div>
+
+								</div>
+								@RenderBody()
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+	@(Html.Kendo().Window().Name("DeleteWindow")
+	.Title("Delete Record")
+	.Visible(false)
+	.Modal(true)
+	.Draggable(true)
+	.Width(300))
+	@*<script src="~/Scripts/jquery-3.5.1.min.js"></script>*@
+	<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+	<script src="~/Scripts/jquery.validate.min.js"></script>
+	<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+	<script src="~/Scripts/responsiveMenuDropdown.js"></script>
+	<script src="~/Scripts/mobileMenu.js"></script>
+
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	<!-- Custom -->
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	@*<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>*@
+	<script src="~/Scripts/popper.min.js"></script>
+	<script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	<page-builder-scripts />
+	@RenderSection("scripts", required: false)
+	@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>*@
+	<script src="~/Scripts/jquery.nicescroll.min.js"></script>
+	<script src="~/Scripts/KendoProcess/MasterProcess.js"></script>
+	<script>
+		(function($) {
+			function fixButtonHeights() {
+				var heights = new Array();
+
+				// Loop to get all element heights
+				$('.equalgrid').each(function() {
+					// Need to let sizes be whatever they want so no overflow on resize
+					$(this).css('min-height', '0');
+					$(this).css('max-height', 'none');
+					$(this).css('height', 'auto');
+
+					// Then add size (no units) to array
+					heights.push($(this).height());
+				});
+
+				// Find max height of all elements
+				var max = Math.max.apply(Math, heights);
+
+				// Set all heights to max height
+				$('.equalgrid').each(function() {
+					$(this).css('height', max + 'px');
+					// Note: IF box-sizing is border-box, would need to manually add border and padding to height (or tallest element will overflow by amount of vertical border + vertical padding)
+				});
+			}
+
+			$(document).ready(function () {
+				// Fix heights on page load
+				fixButtonHeights();
+
+				// Fix heights on window resize
+				$(window).on('resize', function () {
+					// Needs to be a timeout function so it doesn't fire every ms of resize
+					clearTimeout(resizeTimer);
+					resizeTimer = setTimeout(function () {
+						fixButtonHeights();
+					}, 120);
+				});
+			});
+		})(jQuery);
+
+		function setAllInputElementDisabled(parentClassName) {
+			if(parentClassName && parentClassName != '') {
+				console.log('callsed');
+				console.log('class name:' + parentClassName);
+				var parentElement = $("." + parentClassName + " input");
+				var parentSelectElement = $("." + parentClassName + " select");
+				var parentTextAreaElement = $("." + parentClassName + " textarea");
+				parentTextAreaElement.attr('disabled', 'disabled');
+				parentElement.attr('disabled', 'disabled');
+				$.each(parentElement, function(i) {
+					if($('#' + $(parentElement)[i].id).data("kendoDropDownList") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoDropDownList").enable(false);
+					}
+					if($('#' + $(parentElement)[i].id).data("kendoRadioGroup") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoRadioGroup").enable(false);
+					}
+					if($('#' + $(parentElement)[i].id).data("kendoDatePicker") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoDatePicker").enable(false);
+					}
+				});
+				$.each(parentSelectElement, function(i) {
+					if($('#' + $(parentSelectElement)[i].id).data("kendoMultiSelect") != undefined) {
+						$('#' + $(parentSelectElement)[i].id).data("kendoMultiSelect").enable(false);
+					}
+				});
+			}
+			else {
+				var parentElement = $("input[type!='submit']");
+				var parentSelectElement = $("select");
+				var parentTextAreaElement = $("textarea");
+				parentTextAreaElement.attr('disabled', 'disabled');
+				parentElement.attr('disabled', 'disabled');
+				$.each(parentElement, function(i) {
+					if($('#' + $(parentElement)[i].id).data("kendoDropDownList") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoDropDownList").enable(false);
+					}
+					if($('#' + $(parentElement)[i].id).data("kendoRadioGroup") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoRadioGroup").enable(false);
+					}
+					if($('#' + $(parentElement)[i].id).data("kendoDatePicker") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoDatePicker").enable(false);
+					}
+				});
+				$.each(parentSelectElement, function(i) {
+					if($('#' + $(parentSelectElement)[i].id).data("kendoMultiSelect") != undefined) {
+						$('#' + $(parentSelectElement)[i].id).data("kendoMultiSelect").enable(false);
+					}
+				});
+			}
+		}
+
+		function setAllInputElementEnabled(parentClassName) {
+			if(parentClassName && parentClassName != '') {
+				$("." + parentClassName + " input").removeAttr('disabled');
+			}
+			else {
+				$("input").removeAttr('disabled');
+			}
+		}
+
+		function setAllPopUpInputElementDisabled() {
+			if($(".k-widget.k-window.k-display-inline-flex input").length > 0) {
+				var parentElement = $(".k-widget.k-window.k-display-inline-flex input");
+				var parentSelectElement = $("select");
+				var parentTextAreaElement = $("textarea");
+				parentTextAreaElement.attr('disabled', 'disabled');
+				$(parentElement).attr('disabled', 'disabled');
+				$.each(parentElement, function(i) {
+					if($('#' + $(parentElement)[i].id).data("kendoDropDownList") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoDropDownList").enable(false);
+					}
+					if($('#' + $(parentElement)[i].id).data("kendoRadioGroup") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoRadioGroup").enable(false);
+					}
+					if($('#' + $(parentElement)[i].id).data("kendoDatePicker") != undefined) {
+						$('#' + $(parentElement)[i].id).data("kendoDatePicker").enable(false);
+					}
+				});
+
+				$.each(parentSelectElement, function(i) {
+					if($('#' + $(parentSelectElement)[i].id).data("kendoMultiSelect") != undefined) {
+						$('#' + $(parentSelectElement)[i].id).data("kendoMultiSelect").enable(false);
+					}
+				});
+
+				$('.k-button.k-button-icontext.k-grid-update').hide();
+			}
+		}
+
+	</script>
+	<script type="text/javascript">
+		var _lastSeletedStpper;
+		var _currentSeletedStpper;
+        function onApplicationStepperSelect(e) {
+			$('li.k-item > div').hide();
+		//For Grid Items
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.Applicants")') {
+			$(window).scrollTop($('#accordionApplicants').offset().top - 170);
+			$('#accordionApplicantsContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.GroupStructure")') {
+			$(window).scrollTop($('#accordionGroupStructure').offset().top - 170);
+			$('#accordionGroupStructureContentOne').show();
+		}
+		//if(e.step.options.label == 'Tax Details') {
+		//	$(window).scrollTop($('#accordionTaxDetails').offset().top);
+		//	$('#accordionTaxDetailsContentOne').show();
+		//}
+
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.RelatedParties")') {
+			$(window).scrollTop($('#accordionRelatedParties').offset().top - 170);
+			$('#accordionRelatedPartiesContentOne').show();
+            }
+
+
+
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.Accounts")') {
+			$(window).scrollTop($('#accordionAccountsDetails').offset().top - 170);
+			$('#accordionAccountsDetailsContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.DebitCards")') {
+			$(window).scrollTop($('#accordionDebitCardDetails').offset().top - 170);
+			$('#accordionDebitCardContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.EBanking")') {
+			$(window).scrollTop($('#accordionEBankingSubscriber').offset().top - 170);
+			$('#accordionEBankingSubscriberContentOne').show();
+		}
+            if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.SignatureMandate")') {
+				if($('#accordionSignatureMandateIndividual').length > 0 && $('#accordionSignatureMandateIndContentOne').length > 0) {
+					$(window).scrollTop($('#accordionSignatureMandateIndividual').offset().top - 170);
+					$('#accordionSignatureMandateIndContentOne').show();
+				}
+            }
+          if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.SignatureMandate")') {
+			  if($('#accordionSignatureMandate').length > 0 && $('#SignatureMandateaccordionContentOne').length > 0) {
+				  $(window).scrollTop($('#accordionSignatureMandate').offset().top - 170);
+				  $('#SignatureMandateaccordionContentOne').show();
+			  }
+
+            }
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.Notes")') {
+			$(window).scrollTop($('#accordionNoteDetails').offset().top - 170);
+			$('#accordionNoteDetailsContentOne').show();
+		}
+
+		//For Section items
+            if (e.step.options.label.indexOf('&') > 0 && e.step.options.label.replace('&', '&amp;') == '@ResHelper.GetString("Eurobank.Application.LeftMenu.PurposeAndActivity")') {
+
+                $(window).scrollTop($('#accordionPurposeAndActivity').offset().top - 170);
+                $('#PurposeAndActivityaccordionContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.Documents")') {
+			$(window).scrollTop($('#accordionBankDocuments').offset().top - 170);
+			$('#accordionExpectedDocumentsContentOne').show();
+			$('#accordionBankDocumentsContentOne').show();
+		}
+
+		//Submit and begin
+		@*if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.Submit")') {
+			$(window).scrollTop($('#stSubmitConfirm').offset().top - 170);
+		}*@
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.LeftMenu.Application")') {
+			$(window).scrollTop($('#stPageBeginApplication').offset().top - 170);
+			$('#accordionApplicationDetailsContentOne').show();
+		}
+	}
+		function onApplicantStepperSelect(e) {
+			$('li.k-item > div').hide();
+		//For Grid Items
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.AddressDetails")') {
+				if($('#accordionAddressDetails').length > 0) {
+					$(window).scrollTop($('#accordionAddressDetails').offset().top - 170);
+				}
+				if($('#accordionAddressContentOne').length > 0) {
+					$('#accordionAddressContentOne').show();
+					_currentSeletedStpper = $('#accordionAddressContentOne');
+				}
+
+		}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.IdentificationDetails")') {
+				if($('#accordionIdentificationDetails').length > 0) {
+					$(window).scrollTop($('#accordionIdentificationDetails').offset().top - 170);
+				}
+
+				if($('#accordionIdentificationContentOne').length > 0) {
+					$('#accordionIdentificationContentOne').show();
+					_currentSeletedStpper = $('#accordionIdentificationContentOne');
+				}
+
+		}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.TaxDetails")') {
+				if($('#accordionTaxDetails').length > 0) {
+					$(window).scrollTop($('#accordionTaxDetails').offset().top - 170);
+				}
+				if($('#accordionTaxDetailsContentOne').length > 0) {
+					$('#accordionTaxDetailsContentOne').show();
+					_currentSeletedStpper = $('#accordionTaxDetailsContentOne');
+				}
+
+		}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.PEPDetails")') {
+				if($('#accordion1').length > 0) {
+					$(window).scrollTop($('#accordion1').offset().top - 150);
+				}
+				if($('#accordionPepApplicantContentOne').length > 0) {
+					$('#accordionPepApplicantContentOne').show();
+				}
+				if($('#accordionPepFamilyContentOne').length > 0) {
+					$('#accordionPepFamilyContentOne').show();
+				}
+
+			//$('#accordionPepApplicantContentOne').show();
+			}
+
+		//For Section items
+            if (e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.Applicant")') {
+				if($('#accordionPersonDetails').length > 0) {
+					$(window).scrollTop($('#accordionPersonDetails').offset().top - 170);
+				}
+
+				if($('#PersonDetailsaccordionContentOne').length > 0) {
+					$('#PersonDetailsaccordionContentOne').show();
+					_currentSeletedStpper = $('#PersonDetailsaccordionContentOne');
+				}
+
+
+			}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.PersonalDetails")' || e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.CompanyDetails")') {
+				if($('#accordionPersonDetails').length > 0) {
+					$(window).scrollTop($('#accordionPersonDetails').offset().top - 170);
+				}
+				if($('#PersonDetailsaccordionContentOne').length > 0) {
+					$('#PersonDetailsaccordionContentOne').show();
+					_currentSeletedStpper = $('#PersonDetailsaccordionContentOne');
+				}
+
+
+            }
+            @*if( e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.Applicant")') {
+                $(window).scrollTop($('#accordionCompanyDetails').offset().top - 170);
+                $('#CompanyDetailsaccordionContentOne').show();
+
+			}*@
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.CompanyDetails")') {
+				if($('#accordionCompanyDetails').length > 0) {
+					$(window).scrollTop($('#accordionCompanyDetails').offset().top - 170);
+				}
+
+				if($('#CompanyDetailsaccordionContentOne').length > 0) {
+					$('#CompanyDetailsaccordionContentOne').show();
+					_currentSeletedStpper = $('#CompanyDetailsaccordionContentOne');
+				}
+
+
+			}
+			if(e.step.options.label.indexOf('&') > 0 && e.step.options.label.replace('&', '&amp;') == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.BusinessAndFinancialProfile")') {
+				if($('#accordionEmploymentDetails').length > 0) {
+					$(window).scrollTop($('#accordionEmploymentDetails').offset().top - 170);
+				}
+
+				if($('#EmploymentDetailsaccordionContentOne').length > 0) {
+					$('#EmploymentDetailsaccordionContentOne').show();
+					_currentSeletedStpper = $('#EmploymentDetailsaccordionContentOne');
+				}
+
+            }
+
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.BankingRelationship")') {
+				if($('#accordionBankRelationship').length > 0) {
+					$(window).scrollTop($('#accordionBankRelationship').offset().top - 170);
+				}
+
+				if($('#BankRelationshipaccordionContentOne').length > 0) {
+					$('#BankRelationshipaccordionContentOne').show();
+					_currentSeletedStpper = $('#BankRelationshipaccordionContentOne');
+				}
+
+
+			}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.FinancialProfile")') {
+				if($('#stFinancialDetails').length > 0) {
+					$(window).scrollTop($('#stFinancialDetails').offset().top - 170);
+				}
+
+			}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.BusinessProfile")') {
+				if($('#stEmploymentDetails').length > 0) {
+					$(window).scrollTop($('#stEmploymentDetails').offset().top - 170);
+				}
+
+			}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.FATCADetails")') {
+				if($('#accordionFATCACSR').length > 0) {
+					$(window).scrollTop($('#accordionFATCACSR').offset().top - 170);
+				}
+
+				if($('#FATCACSRaccordionContentOne').length > 0) {
+					$('#FATCACSRaccordionContentOne').show();
+					_currentSeletedStpper = $('#FATCACSRaccordionContentOne');
+				}
+
+			}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.CRSDetails")') {
+				if($('#accordionCRSDetails').length > 0) {
+					$(window).scrollTop($('#accordionCRSDetails').offset().top - 170);
+				}
+
+				if($('#CRSDetailsaccordionContentOne').length > 0) {
+					$('#CRSDetailsaccordionContentOne').show();
+					_currentSeletedStpper = $('#CRSDetailsaccordionContentOne');
+				}
+
+			}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.ContactDetails")') {
+				if($('#accordionContactDetails').length > 0) {
+					$(window).scrollTop($('#accordionContactDetails').offset().top - 170);
+				}
+
+				if($('#accordionContactDetailsContentOne').length > 0) {
+					$('#accordionContactDetailsContentOne').show();
+					_currentSeletedStpper = $('#accordionContactDetailsContentOne');
+				}
+
+		}
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.BusinessProfile")') {
+				if($('#accordionCompanyBusinessProfile').length > 0) {
+					$(window).scrollTop($('#accordionCompanyBusinessProfile').offset().top - 170);
+				}
+
+				if($('#BusinessProfileaccordionContentOne').length > 0) {
+					$('#BusinessProfileaccordionContentOne').show();
+					_currentSeletedStpper = $('#BusinessProfileaccordionContentOne');
+				}
+
+            }
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.FinancialProfile")') {
+				if($('#accordionFinancialDetails').length > 0) {
+					$(window).scrollTop($('#accordionFinancialDetails').offset().top - 170);
+				}
+
+				if($('#FinancialDetailsaccordionContentOne').length > 0) {
+					$('#FinancialDetailsaccordionContentOne').show();
+					_currentSeletedStpper = $('#FinancialDetailsaccordionContentOne');
+				}
+
+		}
+		//Submit and begin
+			if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.Submit")') {
+				if($('#stSubmitConfirm').length > 0) {
+					$(window).scrollTop($('#stSubmitConfirm').offset().top);
+				}
+
+		}
+		@*if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.Applicant")') {
+			$(window).scrollTop($('#stPageBeginApplicant').offset().top);
+		}*@
+		}
+		function onRelatedPartyStepperSelect(e) {
+			$('li.k-item > div').hide();
+		//For Grid Items
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.AddressDetails")') {
+			$(window).scrollTop($('#accordionAddressDetails').offset().top - 170);
+			$('#accordionAddressContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.IdentificationDetails")') {
+			$(window).scrollTop($('#accordionIdentificationDetails').offset().top - 170);
+			$('#accordionIdentificationContentOne').show();
+		}
+		//if(e.step.options.label == 'Tax Details') {
+		//	$(window).scrollTop($('#accordionTaxDetails').offset().top);
+		//	$('#accordionTaxDetailsContentOne').show();
+		//}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.ContactDetails")') {
+			$(window).scrollTop($('#accordionContactDetails').offset().top - 170);
+			$('#accordionContactDetailsContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.Roles")') {
+			$(window).scrollTop($('#accordionPartyRoles').offset().top - 170);
+			$('#accordionPartyRolesContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.PEPDetails")') {
+			//$(window).scrollTop($('#stPepDetailsExtend').offset().top - 170);
+			if($('#accordion1').length > 0) {
+				$(window).scrollTop($('#accordion1').offset().top - 150);
+			}
+			if($('#accordionPepApplicantContentOne').length > 0) {
+				$('#accordionPepApplicantContentOne').show();
+			}
+			if($('#accordionPepFamilyContentOne').length > 0) {
+				$('#accordionPepFamilyContentOne').show();
+			}
+			//$('#accordionTaxDetailsContentOne').show();
+		}
+
+		//For Section items
+            if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.RelatedParty")') {
+            $(window).scrollTop($('#accordionPersonalDetails').offset().top - 170);
+            $('#PersonalDetailsaccordionContentOne').show();
+            }
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.PersonalDetails")') {
+            $(window).scrollTop($('#accordionPersonalDetails').offset().top - 170);
+            $('#PersonalDetailsaccordionContentOne').show();
+            }
+            if( e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.CompanyDetails")') {
+				$(window).scrollTop($('#accordionPersonalDetails').offset().top - 170);
+				$('#PersonalDetailsaccordionContentOne').show();
+		}
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.BusinessProfile")') {
+            $(window).scrollTop($('#accordionEmploymentDetails').offset().top - 170);
+            $('#EmploymentDetailsaccordionContentOne').show();
+		}
+
+		//Submit and begin
+		if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.Submit")') {
+			$(window).scrollTop($('#stSubmitConfirm').offset().top - 170);
+		}
+		@*if(e.step.options.label == '@ResHelper.GetString("Eurobank.Application.RelatedParty.LeftMenu.RelatedParty")') {
+			$(window).scrollTop($('#stPageBeginRelatedParty').offset().top -170);
+		}*@
+		}
+
+		function TextBoxUpperCase(currentElement) {
+			//if($(currentElement).attr("data-role") == 'textbox' && $(currentElement).attr("id") != 'EmploymentDetails_EmployersBusiness' && $(currentElement).attr("id") != 'EmploymentDetails_FormerEmployersBusiness') {
+			//	$(currentElement).val($(currentElement).val().toUpperCase());
+			//}
+		}
+
+	</script>
+    <script type="text/x-kendo-template" id="windowTemplate">
+		@*<p> Delete <strong>#= ProductName #</strong> ? </p>
+			<p> We have #= UnitsInStock # units in stock. </p>*@
+		<span><p>@ResHelper.GetString("EuroBank.common.DeleteConfirmation")</p></span>
+		<button class="btn btn-danger" id="yesButton">@ResHelper.GetString("EuroBank.common.DeleteConfirmation.button.yes")</button>
+		<button class="k-button" id="noButton"> @ResHelper.GetString("EuroBank.common.DeleteConfirmation.button.no")</button>
+    </script>
+	<script>
+		var windowTemplate = kendo.template($("#windowTemplate").html());
+
+		function DisplayDeleteConfirmation(e) {  //add a click event listener on the delete button
+
+			e.preventDefault(); //prevent page scroll reset
+			var tr = $(e.target).closest("tr"); //get the row for deletion
+			var data = this.dataItem(tr); //get the row data so it can be referred later
+			var window = $("#DeleteWindow").data("kendoWindow");
+			window.content(windowTemplate(data)); //send the row data object to the template and render it
+			window.wrapper.addClass("middle-popup");
+			window.center().open();
+
+			var grid = $("#" + this.element[0].id).data("kendoGrid");
+
+			$("#yesButton").click(function () {
+				grid.dataSource.remove(data)  //prepare a "destroy" request
+				grid.dataSource.sync()  //actually send the request (might be ommited if the autoSync option is enabled in the dataSource)
+				window.close();
+			})
+			$("#noButton").click(function() {
+				window.close();
+			})
+		}
+		function DisplayDeleteConfirmationContextMenu(e, data, grideName, headerMsg, successMsg) {  //add a click event listener on the delete button
+
+			e.preventDefault(); //prevent page scroll reset
+			var tr = $(e.target).closest("tr"); //get the row for deletion
+			//var data = this.dataItem(tr); //get the row data so it can be referred later
+			var window = $("#DeleteWindow").data("kendoWindow");
+			window.content(windowTemplate(data)); //send the row data object to the template and render it
+			window.wrapper.addClass("middle-popup");
+			window.center().open();
+
+			var grid = $("#" + grideName).data("kendoGrid");
+			$("#yesButton").click(function () {
+				if (grideName == "AccountsDetails") {
+                    UpdateDebitCardRec();
+				}
+                if (grideName == "SignatoryGroup") {
+					UpdateSignatureMandateRec();
+				}
+				//	grid.removeRow(data);//prepare a "destroy" request
+				grid.dataSource.remove(data)  //prepare a "destroy" request
+				grid.dataSource.sync()  //actually send the request (might be ommited if the autoSync option is enabled in the dataSource)
+				window.close();
+				//$("#successDisplay .mr-auto").html(headerMsg);
+				if(successMsg != undefined && successMsg != '') {
+					$("#successDisplay .toastbody").html(successMsg);
+					$("#successDisplay").show().delay(12000).fadeOut();
+				}
+			})
+			$("#noButton").click(function() {
+				window.close();
+			})
+		}
+
+		function onGridRequestEnd(e) {
+			if(e.type == "update" && !e.response.Errors) {
+				//alert("Updated successfully");
+				$("#successDisplay .toastbody").html("Updated successfully");
+				$("#successDisplay").show().delay(12000).fadeOut();
+			}
+
+			if(e.type == "create" && !e.response.Errors) {
+				//alert("Created successfully");
+				$("#successDisplay .toastbody").html("Created successfully");
+				$("#successDisplay").show().delay(12000).fadeOut();
+			}
+		}
+
+		function syncGrid(e) {
+			this.read();
+		}
+		//function displayWarningMsg(successMsg)
+		//{
+		//	if (successMsg != undefined && successMsg != '') {
+		//		$("#successDisplay .toastbody").html(successMsg);
+		//		$("#successDisplay").show().delay(12000).fadeOut();
+		//	}
+		//}
+
+
+		function deleteEmptyGridRecord(gridName) {
+			var grid = $('#' + gridName).data('kendoGrid');
+			var gridRows = grid.tbody.find("tr");
+
+			gridRows.each(function(e) {
+				var rowItem = grid.dataItem($(this));
+				//custom logic
+				console.log(rowItem.Id);
+				if(rowItem.Id == 0) {
+					grid.removeRow(rowItem);
+				}
+			});
+		}
+
+		//$('.k-window input[type="textbox"] ').keyup(function(e) {
+		//    alert('minto');
+		//    var code = (e.keyCode ? e.keyCode : e.which);
+		//    $(e).valid();
+		//});
+		function showHideApplicantErroList() {
+			//debugger;
+
+			if ($("#errorList").is(":hidden")) {
+				const parentDiv = document.querySelector('#errorList');
+				const childDivs = parentDiv.querySelectorAll('.toast');
+				if (childDivs.length > 0)
+				{
+					for (const childDiv of childDivs) {
+						if (childDiv.classList.contains('hide')) {
+							childDiv.classList.replace('hide', 'show');
+						}
+					}
+					$('#errorList').show();
+				}
+			} else {
+				$('#errorList').hide();
+			}	
+
+			let hasShowDiv = false;
+			//childDiv.className.replace('hide','show')
+			
+			//if (hasShowDiv) { }
+			//else {
+			//	$('#errorList').hide();
+			//	$('#notificationbadge').hide();
+			//}
+		}
+		function clearApplicantErroList()
+		{
+			$('#errorList').html('');
+			$('#errorList').hide();
+			$('#notificationbadge').hide();
+		}
+		function toastCloseClick()
+		{
+			debugger;
+
+			const parentDiv = document.querySelector('#errorList');
+			const childDivs = parentDiv.querySelectorAll('.toast.show');
+			const numberOfDivsWithClassShow = childDivs.length;
+			if (numberOfDivsWithClassShow <= 1) {
+				$('#errorList').hide();
+			}
+		}
+	</script>
+	<script>
+		$(document).ready(function() {
+			$(".pushmenu").click(function() {
+				$('body').toggleClass('sidenav-toggled');
+			});
+
+			//$(".sidebarhover").hover(function () {
+			//	if ($('.appsidebar').hasClass('sidenav-toggled', 500)) {
+			//		$('.appsidebar').addClass('sidenav-toggled1', 500);
+			//	}
+			//}, function () {
+			//	if ($('.appsidebar').hasClass('sidenav-toggled', 500)) {
+			//		$('.appsidebar').removeClass('sidenav-toggled1', 500);
+			//	}
+			//});
+
+			$('.toast').toast('show');
+			if ($('#errorList').length) {
+				$('#notificationbadge').show();
+			} else {
+				$('#notificationbadge').hide();
+			}
+
+		});
+
+			    function limitlength(obj, length, spanid) {
+    var maxlength = length
+    if (obj.value.length > maxlength) {
+        document.getElementById(spanid).innerHTML = 'Maximum allowed length of the input text is ' + length;
+        obj.value = obj.value.substring(0, maxlength)
+    }
+    else {
+        document.getElementById(spanid).innerHTML = ' ';
+    }
+}
+		
+	</script>
+	@*@if (ViewBag.JavaScriptFunction != null)
+    {
+        <script type="text/javascript">
+            @Html.Raw(ViewBag.JavaScriptFunction)
+        </script>
+    }*@
+</body>
+
+
+</html>

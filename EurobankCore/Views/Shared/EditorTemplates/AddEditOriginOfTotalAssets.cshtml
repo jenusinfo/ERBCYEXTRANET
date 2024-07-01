@@ -1,0 +1,49 @@
+﻿@model Eurobank.Models.Application.Applicant.OriginOfTotalAssetsModel
+@using Kendo.Mvc.UI
+
+<style>
+	input[type=number]::-webkit-inner-spin-button,
+	input[type=number]::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		margin: 0;
+	}
+</style>
+
+<div class="form-group">
+    @Html.HiddenFor(x => x.OriginOfTotalAssetsName)
+    <label asp-for="OriginOfTotalAssets" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.OriginOfTotalAssets.Label.OriginOfTotalAssets")</label>
+    @(Html.Kendo().DropDownListFor(m => m.OriginOfTotalAssets).BindTo((System.Collections.IEnumerable)ViewBag.OriginsOfTotalAssets)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange= "ShowSpecifyOtherOrigin()",id= "OriginOfTotalAssetsID" }))
+    @Html.ValidationMessageFor(X => X.OriginOfTotalAssets)
+</div>
+<div class="form-group" style="display:none" id="SpecifyOtherOriginDIV">
+    <label asp-for="SpecifyOtherOrigin" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.OriginOfTotalAssets.Label.SpecifyOtherOrigin")</label>
+    @Html.Kendo().TextBoxFor(model => model.SpecifyOtherOrigin).HtmlAttributes(new { @class = "form-control",@onkeyup="limitlength(this,65,'SpecifyOtherOriginError')",@onKeyDown="limitlength(this,65,'SpecifyOtherOriginError')",@onfocusout="limitlength(this,65,'SpecifyOtherOriginError')" })
+    @Html.ValidationMessageFor(X => X.SpecifyOtherOrigin)
+    <span id="SpecifyOtherOriginError" class="text-danger"></span>
+
+</div>
+<div class="form-group">
+	<label asp-for="AmountOfTotalAsset" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.OriginOfTotalAssets.Label.AmountOfTotalAsset")</label>
+	@*@Html.Kendo().NumericTextBoxFor(model => model.AmountOfTotalAsset).Decimals(2).HtmlAttributes(new { @class = "form-control" })*@
+    @Html.Kendo().TextBoxFor(model => model.AmountOfTotalAsset).HtmlAttributes(new { @class = "form-control custom-decimal" , @onkeyup="limitlength(this,19,'AmountOfTotalAssetError')",@onKeyDown="limitlength(this,19,'AmountOfTotalAssetError')",@onfocusout="limitlength(this,19,'AmountOfTotalAssetError')" })
+	<span class="text-danger">@Html.ValidationMessageFor(X => X.AmountOfTotalAsset)</span>    
+    <span id="AmountOfTotalAssetError" class="text-danger"></span>
+</div>
+@*<script src="~/Scripts/Custom/Editor/AddEditOriginOfTotalAssets.js"></script>*@
+<script type="text/javascript">
+	function ShowSpecifyOtherOrigin() {
+    var assets = $("#OriginOfTotalAssetsID").data("kendoDropDownList").text();
+    if (assets == "OTHER") {
+        $("#SpecifyOtherOriginDIV").css("display", "block");
+    }
+    else {
+        $("#SpecifyOtherOriginDIV").css("display", "none");
+        $("#SpecifyOtherOrigin").val('').change().focus().focusout();
+    }
+}
+</script>

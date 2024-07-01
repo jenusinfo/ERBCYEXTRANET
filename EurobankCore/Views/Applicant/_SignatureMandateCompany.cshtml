@@ -1,0 +1,179 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+
+	<style type="text/css">
+		.k-grid-header .k-header > .k-link {
+			margin: -0.75rem 0.0rem;
+			text-overflow: initial;
+			padding: 0.75rem 0.0rem;
+		}
+
+			.k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+				vertical-align: text-bottom;
+				margin-left: 0px;
+			}
+
+		.k-grid th, .k-grid td {
+			padding: 0.75rem 0.50rem;
+			text-align: left;
+		}
+	</style>
+
+<div class="shadow-box col-md-12">
+	@*<h4>@ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany")</h4>*@
+
+
+	<div class="col-md-12">
+		<ul id="accordionSignatureMandate">
+			<li id="chartSection" class="k-state-active">
+				<span class="k-link" id="Span1" style="width:auto; height:auto;">
+					@ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.AccordionHeader")
+				</span>
+				<div id="accordionContentOne">
+					@(Html.Kendo().Grid<Eurobank.Models.Application.Applicant.LegalEntity.SignatureMandateCompanyModel>
+        ()
+        .Name("SignatureMandate")
+        .Columns(columns =>
+        {
+            //columns.Bound(p => p.SlNo).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.Id")).Width(30);
+            columns.Bound(p => p.LimitFrom).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.LimitFrom"));
+            columns.Bound(p => p.LimitTo).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.LimitTo"));
+            columns.Bound(p => p.TotalNumberofSignature).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.TotalNumberofSignature"));
+            columns.Bound(p => p.AuthorizedSignatoryGroupName).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.AuthorizedSignatoryGroup")).Width(150);
+            columns.Bound(p => p.NumberofSignatures).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.NumberofSignatures"));
+            columns.Bound(p => p.AuthorizedSignatoryGroup1Name).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.AuthorizedSignatoryGroup1")).Width(150);
+            columns.Bound(p => p.NumberofSignatures1).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.NumberofSignatures1"));
+            columns.Bound(p => p.StatusName).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100).HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align: center;" });
+            //columns.Command(command => { command.Edit(); }).Width(180);
+            //columns.Command(command => {  command.Destroy(); }).Width(180);
+            columns.Command(command => { command.Edit().IconClass("fa fa-edit").UpdateText("Save").CancelText("Close");
+                command.Custom("Delete").Click("DisplayDeleteConfirmation"); }).Width(205).HtmlAttributes(new { style = "text-align: center;" }).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.Actions")).HeaderHtmlAttributes(new { style = "text-align: center;" });
+        })
+        .Events(e =>
+        {
+            e.Edit("addSMConfirmButton");
+            e.DataBound("onGridDataBoundSignatureMandate");
+            e.Cancel("onGridCancel");
+        })
+        .ToolBar(toolbar => { if(Model.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditSignatureMandateCom").Window(w=>w.Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.PopUp.Title")).Width(800))).EnableCustomBinding(true)
+        .Pageable()
+        .Sortable()
+        .Scrollable()
+        .HtmlAttributes(new { style = "max-height:550px;" })
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+
+            model.Id(p => p.Id);
+            model.Field(p => p.AuthorizedSignatoryGroup);
+            model.Field(p => p.AuthorizedSignatoryGroup1);
+            model.Field(p => p.AuthorizedSignatoryGroupName);
+            model.Field(p => p.AuthorizedSignatoryGroup1Name);
+            model.Field(p => p.LimitFrom);
+            model.Field(p => p.LimitTo);
+            model.Field(p => p.NumberofSignatures);
+            model.Field(p => p.NumberofSignatures1);
+            model.Field(p => p.Rights);
+            model.Field(p => p.TotalNumberofSignature);
+            //model.Field(p => p.SlNo);
+            model.Field(p => p.Status);
+            model.Field(p => p.StatusName);
+
+        })
+        //.Model(model => model.Id(p => p.AddressGuid))
+        .Events(events => events.Error("error_handlerSignatureMandateCompany"))
+        .ServerOperation(true)
+        .Create(update => update.Action("SignatureMandateCompanyPopup_Create", "Applicant", new { apID = Model.Id}))
+        .Read(read => read.Action("SignatureMandateCompany_Read", "Applicant", new { apID = Model.Id }))
+        .Update(update => update.Action("SignatureMandateCompanyPopup_Update", "Applicant", new { apID = Model.Id }))
+        .Destroy(update => update.Action("SignatureMandateCompanyPopup_Destroy", "Applicant"))
+        )
+		)
+
+				</div>
+			</li>
+
+		</ul>
+
+	</div>
+
+
+	
+</div>
+<script>
+    function onGridDataBoundSignatureMandate(e) {
+        $("#SignatureMandate .k-grid-add").html("<span class='k-icon k-i-plus-circle mr-1'></span>New").addClass("new-contact").removeClass("k-button k-button-icontext");
+        $("#SignatureMandate .k-grid-content").attr("style", "max-height: 400px");
+
+    }
+	function addSMConfirmButton(e) {
+        $(".k-widget k-window k-display-inline-flex").addClass("leftpopup");
+		var model = e.model;
+		model.Status = false;
+		model.dirty = true;
+		$("a.k-grid-cancel").addClass('btn btn-link');
+		$("a.k-grid-update")[0].innerHTML = "SAVE AS DRAFT";
+		$("a.k-grid-cancel")[0].innerHTML = "<span class='k-icon k-i-cancel'></span>CLOSE";
+
+		$('<a class="k-button k-button-icontext k-primary k-grid-update custom"  href="#" k-icon k-i-delete"></span>SAVE & CLOSE</a>').insertBefore(".k-grid-update");
+		$(".custom").click(function(e) {
+            model.Status = true;
+
+		});
+
+		$(".k-widget.k-window.k-display-inline-flex input").keyup(function(e) {
+			var validatePopup = $(".k-popup-edit-form").kendoValidator().data("kendoValidator");
+			validatePopup.validate();
+			if($($(this).closest('div')).children('div.field-validation-error').length > 0) {
+				if($(this).val() == '') {
+					$($(this).closest('div')).children('div.field-validation-error').show();
+				}
+				else {
+					$($(this).closest('div')).children('div.field-validation-error').hide();
+				}
+			}
+		});
+
+		$(".k-widget.k-window.k-display-inline-flex input").change(function(e) {
+			if($($(this).closest('div')).children('div.field-validation-error').length > 0) {
+				if($(this).val() == '') {
+					$($(this).closest('div')).children('div.field-validation-error').show();
+				}
+				else {
+					$($(this).closest('div')).children('div.field-validation-error').hide();
+				}
+			}
+		});
+    }
+	function error_handlerSignatureMandateCompany(args) {
+        var errors = args.errors;
+        if (errors) {
+			var grid = $("#SignatureMandate").data("kendoGrid");
+            grid.one("dataBinding", function (e) {
+                e.preventDefault();
+                $.each(errors, function (key, value) {
+                    var message = "";
+                    if ('errors' in value) {
+                        $.each(value.errors, function () {
+                            message += this + "\n";
+                        });
+                    }
+
+                    // As long as the key matches the field name, this line of code will be displayed as validation message in the popup.
+                    grid.editable.element.find("[data-valmsg-for='" + key + "']").replaceWith('<div class="k-tooltip k-tooltip-error k-validator-tooltip k-invalid-msg field-validation-error" ><span class="k-tooltip-icon k-icon k-i-warning"> </span><span class="k-tooltip-content">' + message + '</span><div class="k-callout k-callout-n"></div></div>').show();
+                });
+            });
+        }
+    }
+
+	$("#accordionSignatureMandate").kendoPanelBar({
+		expandMode: "multiple" //options are 'single' and 'multiple'. 'multiple' is the default value
+	});
+
+	var accordion = $("#accordionSignatureMandate").data("kendoPanelBar");
+	accordion.collapse("#chartSection");
+</script>

@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMSApp", "CMS\CMSApp.csproj", "{BB8817AE-48DF-4672-A1CB-CFB7441B88DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary2", "ClassLibrary2\ClassLibrary2.csproj", "{B2660C43-45B9-485F-A90C-CE07034CD042}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB8817AE-48DF-4672-A1CB-CFB7441B88DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB8817AE-48DF-4672-A1CB-CFB7441B88DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB8817AE-48DF-4672-A1CB-CFB7441B88DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB8817AE-48DF-4672-A1CB-CFB7441B88DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2660C43-45B9-485F-A90C-CE07034CD042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2660C43-45B9-485F-A90C-CE07034CD042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2660C43-45B9-485F-A90C-CE07034CD042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2660C43-45B9-485F-A90C-CE07034CD042}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2ADA53A1-8153-4FD8-8830-3F616F490F29}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://cityechsoftwarepvt.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = CMS\\CMSApp.csproj
+		SccProjectName1 = CMS
+		SccLocalPath1 = CMS
+		SccProjectUniqueName2 = ClassLibrary2\\ClassLibrary2.csproj
+		SccProjectName2 = ClassLibrary2
+		SccLocalPath2 = ClassLibrary2
+	EndGlobalSection
+EndGlobal

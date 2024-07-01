@@ -1,0 +1,154 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Validation;
+@{
+	//List<ValidationResultModel> validationResults = null;
+	//string sectionValidationClass = "";
+	//if (ViewBag.ErrorSummaryMsgs != null)
+	//{
+	//	validationResults = ViewBag.ErrorSummaryMsgs;
+	//	if (validationResults.Any(j => !j.IsValid))
+	//	{
+	//		validationResults = validationResults.Where(j => !j.IsValid).ToList();
+	//	}
+
+	//	if (validationResults != null && validationResults.Count > 0)
+	//	{
+	//		if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.SIGNATURE_MANDATE))
+	//		{
+	//			sectionValidationClass = "bg-danger-row";
+	//		}
+	//		else
+	//		{
+	//			sectionValidationClass = "bg-success-row";
+	//		}
+	//	}
+	//	else
+	//	{
+	//		sectionValidationClass = "bg-success-row";
+	//	}
+	//}
+}
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+        padding: 0.75rem 0.0rem;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: left;
+    }
+
+    .k-window-content, .k-prompt-container {
+        overflow-y: scroll;
+    }
+</style>
+
+<div class="shadow-box col-md-12">
+    @*<h4>@ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany")</h4>*@
+
+
+    <div class="col-md-12">
+        <ul id="accordionSignatureMandate">
+            <li id="chartSection" class="k-state-active">
+				<span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.AccordionHeader")
+                </span>
+                <div id="SignatureMandateaccordionContentOne">
+                    @(Html.Kendo().Grid<Eurobank.Models.Application.Applicant.LegalEntity.SignatureMandateCompanyModel>
+		()
+		.Name("SignatureMandate")
+		.Columns(columns =>
+		{
+							columns.Template
+							(
+							@"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+							).Width(30);
+			//columns.Bound(p => p.SlNo).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.Id")).Width(30);
+
+							columns.Bound(p => p.MandateTypeName).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.MandateType")).Width(150);
+							columns.Bound(p => p.LimitFrom).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.LimitFrom")).Width(150);
+							columns.Bound(p => p.LimitTo).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.LimitTo")).Width(150);
+							columns.Bound(p => p.TotalNumberofSignature).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.TotalNumberofSignature")).Width(150);
+			columns.Bound(p => p.AuthorizedSignatoryGroupName).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.AuthorizedSignatoryGroup")).Width(150);
+							columns.Bound(p => p.NumberofSignatures).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.NumberofSignatures")).Width(150);
+			columns.Bound(p => p.AuthorizedSignatoryGroup1Name).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.AuthorizedSignatoryGroup1")).Width(150);
+							columns.Bound(p => p.NumberofSignatures1).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.GridHeader.NumberofSignatures1")).Width(150);
+			columns.Bound(p => p.StatusName).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100).HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align: center;" });
+			
+		})
+		.Events(e =>
+		{
+			e.Edit("addSMConfirmButton");
+			e.DataBound("onSignatureMandateDataBound");
+			e.Cancel("onGridCancel");
+		})
+		.ToolBar(toolbar => { if(Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+		.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditSignatureMandateCom").DisplayDeleteConfirmation(false).Window(w=>w.Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatureMandateCompany.PopUp.Title")).Width(800))).EnableCustomBinding(true)
+		.Pageable()
+		.Sortable()
+		.Scrollable()
+		.HtmlAttributes(new { style = "max-height:550px;" })
+		.DataSource(dataSource => dataSource
+		.Ajax()
+		.PageSize(10)
+		//.Events(e => e.RequestStart("hideIdField"))
+		.Model(model =>
+		{
+
+			model.Id(p => p.Id);
+			model.Field(p => p.AuthorizedSignatoryGroup);
+			model.Field(p => p.AuthorizedSignatoryGroup1);
+			model.Field(p => p.AuthorizedSignatoryGroupName);
+			model.Field(p => p.AuthorizedSignatoryGroup1Name);
+			model.Field(p => p.AuthorizedSignatoryGroupList);
+			model.Field(p => p.AuthorizedSignatoryGroup1List);
+			model.Field(p => p.LimitFrom);
+			model.Field(p => p.LimitTo);
+			model.Field(p => p.NumberofSignatures);
+			model.Field(p => p.NumberofSignatures1);
+			model.Field(p => p.Rights);
+			model.Field(p => p.TotalNumberofSignature);
+			//model.Field(p => p.SlNo);
+			model.Field(p => p.Status);
+			model.Field(p => p.StatusName);
+
+		})
+		//.Model(model => model.Id(p => p.AddressGuid))
+		.Events(events => events.Error("error_handlerSignatureMandateCompany"))
+		.ServerOperation(true)
+		.Create(update => update.Action("SignatureMandateLegalPopup_Create", "Applications", new { apID = Model.Id}))
+		.Read(read => read.Action("SignatureMandateLegal_Read", "Applications", new { apID = Model.Id }))
+		.Update(update => update.Action("SignatureMandateLegalPopup_Update", "Applications", new { apID = Model.Id }))
+		.Destroy(update => update.Action("SignatureMandateLegalPopup_Destroy", "Applications"))
+		)
+		)
+
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<ul id="context-menuSignatureMandate">
+    @if (Model.ApplicationDetails.IsEdit)
+    {
+		<li id="editRowSigManLeg">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowSigManLeg">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-preview"></span></li>
+    }
+</ul>
+@Html.Hidden("hdnApplication_LeftMenu_SignatureMandate", ResHelper.GetString("Eurobank.Application.LeftMenu.SignatureMandate"))
+@Html.Hidden("hdnAuthorizeSignatoryGroupURL", Url.Action("AuthorizeGroup_ReadAll", "Applications"))
+
+<script src="~/Scripts/Custom/Application/SignatureMandateLegal.js"></script>
+

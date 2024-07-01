@@ -1,0 +1,36 @@
+﻿<cms_info version="13.0">
+  <NewDataSet>
+    <cms_info>
+      <Key>machinename</Key>
+      <Value>DotNetServer</Value>
+    </cms_info>
+    <cms_info>
+      <Key>domainname</Key>
+      <Value>kentico.citytechsoftware.com</Value>
+    </cms_info>
+    <cms_info>
+      <Key>currentuser</Key>
+      <Value>administrator</Value>
+    </cms_info>
+    <cms_info>
+      <Key>starttime</Key>
+      <Value>12/15/2023 3:04:49 PM</Value>
+    </cms_info>
+    <cms_info>
+      <Key>systemversion</Key>
+      <Value>13.0.0.21407</Value>
+    </cms_info>
+    <cms_info>
+      <Key>hotfixversion</Key>
+      <Value>0</Value>
+    </cms_info>
+    <cms_info>
+      <Key>webapplication</Key>
+      <Value>False</Value>
+    </cms_info>
+    <cms_info>
+      <Key>siteincluded</Key>
+      <Value>True</Value>
+    </cms_info>
+  </NewDataSet>
+</cms_info>

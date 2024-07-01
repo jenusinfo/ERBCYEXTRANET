@@ -1,0 +1,255 @@
+﻿@using Eurobank.Models.Application.Common
+@using Kendo.Mvc.UI
+@using Eurobank.Models.User;
+@using Eurobank.Helpers.Process;
+@{
+    ViewBag.Title = ResHelper.GetString("EuroBank.PageTitle.Applications");
+    UserModel user = UserProcess.GetUser(User.Identity.Name);
+    
+}
+<link href="~/content/styles/jquery-ui.min.css" rel="stylesheet" />
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 100%;
+    }
+
+        div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+            width: 100%;
+            max-width: none;
+        }
+
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+    .k-grid-header .k-header > .k-link {
+        padding: 0.75rem 0.50rem;
+        text-overflow: initial;
+    }
+
+    .k-master-row > td {
+        text-overflow: initial;
+        word-wrap: break-word;
+    }
+
+    #download-btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    #progressbar {
+        width: 100%;
+        margin-top: 20px;
+        height: 15px;
+    }
+
+    .ui-dialog-titlebar-close {
+        display: none;
+    }
+</style>
+<span id="loader"></span>
+<span id="imageLoader"></span>
+<div id="dialog" title="File Download" style="display: none;">
+    <div class="progress-label">Starting download...</div>
+    <div id="progressbar"></div>
+</div>
+<div class="application">
+    <div class="shadow-box">
+        <div class="d-flex align-items-center justify-content-center flex-column tab-middlepanel">
+            <h4>@ResHelper.GetString("Eurobank.Application")</h4>
+            <ul class="d-flex filter-tab StatusCl">
+                <li class="HeaderTextColor"><a class='k-link tab-active' onclick='statusCommand("")'>All</a></li>
+                <li><a class='k-link tab-active' onclick='statusCommand("Draft")'>Draft</a></li>
+                <li><a class='k-link tab-active' onclick='statusCommand("Pending")'>Pending</a></li>
+                <li><a class='k-link tab-active' onclick='statusCommand("Completed")'>Completed</a></li>
+            </ul>
+            @*<div class="d-flex">
+                    <a class="new-contact newbtn mr-2" href="@Url.Action("Create", "Applications")">
+                        <span class="k-icon k-i-plus-circle mr-1"></span>
+                        New
+                    </a>
+                    <a class="new-contact newbtn" href="#">
+                        <span class="k-icon k-i-export mr-1"></span>
+                        EXPORT
+                    </a>
+                </div>*@
+        </div>
+
+
+        @Html.Hidden("RedirectToApplication", Url.Action("Edit", "Applications"))
+
+        @(Html.Kendo().Grid<Eurobank.Models.Applications.ApplicationDetailsModelView>()
+    .Name("GridApplications")
+            .NoRecords(n => n.Template(@"<div class='w-100 p-4'>" + ResHelper.GetString("Eurobank.common.grid.Norecord") + "</div>"))
+    .Columns(columns =>
+    {
+        //columns.Bound(p => p.AddressType).Hidden();
+        //columns.Bound(p => p.AddressTypeName).Title("Type");
+                columns.Template
+                (
+                @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                ).Width(30);
+                @* columns.Bound(p => p.ApplicationDetails_ApplicationNumber).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.ApplicationID")).Width("200px").Filterable(true).ClientTemplate("#: ApplicationDetails_ApplicationNumber #<br/><span class=HeaderTextColor>#: ApplicationDetails_ApplicationStatusName #</span>"); *@
+                columns.Bound(p => p.ApplicationDetails_ApplicationNumber).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.ApplicationID")).Width("200px").Filterable(true).ClientTemplate("<a href='/applications/edit?application=#= Application_NodeGUID #'>" +
+                    "#: ApplicationDetails_ApplicationNumber #<br/>" +
+                    "<span class='HeaderTextColor'>#: ApplicationDetails_ApplicationStatusName #</span>" +
+                "</a>");
+                columns.Bound(p => p.ApplicationDetails_ApplicationTypeName).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.Type")).Width("140px");
+
+                columns.Bound(p => p.FullNameOfApplicant).Encoded(false).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.ApplicantName")).Width("200px");
+                columns.Bound(p => p.ApplicationDetails_Introducer).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.Initiator")).Width("200px");
+                columns.Bound(p => p.ApplicationDetails_ResponsibleBankingCenterUnit).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.BankCenter")).Width("150px").HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align:center;" });
+                columns.Bound(p => p.ApplicationDetails_SubmittedBy).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.SubmittedBy")).Width("260px");
+                columns.Bound(p => p.ApplicationDetails_SubmittedOn).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.SubmittedOn")).Width("170px").ClientTemplate("#= (ApplicationDetails_SubmittedOn == '01/01/0001 00:00:00') ? ' ' : kendo.toString(ApplicationDetails_SubmittedOn, \"dd/MM/yyyy \") #");
+                columns.Bound(p => p.ApplicationDetails_CreatedOn).Title(ResHelper.GetString("Eurobank.ApplicationGrid.Header.CreatedOn")).Width("150px").ClientTemplate("#= (ApplicationDetails_CreatedOn == null) ? ' ' : kendo.toString(ApplicationDetails_CreatedOn, \"dd/MM/yyyy \") #"); ;
+        //columns.Bound(p => p.ApplicationDetailsID)
+        //  .ClientTemplate
+        //	  (
+        //@"<a href='" + Url.Action("Edit") + "?id=#= ApplicationDetailsID #' class='k-button k-button-icontext' title='Modify this'>Edit</a>"
+        //	  ).Title("Action").Width(120).Filterable(false);
+
+        
+        //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+    })
+     .Events(e => e.DataBound("onApplicationDataBound"))
+    .ToolBar(toolbar =>
+    {
+                if (string.Equals(user.UserType, ApplicationUserType.INTRODUCER.ToString(), StringComparison.OrdinalIgnoreCase))
+    {
+        toolbar.ClientTemplate(@"<div class='toolbar'>
+								<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <select id='column-list'  class='form-control'></select>
+
+									</div>
+
+								</div>
+
+							</div>
+							</div>
+<div class='toolbar'>
+							<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <input type = 'text' class='form-control' id='searchbox' placeholder='Search for...'>
+
+				                        </div>
+				                    </div>
+				                </div>
+				            </div>
+<div class='d-flex' style='margin-left: auto;'>
+        <a class='new-contact mr-2' onclick='showHideLoader();applicationRedirectNew()' style='margin-left: auto;'><span class='k-icon k-i-plus-circle mr-1'></span>New</a>
+        <a class='new-contact mr-2' onclick='downloadXLSX()' style='margin-left: auto;'><span class='k-icon k-i-export mr-1'></span>Export</a></div>
+");
+    }
+                else //Bank user (Internal/Corporate)
+                {
+                    toolbar.ClientTemplate(@"<div class='toolbar'>
+        <div class='row'>
+        <div class='col-md-12'>
+        <div class='input-group'>
+        <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+        <select id='column-list'  class='form-control'></select>
+
+        </div>
+
+        </div>
+
+        </div>
+        </div>
+        <div class='toolbar'>
+        <div class='row'>
+        <div class='col-md-12'>
+        <div class='input-group'>
+        <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+        <input type = 'text' class='form-control' id='searchbox' placeholder='Search for...'>
+
+        </div>
+        </div>
+        </div>
+        </div>
+        <div class='d-flex' style='margin-left: auto;'>
+        <a class='new-contact mr-2' onclick='downloadXLSX()' style='margin-left: auto;'><span class='k-icon k-i-export mr-1'></span>Export</a></div>
+        ");
+    }
+            })
+            //.ToolBar(e =>
+    //{
+    // e.Excel();
+    // e.Search();
+    //})
+    //.ToolBar(toolbar => toolbar.Create().IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }))
+
+    //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddApplication").DisplayDeleteConfirmation("Delete?").Window(w=>w.Title("Application").Width(800))).EnableCustomBinding(true)
+    .Pageable()
+    .Sortable()
+    .Scrollable()
+    @*.Excel(excel => excel
+        .FileName("Application.xlsx")
+        .Filterable(true)
+        .AllPages(true)
+        .ProxyURL(Url.Action("Excel_Export_Save", "Applications"))
+    )*@
+    //.Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+
+    .HtmlAttributes(new { style = "max-height:550px;" })
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+            //.ServerOperation(false)  //the grid will try to get the entire data and later perform paging, sorting, filtering and etc on the client.// Dev comment : Default is true, to implement server side pagination remove it
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+
+            model.Id(p => p.Application_NodeGUID);
+        })
+        //.Model(model => model.Id(p => p.AddressGuid))
+        //.ServerOperation(true)
+        //.Events(events =>
+        //{
+        //	events.RequestEnd("onRequestEnd"); //I've added this
+        //})
+        .Create(update => update.Action("ApplicationPopup_Create", "Applications"))
+            .Read(read => read.Action("Applications_Read", "Applications").Data("onReadApplications"))
+        .Update(update => update.Action("RegistryPopup_Update", "Applications"))
+       .Destroy(update => update.Action("Applications_Destroy", "Applications"))
+    )
+)
+
+    </div>
+
+</div>
+<ul id="context-menuApplications">
+
+    <li id="editRow">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+    <li id="exportXML">Download XML<span class="k-icon k-i-download"></span></li>
+    <li id="btnprintFriendly">Print Detailed<span class="k-icon k-i-print"></span></li>
+    <li id="printSummary">Print Summary<span class="k-icon k-i-print"></span></li>
+    @*<li id="">Share<span class="k-icon k-i-share"></span></li>*@ @*633*@
+    @*<li id="duplicateApplication">Duplicate<span class="k-icon k-i-copy"></span></li>*@
+    @*<li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>*@
+</ul>
+@Html.Hidden("ApplicationCreateUrl", Url.Action("Create", "Applications"))
+@Html.Hidden("ApplicationDownloadUrl", Url.Action("DownloadApplications", "Applications"))
+@Html.Hidden("ApplicationDownloadUrlJS",Url.Action("GetApplicationRecords", "Applications"))
+@Html.Hidden("ExportXMLUrl", Url.Action("ExportXML", "Applications"))
+@Html.Hidden("ExportXMLUrlJS", Url.Action("ExportXMLJS", "Applications"))
+@Html.Hidden("PrintSummaryUrl", Url.Action("PrintSummary", "Applications"))
+@Html.Hidden("DuplicateApplication", Url.Action("DuplicateApplication", "Applications"))
+@Html.Hidden("RedirectPrintFriendly", Url.Action("PrintFriendly", "Applications"))
+<input type="button" value="Sync" onclick="location.href='@Url.Action("SyncApplicationData", "Applications")';showHideLoader();" id="34c7cf89-fe98-4478-9e3f-83c6bff1ab25" style="display:none" />
+@if (!string.IsNullOrEmpty(ViewBag.CopiedSuccessMsg))
+{
+    <script type="text/javascript">
+        $("#successDisplay .toastbody").html("@ViewBag.CopiedSuccessMsg");
+        $("#successDisplay").show();
+    </script>
+}
+<script src="~/Scripts/KendoProcess/HomeProcess.js"></script>
+<script src="~/Scripts/Custom/Application/ApplicationIndex.js"></script>
+<script src="~/scripts/kendoprocess/jquery-ui.min.js"></script>

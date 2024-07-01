@@ -1,0 +1,32 @@
+﻿@model Eurobank.Models.NewsViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h4>@Model.Title</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+            <div class="form-group">
+               @Model.Title
+               
+            </div>
+            <div class="form-group">
+                <img src="~/CMSPages/GetFile.aspx?guid=@Model.Teaser" width="200" height="200" />
+               
+            </div>
+            <div class="form-group">
+               @Model.NewsSummary
+              
+            </div>
+            <div class="form-group">
+                @Html.Raw(Model.NewsLongDescription)
+            </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">@ResHelper.GetString("Eurobank.News.ViewAll")</a>
+</div>

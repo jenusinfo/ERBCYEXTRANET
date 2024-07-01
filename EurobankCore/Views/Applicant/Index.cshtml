@@ -1,0 +1,1269 @@
+﻿@using CMS.DataEngine
+@using CMS.SiteProvider
+@using Eurobank.Helpers.Process;
+@using Microsoft.AspNetCore.Mvc;
+@using Eurobank.Models.Application.Common;
+@using Eurobank.Helpers.Validation;
+@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Kendo.Mvc.UI
+@using System.Globalization
+@{
+    ViewBag.Title = Model.ApplicationNumber + " - Applicant";
+    bool isLegalEntity = string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+    var userModel = UserProcess.GetUser(User.Identity.Name);
+    bool isIntroducer = userModel != null && string.Equals(userModel.UserType, ApplicationUserType.INTRODUCER.ToString(), StringComparison.OrdinalIgnoreCase);
+    Layout = "~/Views/Shared/_Layout_Applications.cshtml";
+    CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-GB");
+    var m = Model;
+    string isCorporationIsengagedInTheProvision = string.Empty;
+    if (Model.CompanyBusinessProfile != null)
+    {
+        isCorporationIsengagedInTheProvision = Model.CompanyBusinessProfile.CorporationIsengagedInTheProvision == true ? "true" : "false";
+    }
+
+    List<ValidationResultModel> validationResults = null;
+    List<ValidationResultModel> validationInfos = null;
+    if (ViewBag.ErrorSummaryMsgs != null)
+    {
+        validationResults = ViewBag.ErrorSummaryMsgs;
+        if (validationResults.Any(j => !j.IsValid))
+        {
+            validationResults = validationResults.Where(j => !j.IsValid).ToList();
+        }
+        //validationInfos = ViewBag.ErrorSummaryMsgs;
+        //if (validationInfos.Any(j => j.Infos != null && j.Infos.Any()))
+        //{
+        //    validationInfos = validationInfos.Where(j => j.Infos != null && j.Infos.Any()).ToList();
+        //}
+    }
+    bool HIDInviteFlag = SettingsKeyInfoProvider.GetBoolValue(SiteContext.CurrentSiteName + ".HIDInviteFlag");
+
+}
+
+
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: center;
+    }
+
+    th > input[type=checkbox] {
+        /*height: 0;
+                        border-bottom-width: 0;*/
+        display: none;
+    }
+
+    input {
+        text-transform: uppercase;
+    }
+</style>
+@*<script>
+        function CloseErrorBox(id) {
+            $("#ErrorMsgBox_"+id).css("display", "none");
+            /*$("#MainDivBOX").css("display", "none");*/
+        }
+    </script>*@
+
+
+<span id="loader"></span>
+<form asp-action="Index" asp-controller="Applicant" id="applicantForm">
+    @Html.HiddenFor(model => model.ApplicationNumber)
+    @Html.HiddenFor(model => model.ApplicationId)
+    @Html.HiddenFor(model => model.Application_NodeGUID)
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.Application_Type)
+    @Html.HiddenFor(m => m.CompanyDetails.RegistryId)
+    @Html.HiddenFor(m => m.PersonalDetails.PersonRegistryId)
+    @Html.HiddenFor(m => m.ApplicantId)
+    @Html.HiddenFor(m => m.PersonalDetails.HIDInviteFlag)
+    @if (validationResults != null && validationResults.Count > 0)
+    {
+        <div id="errorList" class="toast-popup p-3" aria-live="polite" aria-atomic="true">
+
+            @foreach (ValidationResultModel err in validationResults)
+            {
+
+
+                <div class="toast alert alert-danger" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+                    <div class="toastheader">
+                        <strong class="mr-auto">@err.ApplicationModuleName.ToString().Replace("_", " ") </strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onclick="toastCloseClick()">
+                            @*id="ErrorMsgID"*@
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    @foreach (ValidationError et in err.Errors)
+                    {
+                        <div class="toastbody"> @et.ErrorMessage</div>
+                    }
+
+                </div>
+            }
+            <div style="text-align:end;">
+                <button type="button" class=" btn btn-sm btn-dark" onclick="showHideApplicantErroList();">Close</button>
+                <button type="button" class=" btn btn-sm btn-dark" onclick="clearApplicantErroList();" data-toggle="tooltip" data-placement="top" title="Close all error messages">CLEAR ALL</button> @*<span class="fa fa-times"></span>*@
+            </div>
+        </div>
+    }
+    @*@{
+            List<ValidationResultModel> validationResults_IndividualPersonalDetails = null;
+            string sectionValidationClass_IndividualPersonalDetails = "";
+            if (ViewBag.ErrorSummaryMsgs != null)
+            {
+                validationResults_IndividualPersonalDetails = ViewBag.ErrorSummaryMsgs;
+                if (validationResults_IndividualPersonalDetails.Any(j => !j.IsValid))
+                {
+                    validationResults_IndividualPersonalDetails = validationResults_IndividualPersonalDetails.Where(j => !j.IsValid).ToList();
+                }
+
+                if (validationResults_IndividualPersonalDetails != null && validationResults_IndividualPersonalDetails.Count > 0)
+                {
+                    if (validationResults_IndividualPersonalDetails.Any(x => x.ApplicationModuleName == ApplicationModule.PERSONAL_DETAILS) || validationResults_IndividualPersonalDetails.Any(x => x.ApplicationModuleName == ApplicationModule.LEGAL_ENTITY_DETAILS))
+                    {
+                        sectionValidationClass_IndividualPersonalDetails = "bg-danger-row";
+                    }
+                    else
+                    {
+                        sectionValidationClass_IndividualPersonalDetails = "bg-success-row";
+                    }
+                }
+                else
+                {
+                    sectionValidationClass_IndividualPersonalDetails = "bg-success-row";
+                }
+            }
+        }*@
+    @if (Model.PersonalDetails != null && !isLegalEntity)
+    {
+
+        <div class="shadow-box col-md-12" id="stPersonalDetails">
+            @*<div class="col-md-12">*@
+            <ul id="accordionPersonDetails">
+                <li id="chartSection" class="k-state-active">
+                    <span class="k-link sectionValidationClass_IndividualPersonalDetails" id="Span1" style="width:auto; height:auto;">
+                        @ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails")
+                    </span>
+                    <div id="PersonDetailsaccordionContentOne">
+                        @if (isIntroducer)
+                        {
+                            <div class="form-group">
+                                <input type="button" id="btnPersonSearch" onclick="OpenSelectConfirmPersonInd();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Search")" class="btn btn-primary mt-3">
+                                <input type="button" id="btnPersonClear" onclick="clearPersonallDetailsIndividual();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Clear")" class="btn btn-primary mt-3">
+                            </div>
+                        }
+                        <div id="divRegisteredPerson">
+
+                            @(Html.Kendo().Window()
+                                .Name("PersonSearchWindow")
+                                .Title(ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Search.Header"))
+                                .Content(@<text>
+                                    @(Html.Kendo().Grid<Eurobank.Models.Application.Common.PersonsRegistrySearchModel>
+                                                ()
+                                                .Name("RegPersons")
+                                                .Columns(columns =>
+                                                {
+                                            //columns.Select().Width(50);
+                                            columns.Bound(p => p.ApplicationTypeName).Title("Type").Width(120);
+                                            columns.Bound(p => p.FullName).Title("Full Name").Width(180);
+                                            columns.Bound(p => p.IdentificationNumber).Width(200);
+                                            columns.Bound(p => p.DateofBirth).Title("Date Of Birth").Width(130);
+                                            columns.Bound(p => p.IssueDate).Width(120);
+                                            columns.Bound(p => p.CitizenshipName).Title("Citizenship").Width(160);
+                                                    //if (isLegalEntity == true)
+                                                    //{
+                                                    //    columns.Bound(p => p.PhoneNo);
+                                                    //    columns.Bound(p => p.FaxNo);
+                                                    //}
+                                        })
+                                                @*.ToolBar(toolbar =>
+                            toolbar.ClientTemplate("<div class='toolbar search-address'>" +
+                            "<input type='text' name='toolApplicationType' placeholder='Type' class ='k-textbox' id='toolApplicationType'/>" +
+                            //"<input type='text' name='toolReferenceNumber' placeholder='Reference' class ='k-textbox' id='toolReferenceNumber'/>" +
+                            "<input type='text' name='toolFullName' placeholder='Full Name' class ='k-textbox' id='toolFullName'/>" +
+                            "<input type='text' name='toolIdentificationNumber' placeholder='Identification Number' class ='k-textbox' id='toolIdentificationNumber'/>" +
+                            "<input type='text' name='toolDateofBirth' placeholder='Date of Birth' class ='k-textbox' id='toolDateofBirth'/>" +
+                            "<input type='text' name='toolIssueDate' placeholder='Issue Date' class ='k-textbox' id='toolIssueDate'/>" +
+                            "<input type='text' name='toolCitizenshipName' placeholder='Citizenship' class ='k-textbox' id='toolCitizenshipName'/>" +
+                            "<button class='k-button' onclick='searchPersons()'>Search</button></div>"))*@
+                                                .ToolBar(toolbar =>
+                                                toolbar.ClientTemplate("<div class='toolbar'> " +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolApplicationType' placeholder='Type' class ='k-textbox' id='toolApplicationType'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolFullName' placeholder='Full Name' class ='k-textbox' id='toolFullName'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolIdentificationNumber' placeholder='Identification Number' class ='k-textbox' id='toolIdentificationNumber'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolDateofBirth' placeholder='Date of Birth' class ='k-textbox' id='toolDateofBirth'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolIssueDate' placeholder='Issue Date' class ='k-textbox' id='toolIssueDate'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolCitizenshipName' placeholder='Citizenship' class ='k-textbox' id='toolCitizenshipName'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<button class='k-button' onclick='searchPersons()'>Search</button>" +
+                                                "</div></div></div></div>"))
+                                                .Pageable()
+                                                .Selectable(x => x.Mode(GridSelectionMode.Single))
+                                                .Sortable()
+                                                .Scrollable()
+                                                .HtmlAttributes(new { style = "height:550px;" })
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .PageSize(10)
+                                                .Model(model =>
+                                                {
+
+                                                    //model.Id(p => p.Id);
+                                            model.Field(p => p.ApplicationType);
+                                            model.Field(p => p.ApplicationTypeName);
+                                            model.Field(p => p.FirstName);
+                                            model.Field(p => p.LastName);
+                                            model.Field(p => p.IdentificationNumber);
+                                            model.Field(p => p.DateofBirth);
+                                            model.Field(p => p.IssueDate);
+                                            model.Field(p => p.CitizenshipName);
+                                            model.Field(p => p.HomeTelNoCountryCode);
+                                            model.Field(p => p.HomeTelNoNumber);
+                                            model.Field(p => p.MobileTelNoCountryCode);
+                                            model.Field(p => p.MobileTelNoNumber);
+                                            model.Field(p => p.WorkTelNoCountryCode);
+                                            model.Field(p => p.WorkTelNoNumber);
+                                            model.Field(p => p.FaxNoCountryCode);
+                                            model.Field(p => p.FaxNoFaxNumber);
+                                            model.Field(p => p.EmailAddress);
+                                            model.Field(p => p.PreferredCommunicationLanguage);
+                                            model.Field(p => p.ConsentforMarketingPurposes);
+                                                    //model.Field(p => p.Status);
+                                        })
+                                                .ServerOperation(true)
+                                                //.Read(read => read.Action("RegisteredAddresses_Read", "Registries"))
+                                                .Read(read => read.Action("PersonRegistry_Read", "Registries"))
+                                                ))
+
+                                        <div class="form-group d-flex justify-content-end">
+                                            <input type="button" id="btnPersonCancel" onclick="personCancelGrid()" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Cancel")" class="btn btn-link mt-3 mr-3 k-grid-cancel">
+                                            <input type="button" id="btnPersonSelect" onclick="selectPersonFromGrid()" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Select")" class="btn btn-primary mt-3">
+                                        </div>
+                                    </text>)
+                                .Resizable()
+                                .Visible(false)
+                                .Width(600)
+                                .Actions(actions => actions.Close())
+                                //.Events(ev => ev.Close("onSearchWindowClose"))
+                                )
+
+
+
+
+                        </div>
+
+
+                        @Html.HiddenFor(model => model.PersonalDetails.Id)
+                        @Html.HiddenFor(model => model.PersonalDetails.PersonRegistryId)
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.Title" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.Title")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.PersonalDetails.Title).BindTo((System.Collections.IEnumerable)ViewBag.PersonTitle)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validatePersonalDetails()" }))
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.Title)</span>
+                                    <span id="PersonalDetailsTitleError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.FirstName" class="control-label"> @ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.FirstName")</label>
+                                    @Html.Kendo().TextBoxFor(model => model.PersonalDetails.FirstName).HtmlAttributes(new { @class = "form-control", title = "As it appears on the identification document  including any middle names", onfocusout = "validatePersonalDetails()", @onkeypress = "return alphaOnly(event);", @onkeyup = "return limitlength(this,50,'PersonalDetailsFirstNameError')", @onKeyDown = "return limitlength(this,50,'PersonalDetailsFirstNameError')" })
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.FirstName)</span>
+                                    <span id="PersonalDetailsFirstNameError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.LastName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.LastName")</label>
+                                    @Html.Kendo().TextBoxFor(model => model.PersonalDetails.LastName).HtmlAttributes(new { @class = "form-control", title = "As it appears on the identification document", onfocusout = "validatePersonalDetails()", @onkeypress = "return alphaOnly(event);", @onkeyup = "return limitlength(this,50,'PersonalDetailsLastNameError')", @onKeyDown = "return limitlength(this,50,'PersonalDetailsLastNameError')" })
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.LastName)</span>
+                                    <span id="PersonalDetailsLastNameError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.FathersName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.FathersName")</label>
+                                    @Html.Kendo().TextBoxFor(model => model.PersonalDetails.FathersName).HtmlAttributes(new { @class = "form-control", onfocusout = "validatePersonalDetails()", @onkeypress = "return alphaOnly(event);", @onkeyup = "return limitlength(this,50,'PersonalDetailsFathersNameError')", @onKeyDown = "return limitlength(this,50,'PersonalDetailsFathersNameError')" })
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.FathersName)</span>
+                                    <span id="PersonalDetailsFathersNameError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.Gender" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.Gender")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.PersonalDetails.Gender).BindTo((System.Collections.IEnumerable)ViewBag.Gender)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validatePersonalDetails()" }))
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.Gender)</span>
+                                    <span id="PersonalDetailsGenderError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.DateOfBirth" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.DateOfBirth")</label>
+
+                                    @Html.Kendo().DatePickerFor(model => model.PersonalDetails.DateOfBirth).Events(e =>
+                                {
+                                e.Change("onChangePersonalDetailsDOB");
+                                }).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+                                    @*@Html.Kendo().DatePickerFor(model => model.PersonalDetails.DateOfBirth).Format("dd/MM/yyyy").ParseFormats(new string[] { "ddMMyyyy HHmm", "yyyyMMdd HHmm", "dd/MM/yyyy HH:mm", "dd/MM/yyyy", "yyyyMMdd", "ddMMyyyy", "HHmm" }).HtmlAttributes(new { @class = "form-control" })*@
+                                    @Html.HiddenFor(model => model.PersonalDetails.HdnDateOfBirth)
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.DateOfBirth)</span>
+                                    <span id="PersonalDetailsDateOfBirthError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.PlaceOfBirth" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.PlaceOfBirth")</label>
+                                    @Html.Kendo().TextBoxFor(model => model.PersonalDetails.PlaceOfBirth).HtmlAttributes(new { @class = "form-control", onfocusout = "validatePersonalDetails()", @onkeyup = "return limitlength(this,25,'PersonalDetailsPlaceOfBirthError')", @onKeyDown = "return limitlength(this,25,'PersonalDetailsPlaceOfBirthError')" })
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.PlaceOfBirth)</span>
+                                    <span id="PersonalDetailsPlaceOfBirthError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.CountryOfBirth" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Label.CountryOfBirth")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.PersonalDetails.CountryOfBirth).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .Filter("startswith")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validatePersonalDetails()" }))
+                                    @Html.ValidationMessageFor(X => X.PersonalDetails.CountryOfBirth)
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.CountryOfBirth)</span>
+                                    <span id="PersonalDetailsCountryOfBirthError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PersonalDetails.EducationLevel" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.EducationLevel")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.PersonalDetails.EducationLevel).BindTo((System.Collections.IEnumerable)ViewBag.Education)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validatePersonalDetails()" }))
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.PersonalDetails.EducationLevel)</span>
+                                    <span id="PersonalDetailsEducationLevelError" class="text-danger"></span>
+                                </div>
+                                @if (HIDInviteFlag)
+                                {
+                                    <div class="pt-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label asp-for="PersonalDetails.Invited" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.Invited")</label>
+                                                </div>
+                                                <div class="col-6">
+                                                    @(Html.Kendo()
+                                                    .RadioGroupFor(m => m.PersonalDetails.InvitedpersonforonlineIDverification.RadioGroupValue)
+                                                    //.RadioGroup()
+                                                        //.Name("InvitedpersonforonlineIDverification")
+                                                        .Layout("horizontal")
+                                                        .HtmlAttributes(new { onchange = "validatePersonalDetails()" }) @* @class = "form-control" *@
+                                                        .Value(Model.PersonalDetails.InvitedpersonforonlineIDverification.RadioGroupValue)
+                                                        .BindTo(Model.PersonalDetails.InvitedpersonforonlineIDverification.Items))
+                                                </div>
+                                            </div>
+                                            <span class="text-danger">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.InvitedNote")</span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (isIntroducer)
+                                {
+                                    <div class="pt-3">
+                                        <div class="form-group">
+                                            <label asp-for="PersonalDetails.SaveInRegistry" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.SaveInRegistry")</label>
+                                            @(Html.Kendo().CheckBoxFor(m => m.PersonalDetails.SaveInRegistry).HtmlAttributes(new { @class = "form-control" }))
+                                            @Html.ValidationMessageFor(X => X.PersonalDetails.SaveInRegistry)
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @Html.HiddenFor(model => model.ContactDetails.IsRetriveFromRegistry)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnCountry_Code_MobileTelNoNumber)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnContactDetails_MobileTelNoNumber)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnCountry_Code_HomeTelNoNumber)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnContactDetails_HomeTelNoNumber)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnCountry_Code_WorkTelNoNumber)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnContactDetails_WorkTelNoNumber)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnCountry_Code_FaxNoFaxNumber)
+                        @Html.HiddenFor(model => model.ContactDetails.hdnContactDetails_FaxNoFaxNumber)
+
+                        @Html.HiddenFor(model => model.hdnCitizenship)
+                        @Html.HiddenFor(model => model.hdnTypeofIdentification)
+                        @Html.HiddenFor(model => model.hdnIdentificationNumber)
+                        @Html.HiddenFor(model => model.hdnIssuingCountry)
+                        @Html.HiddenFor(model => model.hdnIssueDateTime)
+                        @Html.HiddenFor(model => model.hdnExpiryDateTime)
+
+
+                    </div>
+                </li>
+            </ul>
+            @*</div>*@
+        </div>
+    }
+    @*@{
+            List<ValidationResultModel> validationResults_LegalPersonalDetails = null;
+            string sectionValidationClass_LegalPersonalDetails = "";
+            if (ViewBag.ErrorSummaryMsgs != null)
+            {
+                validationResults_LegalPersonalDetails = ViewBag.ErrorSummaryMsgs;
+                if (validationResults_LegalPersonalDetails.Any(j => !j.IsValid))
+                {
+                    validationResults_LegalPersonalDetails = validationResults_LegalPersonalDetails.Where(j => !j.IsValid).ToList();
+                }
+
+                if (validationResults_LegalPersonalDetails != null && validationResults_LegalPersonalDetails.Count > 0)
+                {
+                    if (validationResults_LegalPersonalDetails.Any(x => x.ApplicationModuleName == ApplicationModule.PERSONAL_DETAILS) || validationResults_IndividualPersonalDetails.Any(x => x.ApplicationModuleName == ApplicationModule.LEGAL_ENTITY_DETAILS))
+                    {
+                        sectionValidationClass_LegalPersonalDetails = "bg-danger-row";
+                    }
+                    else
+                    {
+                        sectionValidationClass_LegalPersonalDetails = "bg-success-row";
+                    }
+                }
+                else
+                {
+                    sectionValidationClass_LegalPersonalDetails = "bg-success-row";
+                }
+            }
+        }*@
+    @if (Model.CompanyDetails != null && isLegalEntity)
+    {
+        <div class="shadow-box col-md-12" id="stCompanyDetails">
+
+            <ul id="accordionPersonDetails">
+                <li id="chartSection" class="k-state-active">
+                    <span class="k-link sectionValidationClass_LegalPersonalDetails" id="Span1" style="width:auto; height:auto;">
+                        @*@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails")*@
+                        @ResHelper.GetString("Eurobank.Application.RelatedParty.CompanyDetails")
+
+                    </span>
+                    <div id="PersonDetailsaccordionContentOne">
+                        <div class="form-group">
+                            <input type="button" id="btnPersonSearch" onclick="OpenSelectConfirmPersonCom();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Search")" class="btn btn-primary mt-3">
+                            <input type="button" id="btnPersonClear" onclick="clearCompanyDetails();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Clear")" class="btn btn-primary mt-3">
+                        </div>
+
+                        <div id="divRegisteredPersonCompany">
+
+                            @(Html.Kendo().Window()
+                                .Name("CompanyPersonSearchWindow")
+                                .Title(ResHelper.GetString("Eurobank.Application.Applicant.PersonalDetails.Search.Header"))
+                                .Content(@<text>
+                                    @(Html.Kendo().Grid<Eurobank.Models.Application.Common.PersonRegistyLegalSearchModel>
+                                                ()
+                                                .Name("RegPersonsCompany")
+                                                .Columns(columns =>
+                                                {
+                                            //columns.Select().Width(50);
+                                            columns.Bound(p => p.PersonType).Title("Type").Width(135);
+                                            columns.Bound(p => p.RegisteredName).Title("Entity Name").Width(200);
+                                            columns.Bound(p => p.RegistrationNumber).Width(210).Title("REGISTRATION NUMBER");
+                                            columns.Bound(p => p.DateofIncorporation).Width(210).Title("DATE OF REGISTRATION");
+                                            columns.Bound(p => p.CountryofIncorporation).Width(240).Title("COUNTRY OF REGISTRATION");
+
+
+                                        })
+                                                @*.ToolBar(toolbar =>
+                            toolbar.ClientTemplate("<div class='toolbar search-address'>" +
+                            "<input type='text' name='toolPersonType' placeholder='Type' class ='k-textbox' id='toolPersonType'/>" +
+                            "<input type='text' name='toolRegisteredName' placeholder='Person Name' class ='k-textbox' id='toolRegisteredName'/>" +
+                            "<input type='text' name='toolRegistrationNumber' placeholder='Identification Number' class ='k-textbox' id='toolRegistrationNumber'/>" +
+                            "<input type='text' name='toolDateofIncorporation' placeholder='Date of Birth' class ='k-textbox' id='toolDateofIncorporation'/>" +
+                            "<input type='text' name='toolCountryofIncorporation' placeholder='Country' class ='k-textbox' id='toolCountryofIncorporation'/>" +
+                            "<button class='k-button' onclick='searchCompanyPersons()'>Search</button></div>"))*@
+                                                .ToolBar(toolbar =>
+                                                toolbar.ClientTemplate("<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolRegisteredName' placeholder='Entity Name' class ='k-textbox' id='toolRegisteredName'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolRegistrationNumber' placeholder='REGISTRATION NUMBER' class ='k-textbox' id='toolRegistrationNumber'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolDateofIncorporation' placeholder='DATE OF REGISTRATION' class ='k-textbox' id='toolDateofIncorporation'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<input type='text' name='toolCountryofIncorporation' placeholder='COUNTRY OF REGISTRATION' class ='k-textbox' id='toolCountryofIncorporation'/>" +
+                                                "</div></div></div></div>" +
+                                                "<div class='toolbar'>" +
+                                                "<div class='row'><div class='col-md-12'><div class='input-group'>" +
+                                                "<button class='k-button' onclick='searchCompanyPersons()'>Search</button>" +
+                                                "</div></div></div></div>"))
+                                                .Pageable()
+                                                .Selectable(x=>x.Mode(GridSelectionMode.Single))
+                                                .Sortable()
+                                                .Scrollable()
+                                                .HtmlAttributes(new { style = "height:550px;" })
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .PageSize(10)
+                                                .Model(model =>
+                                                {
+
+                                                    //model.Id(p => p.Id);
+                                            model.Field(p => p.PersonType);
+                                            model.Field(p => p.RegisteredName);
+                                            model.Field(p => p.TradingName);
+                                            model.Field(p => p.EntityType);
+                                            model.Field(p => p.CountryofIncorporation);
+                                            model.Field(p => p.RegistrationNumber);
+                                            model.Field(p => p.DateofIncorporation);
+                                            model.Field(p => p.ListingStatus);
+                                            model.Field(p => p.CorporationSharesIssuedToTheBearer);
+                                            model.Field(p => p.IstheEntitylocatedandoperatesanofficeinCyprus);
+                                            model.Field(p => p.SharesIssuedToTheBearerName);
+                                            model.Field(p => p.IsOfficeinCyprusName);
+                                            model.Field(p => p.ContactDetailsLegal_PreferredMailingAddress);
+                                            model.Field(p => p.ContactDetailsLegal_EmailAddressForSendingAlerts);
+                                            model.Field(p => p.ContactDetailsLegal_PreferredCommunicationLanguage);
+
+                                        })
+                                                .ServerOperation(true)
+                                                //.Read(read => read.Action("RegisteredAddresses_Read", "Registries"))
+                                                .Read(read => read.Action("PersonRegistryLegal_Read", "Registries"))
+                                                ))
+
+                                        <div class="form-group d-flex justify-content-end">
+                                            <input type="button" id="btnPersonCancel" onclick="companyPersonCancelGrid()" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Cancel")" class="btn btn-link mt-3 mr-3 k-grid-cancel">
+                                            <input type="button" id="btnPersonSelect" onclick="selectCompanyPersonFromGrid()" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Select")" class="btn btn-primary mt-3">
+                                        </div>
+                                    </text>)
+                                .Resizable()
+                                .Visible(false)
+                                .Width(600)
+                                .Actions(actions => actions.Close())
+                                //.Events(ev => ev.Close("onSearchWindowClose"))
+                                )
+
+
+
+
+                        </div>
+                        @Html.HiddenFor(model => model.CompanyDetails.RegistryId)
+                        @Html.HiddenFor(model => model.CompanyDetails.Id)
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CompanyDetails.RegisteredName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.RegisteredName")</label>
+                                    @Html.Kendo().TextBoxFor(model => model.CompanyDetails.RegisteredName).HtmlAttributes(new { @class = "form-control", title = "Name as it appears on Certificate of Incorporation", onfocusout = "validateCompanyDetails()" })
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.RegisteredName)</span>
+                                    <span id="CompanyDetailsRegisteredNameErrorrReq" class="text-danger"></span>
+                                </div>
+                                <div class="form-group" id="divTradingName">
+                                    <label asp-for="CompanyDetails.TradingName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.TradingName")</label>
+                                    @Html.Kendo().TextBoxFor(model => model.CompanyDetails.TradingName).HtmlAttributes(new { @class = "form-control", onfocusout = "validateCompanyDetails()" })
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.TradingName)</span>
+                                    <span id="CompanyDetailsTradingNameErrorrReq" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="CompanyDetails.EntityType" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.EntityType")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.CompanyDetails.EntityType).BindTo((System.Collections.IEnumerable)ViewBag.CompanyEntities)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateCompanyDetails(); ShowRespectedFieldUsingEntityType();", @id = "EntityTypeID" }))
+
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.EntityType)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="CompanyDetails.CountryofIncorporation" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.CountryofIncorporation")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.CompanyDetails.CountryofIncorporation).BindTo((System.Collections.IEnumerable)ViewBag.Countries)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .Filter("startswith")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateCompanyDetails();ShowRespectedFieldUsingEntityType();", @id = "CountryofIncorporationID" }))
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.CountryofIncorporation)</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="CompanyDetails.RegistrationNumber" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.RegistrationNumber")</label>
+                                    @Html.Kendo().TextBoxFor(model => model.CompanyDetails.RegistrationNumber).HtmlAttributes(new { @class = "form-control", onfocusout = "validateCompanyDetails();limitlength(this,50,'CompanyDetailsRegistrationNumberError')", @onkeyup = "return limitlength(this,50,'CompanyDetailsRegistrationNumberError')", @onKeyDown = "return limitlength(this,50,'CompanyDetailsRegistrationNumberError')" })
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.RegistrationNumber)</span>
+                                    <span id="CompanyDetailsRegistrationNumberError" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="CompanyDetails.DateofIncorporation" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.DateofIncorporation")</label>
+                                    @Html.Kendo().DatePickerFor(model => model.CompanyDetails.DateofIncorporation).Events(e =>
+                                {
+                                e.Change("onChangeCompanyDetailsDOI");
+                                }).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+                                    @Html.HiddenFor(model => model.CompanyDetails.HdnDateofIncorporation)
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.DateofIncorporation)</span>
+                                </div>
+                                <div class="form-group" id="ListingStatusDIV" style="display:none">
+                                    <label asp-for="CompanyDetails.ListingStatus" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.ListingStatus")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.CompanyDetails.ListingStatus).BindTo((System.Collections.IEnumerable)ViewBag.ListingStatuses)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateCompanyDetails()" }))
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.ListingStatus)</span>
+                                </div>
+                                <div class="form-group" id="SharesIssuedToTheBearerDIV" style="display:none">
+                                    <label asp-for="CompanyDetails.SharesIssuedToTheBearerName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.CorporationSharesIssuedToTheBearer")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.CompanyDetails.SharesIssuedToTheBearerName).BindTo((System.Collections.IEnumerable)ViewBag.CorporationShares)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateCompanyDetails()" }))
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.SharesIssuedToTheBearerName)</span>
+                                </div>
+                                <div class="form-group" id="IsOfficeinCyprusNameDiv">
+                                    <label asp-for="CompanyDetails.IsOfficeinCyprusName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.IstheEntitylocatedandoperatesanofficeinCyprus")</label>
+                                    @(Html.Kendo().DropDownListFor(m => m.CompanyDetails.IsOfficeinCyprusName).BindTo((System.Collections.IEnumerable)ViewBag.EntityLocatedAndOperates)
+                                        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                        .DataValueField("Value")
+                                        .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateCompanyDetails()", id = "IsOfficeinCyprusNameID" }))
+                                    <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyDetails.IsOfficeinCyprusName)</span>
+                                </div>
+
+                                @if (isIntroducer)
+                                {
+                                    <div class="pt-3">
+                                        <div class="form-group">
+                                            <label asp-for="CompanyDetails.SaveInRegistry" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.SaveInRegistry")</label>
+                                            @(Html.Kendo().CheckBoxFor(m => m.CompanyDetails.SaveInRegistry).HtmlAttributes(new { @class = "form-control" }))
+                                            @Html.ValidationMessageFor(X => X.CompanyDetails.SaveInRegistry)
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+    }
+    @if (Model.Id > 0)
+    {
+        @if (!isLegalEntity)
+        {
+            @Html.Partial("_IdentificationDetails", Model)
+        }
+        @Html.Partial("_AddressDetails", Model)
+        @if (isLegalEntity)
+        {
+            <div id="_ContactDetailsLegalView">
+                @Html.Partial("_ContactDetailsLegal", Model)
+            </div>
+        }
+        else
+        {
+            <div id="_ContactDetailsView">
+                @Html.Partial("_ContactDetails", Model)
+            </div>
+            @Html.Partial("_TaxDetails", Model)
+        }
+        <div class="shadow-box col-md-12">
+            <div class="col-md-12 p-0">
+                @*@if (!isLegalEntity)
+                    {
+                    @Html.Partial("_IdentificationDetails", Model)
+                    }*@
+                @if (isLegalEntity)
+                {
+                    @Html.Partial("_TaxDetails", Model)
+
+                    @Html.Partial("_FATCACRSDetails", Model)
+                    @Html.Partial("_CRSDetails", Model)
+
+                }
+            </div>
+        </div>
+
+        @*List<ValidationResultModel> validationResults_individualEmploymentDetails = null;
+            string sectionValidationClass_individualEmploymentDetails = "";
+            if (ViewBag.ErrorSummaryMsgs != null)
+            {
+                validationResults_individualEmploymentDetails = ViewBag.ErrorSummaryMsgs;
+                if (validationResults_individualEmploymentDetails.Any(j => !j.IsValid))
+                {
+                    validationResults_individualEmploymentDetails = validationResults_individualEmploymentDetails.Where(j => !j.IsValid).ToList();
+                }
+
+                if (validationResults_individualEmploymentDetails != null && validationResults_individualEmploymentDetails.Count > 0)
+                {
+                    if (validationResults_individualEmploymentDetails.Any(x => x.ApplicationModuleName == ApplicationModule.BUSINESS_AND_FINANCIAL_PROFILE_EMPLOYMENT_DETAILS))
+                    {
+                        sectionValidationClass_individualEmploymentDetails = "bg-danger-row";
+                    }
+                    else
+                    {
+                        sectionValidationClass_individualEmploymentDetails = "bg-success-row";
+                    }
+                }
+                else
+                {
+                    sectionValidationClass_individualEmploymentDetails = "bg-success-row";
+                }
+            }*@
+
+        @if (Model.EmploymentDetails != null && !isLegalEntity)
+        {
+
+            <div class="shadow-box col-md-12" id="stEmploymentDetails">
+                <ul id="accordionEmploymentDetails">
+                    <li id="chartSection" class="k-state-active">
+                        <span class="k-link sectionValidationClass_individualEmploymentDetails" id="Span1" style="width:auto; height:auto;">
+                            @ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails")
+                        </span>
+                        <div id="EmploymentDetailsaccordionContentOne">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    @Html.HiddenFor(model => model.EmploymentDetails.Id)
+                                    <div class="form-group">
+                                        @Html.HiddenFor(m => m.EmploymentDetails.EmploymentStatusName, new { id = "EmploymentStatusNameHdn" })
+                                        <label asp-for="EmploymentDetails.EmploymentStatus" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.EmploymentStatus")</label>
+                                        @(Html.Kendo().DropDownListFor(m => m.EmploymentDetails.EmploymentStatus).BindTo((System.Collections.IEnumerable)ViewBag.EmploymentStatuses)
+                                            .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                            .DataValueField("Value")
+                                            .DataTextField("Text").Events(e =>
+                                            {
+                                                e.Change("onChangeEmploymentStatus").DataBound("onDataBound");
+                                            }).HtmlAttributes(new { @class = "form-control", id = "EmploymentStatus" }))
+                                        @Html.ValidationMessageFor(X => X.EmploymentDetails.EmploymentStatus)
+                                    </div>
+
+                                    <div class="specialStatusBloMainBusinessActivitiesck" id="DIVProfession">
+                                        <div class="form-group">
+                                            <label asp-for="EmploymentDetails.Profession" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.Profession")</label>
+                                            @(Html.Kendo().DropDownListFor(m => m.EmploymentDetails.Profession).BindTo((System.Collections.IEnumerable)ViewBag.EmploymentProfessions)
+                                                .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                                .DataValueField("Value")
+                                                .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateBusinessAndFinancialProfile()" }))
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.Profession)
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="EmploymentDetails.YearsInBusiness" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.YearsInBusiness")</label>
+                                            @Html.Kendo().TextBoxFor(model => model.EmploymentDetails.YearsInBusiness).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBusinessAndFinancialProfile()", @onkeyup = "return limitlength(this,4,'EmploymentDetailsYearsInBusinessError')", @onKeyDown = "return limitlength(this,4,'EmploymentDetailsYearsInBusinessError')", @onkeypress = "return isNumberWithoutDecimalKey(event);" })
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.YearsInBusiness)
+                                            <span id="EmploymentDetailsYearsInBusinessError" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="EmploymentDetails.EmployersName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.EmployersName")</label>
+                                            @Html.Kendo().TextBoxFor(model => model.EmploymentDetails.EmployersName).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBusinessAndFinancialProfile()", @onkeyup = "return limitlength(this,100,'EmploymentDetailsEmployersNameError')", @onKeyDown = "return limitlength(this,100,'EmploymentDetailsEmployersNameError')" })
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.EmployersName)
+                                            <span id="EmploymentDetailsEmployersNameError" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group decision-commnt">
+                                            <label asp-for="EmploymentDetails.EmployersBusiness" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.EmployersBusiness")</label>
+                                            @Html.Kendo().TextAreaFor(model => model.EmploymentDetails.EmployersBusiness).Rows(3).Resizable("both").HtmlAttributes(new { @class = "form-control k-textbox", onfocusout = "validateBusinessAndFinancialProfile()", @onkeyup = "return limitlength(this,5000,'EmploymentDetailsEmployersBusinessError')", @onKeyDown = "return limitlength(this,5000,'EmploymentDetailsEmployersBusinessError')" })
+                                            @*@Html.Kendo().TextBoxFor(model => model.EmploymentDetails.EmployersBusiness).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBusinessAndFinancialProfile()" })*@
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.EmployersBusiness)
+                                            <span id="EmploymentDetailsEmployersBusinessError" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="formarStatusBlock" id="DIVFormerProfession">
+
+                                        <div class="form-group">
+                                            <label asp-for="EmploymentDetails.FormerProfession" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerProfession")</label>
+                                            @(Html.Kendo().DropDownListFor(m => m.EmploymentDetails.FormerProfession).BindTo((System.Collections.IEnumerable)ViewBag.EmploymentProfessions)
+                                                .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                                .DataValueField("Value")
+                                                .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateBusinessAndFinancialProfile()" }))
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.FormerProfession)
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="EmploymentDetails.FormerCountryOfEmployment" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerCountryOfEmployment")</label>
+                                            @(Html.Kendo().DropDownListFor(m => m.EmploymentDetails.FormerCountryOfEmployment).BindTo((System.Collections.IEnumerable)ViewBag.CountriesOfEmployment)
+                                                .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "0" })
+                                                .DataValueField("Value")
+                                                .Filter("startswith")
+                                                .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateBusinessAndFinancialProfile()" }))
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.FormerCountryOfEmployment)
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="EmploymentDetails.FormerEmployersName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerEmployersName")</label>
+                                            @Html.Kendo().TextBoxFor(model => model.EmploymentDetails.FormerEmployersName).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBusinessAndFinancialProfile()", @onkeyup = "return limitlength(this,100,'EmploymentDetailsFormerEmployersNameError')", @onKeyDown = "return limitlength(this,100,'EmploymentDetailsFormerEmployersNameError')" })
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.FormerEmployersName)
+                                            <span id="EmploymentDetailsFormerEmployersNameError" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="EmploymentDetails.FormerEmployersBusiness" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.Label.FormerEmployersBusiness")</label>
+                                            @Html.Kendo().TextBoxFor(model => model.EmploymentDetails.FormerEmployersBusiness).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBusinessAndFinancialProfile()", @onkeyup = "return limitlength(this,5000,'EmploymentDetailsFormerEmployersBusinessError')", @onKeyDown = "return limitlength(this,5000,'EmploymentDetailsFormerEmployersBusinessError')" })
+                                            @Html.ValidationMessageFor(X => X.EmploymentDetails.FormerEmployersBusiness)
+                                            <span id="EmploymentDetailsFormerEmployersBusinessError" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        }
+        @if (!isLegalEntity)
+        {
+            @Html.Partial("_SourceOfIncome", Model)
+            @Html.Partial("_OriginOfTotalAssets", Model)
+            @Html.Partial("_PEPDetails", Model)
+            @Html.Partial("_BankRelationShip", Model)
+        }
+        @if (isLegalEntity)
+        {
+            @if (Model.CompanyBusinessProfile != null)
+            {
+                @*List<ValidationResultModel> validationResults_BusinessProfile = null;
+                    string sectionValidationClass_BusinessProfile = "";
+                    if (ViewBag.ErrorSummaryMsgs != null)
+                    {
+                        validationResults_BusinessProfile = ViewBag.ErrorSummaryMsgs;
+                        if (validationResults_BusinessProfile.Any(j => !j.IsValid))
+                        {
+                            validationResults_BusinessProfile = validationResults_BusinessProfile.Where(j => !j.IsValid).ToList();
+                        }
+
+                        if (validationResults_BusinessProfile != null && validationResults_BusinessProfile.Count > 0)
+                        {
+                            if (validationResults_BusinessProfile.Any(x => x.ApplicationModuleName == ApplicationModule.BUSINESS_PROFILE))
+                            {
+                                sectionValidationClass_BusinessProfile = "bg-danger-row";
+                            }
+                            else
+                            {
+                                sectionValidationClass_BusinessProfile = "bg-success-row";
+                            }
+                        }
+                        else
+                        {
+                            sectionValidationClass_BusinessProfile = "bg-success-row";
+                        }
+                    }*@
+                <div class="shadow-box col-md-12" id="stEmploymentDetails">
+                    <ul id="accordionCompanyBusinessProfile">
+                        <li id="chartSection" class="k-state-active">
+                            <span class="k-link sectionValidationClass_BusinessProfile" id="Span1" style="width:auto; height:auto;">
+                                @ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile")
+                            </span>
+                            <div id="BusinessProfileaccordionContentOne" class="row m-0">
+                                <div class="col-md-6">
+                                    @Html.HiddenFor(model => model.CompanyBusinessProfile.Id)
+                                    <div class="form-group decision-commnt">
+                                        <label asp-for="CompanyBusinessProfile.MainBusinessActivities" id="lblMainBusinessActivities" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.MainBusinessActivities")</label>
+                                        @*@Html.Kendo().TextBoxFor(model => model.CompanyBusinessProfile.MainBusinessActivities).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBusinessProfileLegal()" })*@
+                                        @Html.Kendo().TextAreaFor(model => model.CompanyBusinessProfile.MainBusinessActivities).Rows(3).Resizable("both").HtmlAttributes(new { @class = "form-control k-textbox", title = "Please include detailed description of the goods and services traded/provided. Generic descriptions like Trading, Investments, Consultancy Services, Agent, Real Estare etc are not applicable", onfocusout = "validateBusinessProfileLegal()" })
+                                        @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.MainBusinessActivities)
+                                    </div>
+                                    <div class="form-group" id="divNumberofYearsinOperation">
+                                        <label asp-for="CompanyBusinessProfile.NumberofYearsinOperation" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.NumberofYearsinOperation")</label>
+                                        @Html.Kendo().TextBoxFor(model => model.CompanyBusinessProfile.NumberofYearsinOperation).HtmlAttributes(new { @class = "form-control custom-numeric", onfocusout = "validateBusinessProfileLegal()", @onkeyup = "return limitlength(this,4,'CompanyBusinessProfileNumberofYearsinOperationError')", @onKeyDown = "return limitlength(this,4,'CompanyBusinessProfileNumberofYearsinOperationError')" })
+                                        <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyBusinessProfile.NumberofYearsinOperation)</span>
+                                        <span id="CompanyBusinessProfileNumberofYearsinOperationError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group" id="divNumberofEmployes">
+                                        <label asp-for="CompanyBusinessProfile.NumberofEmployes" id="lblNumberofEmployes" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.NumberofEmployes")</label>
+                                        @Html.Kendo().TextBoxFor(model => model.CompanyBusinessProfile.NumberofEmployes).HtmlAttributes(new { @class = "form-control custom-numeric", onfocusout = "validateBusinessProfileLegal()", @onkeyup = "return limitlength(this,9,'CompanyBusinessProfileNumberofEmployesError')", @onKeyDown = "return limitlength(this,9,'CompanyBusinessProfileNumberofEmployesError')" })
+                                        <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyBusinessProfile.NumberofEmployes)</span>
+                                        <span id="CompanyBusinessProfileNumberofEmployesError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group" id="divWebsiteAddress">
+                                        <label asp-for="CompanyBusinessProfile.WebsiteAddress" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.WebsiteAddress")</label>
+                                        @Html.Kendo().TextBoxFor(model => model.CompanyBusinessProfile.WebsiteAddress).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBusinessProfileLegal()", @onkeyup = "return limitlength(this,50,'CompanyBusinessProfileWebsiteAddressError')", @onKeyDown = "return limitlength(this,50,'CompanyBusinessProfileWebsiteAddressError')" })
+                                        @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.WebsiteAddress)
+                                        <span id="CompanyBusinessProfileWebsiteAddressError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group" id="divCorporationIsengaged">
+                                        <label asp-for="CompanyBusinessProfile.CorporationIsengagedInTheProvisionName" id="lblCorporationIsengagedInTheProvisionName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.CorporationIsengagedInTheProvision")</label>
+                                        @(Html.Kendo().DropDownListFor(m => m.CompanyBusinessProfile.CorporationIsengagedInTheProvisionName).BindTo((System.Collections.IEnumerable)ViewBag.IsEngagedInTheProvisionOfFinance)
+                                            .OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+                                            .DataValueField("Value")
+                                            .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateBusinessProfileLegal();ShowRespectedFieldUsingCorporationIsengaged();" }))
+                                        @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.CorporationIsengagedInTheProvisionName)
+                                    </div>
+                                    <div class="form-group" id="divIssuingAuthority">
+                                        <label asp-for="CompanyBusinessProfile.IssuingAuthority" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.IssuingAuthority")</label>
+                                        @Html.Kendo().TextBoxFor(model => model.CompanyBusinessProfile.IssuingAuthority).HtmlAttributes(new { @class = "form-control", title = "Copy of license is required to be submitted", onfocusout = "validateBusinessProfileLegal()", @onkeyup = "return limitlength(this,65,'CompanyBusinessProfileIssuingAuthorityError')", @onKeyDown = "return limitlength(this,65,'CompanyBusinessProfileIssuingAuthorityError')" })
+                                        @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.IssuingAuthority)
+                                        <span id="CompanyBusinessProfileIssuingAuthorityError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group" id="divEconomicSectorIndustry">
+                                        <label asp-for="CompanyBusinessProfile.EconomicSectorIndustry" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.EconomicSectorIndustry")</label>
+                                        @(Html.Kendo().DropDownListFor(m => m.CompanyBusinessProfile.EconomicSectorIndustry).BindTo((System.Collections.IEnumerable)ViewBag.EconomicSectorIndustries)
+                                            .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                                            .DataValueField("Value")
+                                            .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateBusinessProfileLegal()" }))
+                                        @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.EconomicSectorIndustry)
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="CompanyBusinessProfile.CountryofOriginofWealthActivities" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.CountryofOriginofWealthActivities")</label>
+
+                                        @(Html.Kendo().MultiSelectFor(X => X.CompanyBusinessProfile.CountryofOriginofWealthActivitiesValues)
+                                            .AutoClose(false).DataValueField("Value")
+                                            .DataTextField("Text")
+                                            .HtmlAttributes(new { onchange = "validateBusinessProfileLegal()" })
+                                            .BindTo((System.Collections.IEnumerable)ViewBag.CountriesOfEmployment)
+                                            )
+                                        @*@(Html.Kendo().DropDownListFor(m => m.CompanyBusinessProfile.CountryofOriginofWealthActivities).BindTo((System.Collections.IEnumerable)ViewBag.CountriesOfEmployment)
+                                            .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "0" })
+                                            .DataValueField("Value")
+                                            .DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "validateBusinessProfileLegal()" }))
+                                            @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.CountryofOriginofWealthActivities)*@
+                                    </div>
+                                    <div id="divSponsoringEntity" style="display:none">
+                                        <div class="form-group">
+                                            <label asp-for="CompanyBusinessProfile.SponsoringEntityName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.SponsoringEntityName")</label>
+                                            @Html.Kendo().TextBoxFor(model => model.CompanyBusinessProfile.SponsoringEntityName).HtmlAttributes(new { @class = "form-control", onkeypress = "allowAlphaNumericSpace(event)" })
+                                            @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.SponsoringEntityName)
+
+                                        </div>
+                                        <div class="form-group decision-commnt" id="divLineOfBusinessOfTheSponsoringEntity">
+                                            <label asp-for="CompanyBusinessProfile.LineOfBusinessOfTheSponsoringEntity" id="lbLineOfBusinessOfTheSponsoringEntity" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.LineOfBusinessOfTheSponsoringEntity")</label>
+                                            @Html.Kendo().TextAreaFor(model => model.CompanyBusinessProfile.LineOfBusinessOfTheSponsoringEntity).Rows(3).Resizable("both").HtmlAttributes(new { @class = "form-control k-textbox", onkeypress = "allowAlphaNumericSpace(event)" })
+                                            @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.LineOfBusinessOfTheSponsoringEntity)
+                                        </div>
+                                        <div class="form-group" id="divWebsiteOfTheSponsoringEntity">
+                                            <label asp-for="CompanyBusinessProfile.WebsiteOfTheSponsoringEntity" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.WebsiteOfTheSponsoringEntity")</label>
+                                            @Html.Kendo().TextBoxFor(model => model.CompanyBusinessProfile.WebsiteOfTheSponsoringEntity).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,50,'CompanyBusinessProfileWebsiteOfTheSponsoringEntityError')", @onKeyDown = "return limitlength(this,50,'CompanyBusinessProfileWebsiteOfTheSponsoringEntityError')" })
+                                            @Html.ValidationMessageFor(X => X.CompanyBusinessProfile.WebsiteOfTheSponsoringEntity)
+                                            <span id="CompanyBusinessProfileWebsiteOfTheSponsoringEntityError" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            }
+
+            @if (Model.CompanyFinancialInformation != null)
+            {
+                @*List<ValidationResultModel> validationResults_FinancialInformation = null;
+                    string sectionValidationClass_FinancialInformation = "";
+                    if (ViewBag.ErrorSummaryMsgs != null)
+                    {
+                        validationResults_FinancialInformation = ViewBag.ErrorSummaryMsgs;
+                        if (validationResults_FinancialInformation.Any(j => !j.IsValid))
+                        {
+                            validationResults_FinancialInformation = validationResults_FinancialInformation.Where(j => !j.IsValid).ToList();
+                        }
+
+                        if (validationResults_FinancialInformation != null && validationResults_FinancialInformation.Count > 0)
+                        {
+                            if (validationResults_FinancialInformation.Any(x => x.ApplicationModuleName == ApplicationModule.FINANCIAL_INFORMATION))
+                            {
+                                sectionValidationClass_FinancialInformation = "bg-danger-row";
+                            }
+                            else
+                            {
+                                sectionValidationClass_FinancialInformation = "bg-success-row";
+                            }
+                        }
+                        else
+                        {
+                            sectionValidationClass_FinancialInformation = "bg-success-row";
+                        }
+                    }*@
+                <div class="shadow-box col-md-12" id="stFinancialDetails">
+                    <ul id="accordionFinancialDetails">
+                        <li id="chartSection" class="k-state-active">
+                            <span class="k-link sectionValidationClass_FinancialInformation" id="Span1" style="width:auto; height:auto;">
+                                @ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyFinancialInformation")
+                            </span>
+                            <div id="FinancialDetailsaccordionContentOne" class="row m-0">
+                                @*<div class="row">*@
+                                <div class="col-md-6">
+                                    @Html.HiddenFor(model => model.CompanyFinancialInformation.Id)
+                                    <div class="form-group" id="divTurnover">
+                                        <label asp-for="CompanyFinancialInformation.Turnover" id="lblTurnover" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.Turnover")</label>
+                                        @Html.Kendo().TextBoxFor(model => model.CompanyFinancialInformation.Turnover).HtmlAttributes(new { @class = "form-control custom-decimal thousands-separator", id = "CompanyFinancialInformation_Turnover", title = ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.HelpText.Turnover"), onfocusout = "validateFinancialProfileLegal();TurnoverValidateRegex(this)", onkeyup = "TurnoverValidateRegex(this)" }) @*,@onkeyup="return limitlength(this,19,'CompanyFinancialInformationTurnoverError')",@onKeyDown="return limitlength(this,19,'CompanyFinancialInformationTurnoverError')"*@
+                                        @*<span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyFinancialInformation.Turnover)</span>*@
+                                        <span class="text-danger" asp-validation-for="@Model.CompanyFinancialInformation.Turnover"></span>
+                                        <span id="CompanyFinancialInformationTurnoverError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="CompanyFinancialInformation.NetProfitLoss" class="control-label" id="lblNetProfitLoss">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.NetProfitAndLoss")</label>
+                                        @Html.Kendo().TextBoxFor(model => model.CompanyFinancialInformation.NetProfitLoss).HtmlAttributes(new { @class = "form-control custom-decimal thousands-separator", id = "CompanyFinancialInformation_NetProfitLoss", onfocusout = "validateFinancialProfileLegal();NetProfitLossValidateRegex(this)", onkeyup = "NetProfitLossValidateRegex(this)" }) @*,@onkeyup="return limitlength(this,19,'CompanyFinancialInformationNetProfitLossError')",@onKeyDown="return limitlength(this,19,'CompanyFinancialInformationNetProfitLossError')"*@
+                                        <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyFinancialInformation.NetProfitLoss)</span>
+                                        <span id="CompanyFinancialInformationNetProfitLossError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="CompanyFinancialInformation.TotalAssets" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.TotalAssets")</label>
+                                        @Html.Kendo().TextBoxFor(model => model.CompanyFinancialInformation.TotalAssets).HtmlAttributes(new { @class = "form-control custom-decimal thousands-separator", id = "CompanyFinancialInformation_TotalAssets", onfocusout = "validateFinancialProfileLegal();TotalAssetsValidateRegex(this)", onkeyup = "TotalAssetsValidateRegex(this)" }) @*,@onkeyup="return limitlength(this,19,'CompanyFinancialInformationTotalAssetsError')",@onKeyDown="return limitlength(this,19,'CompanyFinancialInformationTotalAssetsError')"*@
+                                        <span class="text-danger">@Html.ValidationMessageFor(X => X.CompanyFinancialInformation.TotalAssets)</span>
+                                        <span id="CompanyFinancialInformationTotalAssetsError" class="text-danger"></span>
+                                    </div>
+
+                                </div>
+                                @*</div>*@
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            }
+        }
+        @if (isLegalEntity)
+        {
+            @Html.Partial("_OriginOfTotalAssets", Model)
+
+            @Html.Partial("_BankRelationShip", Model)
+        }
+
+        @*@if (isLegalEntity)
+            {
+            @Html.Partial("_SignatoryGroup", Model)
+            @Html.Partial("_SignatureMandateCompany", Model)
+
+            }*@
+
+    }
+    <div id="stSubmitConfirm" class="fix-appbtn" style="clear:both;">
+        <div class="row justify-content-between pt-3">
+            @*<div class="row">*@
+            <div class="col-6">
+                <a href="@Url.Action("Edit", "Applications", new { @application = Model.Application_NodeGUID})">
+                    <button id="btnApplicantClose" type="button" class="btn btn-link">Close Applicant</button>
+                </a>
+
+            </div>
+            <div class="col-6 text-right">
+                @if (Model.Id > 0)
+                {
+                    @if (string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.PENDING_INITIATOR.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.DRAFT.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.PENDING_SIGNATURES.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationStatus, ApplicationWorkflowStatus.PENDING_OMMISSIONS.ToString().Replace("_", " "), StringComparison.OrdinalIgnoreCase))
+                    {
+                        <button form="applicantForm" name="applicantButton" value="SAVEDRAFT" id="btnFullSave" type="submit" class="btn btn-success mr-3 btnSaveAsDraft">SAVE AS DRAFT</button>
+                    }
+                    @if (Model.IsEdit)
+                    {
+                        <button form="applicantForm" name="applicantButton" value="SAVECLOSE" id="btnFullConfirm" type="submit" class="btn btn-primary">SAVE & CLOSE</button>
+                    }
+
+                }
+                else
+                {
+                    <button form="applicantForm" name="applicantButton" id="btnFullSave" type="submit" class="btn btn-primary" value="PROCEED" onclick="return ValidateApplicant()">PROCEED</button>
+                }
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+    @(Html.Kendo().Window()
+        .Name("ReSelectConfirmPersonInd")
+        .Title("Confirm Person")
+        .Content(@<text>
+            <div>Confirm Person Selection, It will delete existing person details</div>
+            <div class="col-12 text-right">
+                <button name="btnSelectConfirmPerson" value="YES" type="button" class="btn btn-primary" onclick="SelectConfirmPersonIndYes()">Yes</button>
+                <button name="btnSelectConfirmPersonNo" value="NO" type="button" class="btn btn-primary" onclick="SelectConfirmPersonIndNo()">No</button>
+            </div>
+        </text>)
+        //.Resizable()
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Actions(actions => actions.Close())
+
+        )
+    @(Html.Kendo().Window()
+        .Name("ReSelectConfirmPersonCom")
+        .Title("Confirm Legal Entity")
+        .Content(@<text>
+            <div>Confirm Legal Entity Selection, It will remove existing legal entity details</div>
+            <div class="col-12 text-right">
+                <button name="btnSelectConfirmComPerson" value="YES" type="button" class="btn btn-primary" onclick="SelectConfirmPersonComYes()">Yes</button>
+                <button name="btnSelectConfirmPersonComNo" value="NO" type="button" class="btn btn-primary" onclick="SelectConfirmPersonComNo()">No</button>
+            </div>
+        </text>)
+        //.Resizable()
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Actions(actions => actions.Close())
+
+        )
+    @(Html.Kendo().Window()
+        .Name("pepDetailsReselctConfirmation")
+        .Title("PEP DETAILS- APPLICANT")
+        .Content(@<text>
+            <div>Are you sure you want to change it?</div>
+            <div class="col-12 text-right">
+                <button name="btnSelectPepDetailsYes" value="YES" type="button" class="btn btn-primary" onclick="SelectPepDetailsYes()">Yes</button>
+                <button name="btnSelectPepDetailsNo" value="NO" type="button" class="btn btn-primary" onclick="SelectPepDetailsNo()">No</button>
+            </div>
+        </text>)
+        //.Resizable()
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Actions(actions => actions.Close())
+
+        )
+    @(Html.Kendo().Window()
+        .Name("pepDetailsFamilyReselctConfirmation")
+        .Title("PEP DETAILS- FAMILY MEMBER/ ASSOCIATE")
+        .Content(@<text>
+            <div>Are you sure you want to change it?</div>
+            <div class="col-12 text-right">
+                <button name="btnSelectPepDetailsFamilyYes" value="YES" type="button" class="btn btn-primary" onclick="SelectPepDetailsFamilyYes()">Yes</button>
+                <button name="btnSelectPepDetailsFamilyNo" value="NO" type="button" class="btn btn-primary" onclick="SelectPepDetailsFamilyNo()">No</button>
+            </div>
+        </text>)
+        //.Resizable()
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Actions(actions => actions.Close())
+
+        )
+</form>
+@Html.Hidden("ApplicantID", Model.Id)
+@Html.Hidden("ApplicationIsEdit", Model.IsEdit)
+@Html.Hidden("hdnSpecialEmpStatuses", ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.SpecialEmpStatuses"))
+@Html.Hidden("hdnFormerEmpStatuses", ResHelper.GetString("Eurobank.Application.Applicant.EmploymentDetails.FormerEmpStatuses"))
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_PEPDetails", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.PEPDetails"))
+@Html.Hidden("ValidatePersonalDetailsUrl", Url.Action("ValidatePersonalDetails", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_PersonalDetails", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.PersonalDetails"))
+@Html.Hidden("ValidateCompanyDetailsUrl", Url.Action("ValidateCompanyDetails", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_CompanyDetails", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.CompanyDetails"))
+@Html.Hidden("ValidateFatcaDetailsUrl", Url.Action("ValidateFatcaDetails", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LegalEntity_LeftMenu_FATCADetails", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.FATCADetails"))
+@Html.Hidden("ValidateCrsDetailsUrl", Url.Action("ValidateCrsDetails", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LegalEntity_LeftMenu_CRSDetails", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.CRSDetails"))
+@Html.Hidden("ValidateBusinessProfileLegalUrl", Url.Action("ValidateBusinessProfileLegal", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LegalEntity_LeftMenu_BusinessProfile", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.BusinessProfile"))
+@Html.Hidden("ValidateFinancialProfileLegalUrl", Url.Action("ValidateFinancialProfileLegal", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_FinancialProfile", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.FinancialProfile"))
+@Html.Hidden("ValidateBankingRelationshipLegalUrl", Url.Action("ValidateBankingRelationshipLegal", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_BankingRelationship", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.BankingRelationship"))
+@Html.Hidden("ValidateBankingRelationshipIndividualUrl", Url.Action("ValidateBankingRelationshipIndividual", "Applicant"))
+@Html.Hidden("ValidateContactDetailsLegalUrl", Url.Action("ValidateContactDetailsLegal", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LegalEntity_LeftMenu_ContactDetails", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.LeftMenu.ContactDetails"))
+@Html.Hidden("ValidateContactDetailsIndividualUrl", Url.Action("ValidateContactDetailsIndividual", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_ContactDetails", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.ContactDetails"))
+@Html.Hidden("ValidateBusinessAndFinancialProfileUrl", Url.Action("ValidateBusinessAndFinancialProfile", "Applicant"))
+@Html.Hidden("hdnApplication_Applicant_LeftMenu_BusinessAndFinancialProfile", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.BusinessAndFinancialProfile"))
+@Html.Hidden("ResourceStringTitle_Trust", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Title.MainBusinessActivities.Trust"))
+@Html.Hidden("ResourceStringTitle_All", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Title.MainBusinessActivities.All"))
+@Html.Hidden("ResourceStringLabel_NumberofEmployes2", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.NumberofEmployes2"))
+@Html.Hidden("ResourceStringLabel_NumberofEmployes", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.NumberofEmployes"))
+@Html.Hidden("ResourceStringLabel_MainBusinessActivities3", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.MainBusinessActivities3"))
+@Html.Hidden("ResourceStringLabel_MainBusinessActivities4", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.MainBusinessActivities4"))
+@Html.Hidden("ResourceStringLabel_MainBusinessActivities2", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.MainBusinessActivities2"))
+@Html.Hidden("ResourceStringLabel_MainBusinessActivities", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.MainBusinessActivities"))
+@Html.Hidden("IsLegalEntity", isLegalEntity)
+@Html.Hidden("IsRelatedParty", TempData["IsRelatedParty"])
+@Html.Hidden("hdnApplicant_LeftMenu_TaxDetails", ResHelper.GetString("Eurobank.Application.Applicant.LeftMenu.TaxDetails"))
+@Html.Hidden("ResourceStringLabel_CorporationIsengagedInTheProvisionName", ResHelper.GetString("Eurobank.Application.Applicant.LegalEntity.CompanyBusinessProfile.Label.CorporationIsengagedInTheProvision"))
+<script src="~/Scripts/KendoProcess/CommonDataValidationProcess.js"></script>
+<script src="~/Scripts/Custom/Applicant/Applicant_Index.js"></script>
+@if (ViewBag.SuccessMsg != null)
+{
+    <script>
+        var message = '@ViewBag.SuccessMsg';
+        $("#successDisplay .toastbody").html(message);
+        $("#successDisplay").show().delay(15000).fadeOut();
+    </script>
+}
+@if (isLegalEntity)
+{
+    <script>
+        $(document).ready(function () {
+            validateContactDetailsLegal();
+            validateCompanyDetails();
+            validateFatcaDetails();
+            validateCrsDetails();
+            validateBusinessProfileLegal();
+            validateFinancialProfileLegal();
+            validateBankingRelationshipLegal();
+        });
+    </script>
+}
+else
+{
+    <script>
+        $(document).ready(function () {
+            validatePersonalDetails();
+            validateContactDetailsIndividual();
+            validateBusinessAndFinancialProfile();
+            validateBankingRelationshipIndividual();
+        });
+    </script>
+}
+<script>
+    function manageLegalApplicantMenuPanel() {
+    @{
+        string legalApplicantName = string.Empty;
+    }
+    @if (Model.CompanyDetails != null && (!string.IsNullOrEmpty(Model.CompanyDetails.RegisteredName)))
+    {
+        legalApplicantName = (!string.IsNullOrEmpty(Model.CompanyDetails.RegisteredName) ? Model.CompanyDetails.RegisteredName : string.Empty);
+    }
+                        var applicantLegalName = '@legalApplicantName';
+
+        if ($('#ApplicationStepper li a[title="Company Details"]').parent().length > 0) {
+            $('#ApplicationStepper li a[title="Company Details"]').parent().append('<span class="row" style="margin-left: 20%;color: #27438c;">' + applicantLegalName.toUpperCase() + '</span>');
+        }
+    }
+    function manageIndividualApplicantMenuPanel() {
+    @{
+        string applicantName = string.Empty;
+    }
+    @if (Model.PersonalDetails != null && (!string.IsNullOrEmpty(Model.PersonalDetails.FirstName) || !string.IsNullOrEmpty(Model.PersonalDetails.LastName)))
+    {
+        applicantName = (!string.IsNullOrEmpty(Model.PersonalDetails.FirstName) ? Model.PersonalDetails.FirstName : string.Empty) + " " + (!string.IsNullOrEmpty(Model.PersonalDetails.LastName) ? Model.PersonalDetails.LastName : string.Empty);
+    }
+                        var applicantName = '@applicantName';
+
+        if ($('#ApplicationStepper li a[title="Personal Details"]').parent().length > 0) {
+            $('#ApplicationStepper li a[title="Personal Details"]').parent().append('<span class="row" style="margin-left: 20%;color: #27438c;">' + applicantName.toUpperCase() + '</span>');
+        }
+
+    }
+    @*document.getElementById('btnFullSave').addEventListener('click', function () {
+        // Get the button element by its id
+        var btnFullSave = document.getElementById('btnFullSave');
+
+        // Disable the button
+        btnFullSave.disabled = true;
+        //btnFullSave.hidden = true;
+    });*@
+
+    if ($("#ApplicantID").val() == 0)
+       {
+           $('form').submit(function() {
+            $(this).find("button[type='submit']").prop('disabled', true);
+           });
+       }
+</script>
+

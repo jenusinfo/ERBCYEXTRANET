@@ -1,0 +1,236 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Eurobank.Helpers.Process;
+@using Microsoft.AspNetCore.Mvc;
+@using Eurobank.Models.Application.Common;
+@using Eurobank.Helpers.Validation;
+@{
+    var userModel = UserProcess.GetUser(User.Identity.Name);
+    bool isIntroducer = userModel != null && string.Equals(userModel.UserType, ApplicationUserType.INTRODUCER.ToString(), StringComparison.OrdinalIgnoreCase);
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.CONTACT_DETAILS))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<div class="shadow-box col-md-12">
+    <ul id="accordionContactDetails">
+        <li id="chartSection" class="k-state-active">
+            <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                Contact Details
+            </span>
+            <div id="accordionContactDetailsContentOne" class="row m-0">
+
+                @if (isIntroducer)
+                {
+                    <div class="form-group">
+                        <input type="button" id="btnPersonSearch" onclick="personSearchGrid();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Search")" class="btn btn-primary mt-3">
+                        <input type="button" id="btnPersonClear" onclick="clearContact();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Clear")" class="btn btn-primary mt-3">
+                    </div>
+                }
+
+                @*<div id="validation-success" class="alert alert-success" role="alert"></div>*@
+                @*<form asp-action="ContactDetails" asp-controller="RelatedParty" class="row">*@
+                @*<form method="post">*@
+                @Html.HiddenFor(model => model.ContactDetails.ContactDetailsID)
+                @Html.HiddenFor(model => model.PersonalDetails.Id)
+                @Html.HiddenFor(model => model.Type)
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label asp-for="ContactDetails.ContactDetails_HomeTelNoNumber" class="control-label "></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ContactDetails.Country_Code_HomeTelNoNumber)
+          .OptionLabel("Country Code")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+                                    .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_HomeTelNoNumber", @placeholder = "Type Country", @onchange = "ChangeMaxLengthIndividualHomeNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Applications");
+            });
+        }))
+
+                                @Html.ValidationMessageFor(X => X.ContactDetails.Country_Code_HomeTelNoNumber)
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="form-group">
+                                <label class="control-label" style="padding-top:20px;"></label>
+                                @Html.TextBoxFor(model => model.ContactDetails.ContactDetails_HomeTelNoNumber, new { @class = "form-control MobileNumber phone", @id = "ContactDetails_HomeTelNoNumber", @onkeypress = "return isNumberWithoutDecimalKey(event);",@onkeyup="contactsMaxLengthWarningHome(this)",@onKeyDown="contactsMaxLengthWarningHome(this)",@onfocusout="contactsMaxLengthWarningHome(this)" })
+                                @Html.ValidationMessageFor(X => X.ContactDetails.ContactDetails_HomeTelNoNumber)
+                                <span id="ContactDetails_HomeTelNumberError" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label asp-for="ContactDetails.ContactDetails_MobileTelNoNumber" class="control-label "></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ContactDetails.Country_Code_MobileTelNoNumber)
+        .OptionLabel("Country Code")
+        .DataTextField("Text")
+ .DataValueField("Value")
+.Filter("startswith")
+                                    .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_MobileTelNoNumber", @placeholder = "Type Country", onchange = "validateContactDetailsIndividual();ChangeMaxLengthIndividualMobileNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Applications");
+            });
+        }))
+                                @Html.ValidationMessageFor(X => X.ContactDetails.Country_Code_MobileTelNoNumber)
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="form-group">
+                                <label class="control-label" style="padding-top:20px"></label>
+                                @Html.TextBoxFor(model => model.ContactDetails.ContactDetails_MobileTelNoNumber, new { @class = "form-control MobileNumber phone", title = "This Mobile Number will be the preferred method of communication with the Bank for receiving ERB alerts. ", @id = "ContactDetails_MobileTelNoNumber", onfocusout = "validateContactDetailsIndividual();contactsMaxLengthWarningMobile(this)", @onkeypress = "return isNumberWithoutDecimalKey(event);",@onkeyup="contactsMaxLengthWarningMobile(this)",@onKeyDown="contactsMaxLengthWarningMobile(this)" })
+                                @*@Html.ValidationMessageFor(X => X.ContactDetails.ContactDetails_MobileTelNoNumber)*@
+                                <span id="ContactDetails_MobileTelNumberError" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label asp-for="ContactDetails.ContactDetails_WorkTelNoNumber" class="control-label "></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ContactDetails.Country_Code_WorkTelNoNumber)
+        .OptionLabel("Country Code")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+                                    .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_WorkTelNoNumber", @placeholder = "Type Country", @onchange = "ChangeMaxLengthIndividualWorkNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Applications");
+            });
+        }))
+                                @Html.ValidationMessageFor(X => X.ContactDetails.Country_Code_WorkTelNoNumber)
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="form-group">
+                                <label class="control-label" style="padding-top:20px"></label>
+                                @Html.TextBoxFor(model => model.ContactDetails.ContactDetails_WorkTelNoNumber, new { @class = "form-control MobileNumber phone", @id = "ContactDetails_WorkTelNoNumber", @onkeypress = "return isNumberWithoutDecimalKey(event);",@onkeyup="contactsMaxLengthWarningWork(this)",@onKeyDown="contactsMaxLengthWarningWork(this)",@onfocusout="contactsMaxLengthWarningWork(this)" })
+                                @*@Html.ValidationMessageFor(X => X.ContactDetails.ContactDetails_WorkTelNoNumber)*@
+                                <span id="ContactDetails_WorkTelNumberError" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label asp-for="ContactDetails.ContactDetails_FaxNoFaxNumber" class="control-label "></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ContactDetails.Country_Code_FaxNoFaxNumber)
+        .OptionLabel("Country Code")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+                                    .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_FaxNoFaxNumber", @placeholder = "Type Country", @onchange = "ChangeMaxLengthIndividualFaxNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Applications");
+            });
+        }))
+                                @Html.ValidationMessageFor(X => X.ContactDetails.Country_Code_FaxNoFaxNumber)
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="form-group">
+                                <label class="control-label" style="padding-top:20px"></label>
+                                @Html.TextBoxFor(model => model.ContactDetails.ContactDetails_FaxNoFaxNumber, new { @class = "form-control MobileNumber phone", @id = "ContactDetails_FaxNoFaxNumber", @onkeypress = "return isNumberWithoutDecimalKey(event);",@onkeyup="contactsMaxLengthWarningFax(this)",@onKeyDown="contactsMaxLengthWarningFax(this)",@onfocusout="contactsMaxLengthWarningFax(this)" })
+                                @*@Html.ValidationMessageFor(X => X.ContactDetails.ContactDetails_FaxNoFaxNumber)*@
+                                <span id="ContactDetails_FaxNumberError" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label asp-for="ContactDetails.ContactDetails_EmailAddress" class="control-label"></label>
+                        @(Html.Kendo().TextBoxFor(m=>m.ContactDetails.ContactDetails_EmailAddress).HtmlAttributes(new { @class="form-control", title = "This email will be used to contact you about your current application", onfocusout = "validateContactDetailsIndividual()",@onkeyup="return limitlength(this,50,'ContactDetails_EmailAddressError')",@onKeyDown="return limitlength(this,50,'ContactDetails_EmailAddressError')" }))
+                        <span class="text-danger">@Html.ValidationMessageFor(m => m.ContactDetails.ContactDetails_EmailAddress)</span>
+                        <span id="ContactDetails_EmailAddressError" class="text-danger"></span>
+                    </div>
+
+                    <label asp-for="ContactDetails.ContactDetails_PreferredCommunicationLanguage" class="control-label"></label>
+                    @(Html.Kendo().DropDownListFor(m => m.ContactDetails.ContactDetails_PreferredCommunicationLanguage)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateContactDetailsIndividual()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("PreferredCommunicationLanguage_Read", "Applicant");
+			});
+		}))
+                    @(Html.Kendo().Window().Name("SuccessWindow")
+    .Title("Alert")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(300)
+)
+                    @Html.ValidationMessageFor(m => m.ContactDetails.ContactDetails_PreferredCommunicationLanguage)
+                    @*@if (isIntroducer)
+                    {
+                        <div class="pt-3">
+                            <div class="form-group">
+                                <label asp-for="ContactDetails.ContactDetails_SaveInRegistry" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.SaveInRegistry")</label>
+                                @(Html.Kendo().CheckBoxFor(m => m.ContactDetails.ContactDetails_SaveInRegistry).HtmlAttributes(new { @class = "form-control" }))
+                                @Html.ValidationMessageFor(X => X.ContactDetails.ContactDetails_SaveInRegistry)
+                            </div>
+                        </div>
+                    }*@
+
+                    <div class="clearfix"></div>
+                    @*<div class="form-group">
+                            <div class="col-md-8">
+
+                            </div>
+                            <div class="col-md-4" style="padding-top: 20px">
+                                <input type="submit" id="submit" value="Save" class="btn btn-primary">
+                            </div>
+                        </div>*@
+                </div>
+
+                @*</form>*@
+
+
+            </div>
+        </li>
+    </ul>
+
+</div>
+<script src="~/Scripts/KendoProcess/CommonDataValidationProcess.js"></script>
+<script src="~/scripts/custom/applicant/applicant_contactdetails.js"></script>
+

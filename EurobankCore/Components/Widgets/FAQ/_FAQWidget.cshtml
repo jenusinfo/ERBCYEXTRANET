@@ -1,0 +1,41 @@
+﻿@using Eurobank.InlineEditors
+@using Eurobank.Widgets
+
+@model Eurobank.Widgets.FAQWidgetViewModel
+
+@if (Context.Kentico().PageBuilder().EditMode)
+{
+    <partial name="~/Components/InlineEditors/SpinnerEditor/_SpinnerEditor.cshtml"
+             model="new SpinnerEditorViewModel
+               {
+                   PropertyName = nameof(UseFulLinksWidgetProperties.Count),
+                   Count = Model.Count
+               }" />
+
+
+}
+
+<h4>@ViewBag.Name </h4>
+
+
+@foreach (var item in Model.FAQList)
+{
+    <div class="accordion" id="accordionExample_@item.NodeId">
+        <div class="card">
+            <div class="card-header" id="headingOne_@item.NodeId">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseOne_@item.NodeId" aria-expanded="false" aria-controls="collapseOne">
+                        @item.Question
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseOne_@item.NodeId" class="collapse" aria-labelledby="headingOne_@item.NodeId" data-parent="#accordionExample_@item.NodeId">
+                <div class="card-body">
+                    @Html.Raw(item.Answer)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

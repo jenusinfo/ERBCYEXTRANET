@@ -1,0 +1,25 @@
+﻿@model Eurobank.Models.Application.Applicant.SourceOfIncomeModel
+@using Kendo.Mvc.UI
+
+@Html.HiddenFor(m=>m.SourceOfAnnualIncomeName)
+	<div class="form-group">
+		<label asp-for="SourceOfAnnualIncome" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.Label.SourceOfAnnualIncome")</label>
+		@(Html.Kendo().DropDownListFor(m => m.SourceOfAnnualIncome).BindTo((System.Collections.IEnumerable)ViewBag.SourcesOfAnnualIncome)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control",onchange="ShowRespectedField()" }))
+		@Html.ValidationMessageFor(X => X.SourceOfAnnualIncome)
+	</div>
+	<div class="form-group" style="display:none" id="SpecifyOtherSourceID">
+		<label asp-for="SpecifyOtherSource" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.Label.SpecifyOtherSource")</label>
+	@Html.Kendo().TextBoxFor(model => model.SpecifyOtherSource).HtmlAttributes(new { @class = "form-control", @onkeyup="limitlength(this,65,'IndividualSpecifyOtherSourceError')",@onKeyDown="limitlength(this,65,'IndividualSpecifyOtherSourceError')",@onfocusout="limitlength(this,65,'IndividualSpecifyOtherSourceError')" })
+		@Html.ValidationMessageFor(X => X.SpecifyOtherSource)
+	<span id="IndividualSpecifyOtherSourceError" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="AmountOfIncome" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.Label.AmountOfIncome")</label>
+	@Html.Kendo().TextBoxFor(model => model.AmountOfIncome).HtmlAttributes(new { @class = "form-control custom-decimal-positive", onchange = "setTwoNumberDecimal()", @onkeyup="limitlength(this,16,'IndividualAmountOfIncomeError')",@onKeyDown="limitlength(this,16,'IndividualAmountOfIncomeError')",@onfocusout="limitlength(this,16,'IndividualAmountOfIncomeError')" })
+		@Html.ValidationMessageFor(X => X.AmountOfIncome)
+	<span id="IndividualAmountOfIncomeError" class="text-danger"></span>
+	</div>
+    <script src="~/Scripts/Custom/Editor/AddEditSourceOfIncome.js"></script>

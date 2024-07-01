@@ -1,0 +1,188 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Validation;
+@{
+    string applicationNumber = string.Empty;
+    if (ViewBag.ApplicationNumber != null)
+    {
+        applicationNumber = Convert.ToString(ViewBag.ApplicationNumber);
+    }
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.SIGNATORY_GROUP))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: center;
+    }
+</style>
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionSignatoryGroup">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup")
+                </span>
+                <div id="accordionContentOne">
+
+
+                    @(Html.Kendo().Grid<Eurobank.Models.Application.Applicant.LegalEntity.SignatoryGroupModel>
+        ()
+        .Name("SignatoryGroup")
+        .Columns(columns =>
+        {
+                            columns.Template
+                            (
+                            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                            ).Width(30);
+                            columns.Bound(p => p.SignatoryGroup).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.GridHeader.SignatoryGroupName")).Width(150);
+                            columns.Bound(p => p.SignatoryPersonNames).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.GridHeader.SignatoryPersonNames")).Width(250);
+            //columns.Bound(p => p.StartDateString).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.GridHeader.StartDate")).Media("(min-width: 1024px)");
+            //columns.Bound(p => p.EndDateString).Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.GridHeader.EndDate")).Media("(min-width: 1024px)");
+            columns.Bound(p => p.StatusName).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100).HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align: center;" });
+            
+        })
+         .Events(e =>
+         {
+             e.Edit("addSnGroupConfirmButton");
+             e.DataBound("onGridDataBoundSignatoryGroup");
+             e.Cancel("onGridCancel");
+         })
+        .ToolBar(toolbar => { if(Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditSignatoryGroupLegal").DisplayDeleteConfirmation(false).Window(w=>w.Title(ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.PopUp.Title")).Width(800))).EnableCustomBinding(true)
+        .Pageable()
+        .Sortable()
+        .Scrollable()
+        .HtmlAttributes(new { style = "max-height:550px;" })
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+        .Sort(x => x.Add("StatusName").Descending())
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+
+            model.Id(p => p.Id);
+            model.Field(p => p.SignatoryPersons);
+            model.Field(p => p.SignatoryPersonNames);
+            model.Field(p => p.SignatoryPersonsList);
+            model.Field(p => p.SignatoryGroupName);
+            model.Field(p => p.StartDate);
+            model.Field(p => p.EndDate);
+            model.Field(p => p.StartDateString);
+            model.Field(p => p.EndDateString);
+            model.Field(p => p.StatusName);
+            //model.Field(p => p.nodePath);
+        })
+         //.Model(model => model.Id(p => p.AddressGuid))
+                        .Events(events => events.Error("error_handlerSignatoryGroup").Sync("Sync_handlerSignatureGroup"))
+        .ServerOperation(true)
+        .Create(update => update.Action("SignatoryGroupPopup_Create", "Applications", new { apID = Model.Id}))
+        .Read(read => read.Action("SignatoryGroup_Read", "Applications", new { apID = Model.Id }))
+        .Update(update => update.Action("SignatoryGroupPopup_Update", "Applications", new { apID = Model.Id }))
+        .Destroy(update => update.Action("SignatoryGroupPopup_Destroy", "Applications", new { apID = Model.Id }))
+        )
+		)
+
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@(Html.Kendo().Window()
+        .Name("SignatoryGroupEditDeleteConfirmation")
+        .Title("Signatory Group")
+        .Content(@<text>
+            <div>Are you sure you want to modify this record, it is being used in Signature Mandate section?</div>
+            <div class="col-12 text-right">
+                <button name="btnSignatoryYes" value="YES" type="button" class="btn btn-primary" id="SignatoryEditYes">Yes</button>
+                <button name="btnSignatoryNo" value="NO" type="button" class="btn btn-primary" id="SignatoryEditNo">No</button>
+            </div>
+        </text>)
+        //.Resizable()
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Actions(actions => actions.Close())
+
+        )
+@(Html.Kendo().Window()
+    .Name("SignatoryGroupDeleteWarningMsg")
+    .Title("Signatory Group Warning!!!")
+    .Content(@<text>
+        <div>Please Delete Signatory Group sequence wise(like GROUP D,GROUP C,GROUP B,GROUP A)</div>
+        <div class="col-12 text-right">
+            <button name="btnSignatoryOk" value="OK" type="button" class="btn btn-primary" id="SignatoryGroupOk">Ok</button>
+        </div>
+    </text>)
+    //.Resizable()
+    .Visible(false)
+    .Width(900)
+    .Height(900)
+    .Actions(actions => actions.Close())
+
+    )
+<input type="hidden" id="HdnSignatoryGroupName" />
+@Html.Hidden("ApplicationNumber", applicationNumber)
+@Html.Hidden("SignatoryPersons_ReadUrl", Url.Action("SignatoryPersons_Read", "Applications"))
+@Html.Hidden("ValidateSignatoryGroupDatesUrl", Url.Action("ValidateSignatoryGroupDates", "Applications"))
+@Html.Hidden("SignatoryUsedInMandateUrl", Url.Action("IsSignatoryUseInMandate", "Applications"))
+@Html.Hidden("SignatureMandateStatusUpdateUrl", Url.Action("UpdateSignatureMandateStatus", "Applications"))
+@Html.Hidden("SignatureValidateforDeleteUrl", Url.Action("SignatureValidateforDelete", "Applications"))
+<ul id="context-menuSignatoryGroup">
+
+    @if (Model.ApplicationDetails.IsEdit)
+    {
+        <li id="editRowSignGp">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowSignGp">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+    }
+</ul>
+<script src="~/Scripts/Custom/Application/SignatoryGroup.js"></script>
+<script>
+    function Sync_handlerSignatureGroup(e) {
+        if (!e.sender.preventSync) {
+            e.sender.read();
+        }
+        e.sender.preventSync = false;
+    }
+</script>
+

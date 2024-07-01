@@ -1,0 +1,110 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Eurobank.Helpers.Validation;
+@{
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.CRS_DETAILS))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<div class="shadow-box col-md-12" id="st_CSR">
+
+    <ul id="accordionCRSDetails">
+        <li id="chartSection" class="k-state-active">
+            <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                @ResHelper.GetString("Eurobank.CRSDetails")
+            </span>
+            <div id="CRSDetailsaccordionContentOne" class="row m-0">
+
+
+                <div class="row m-0">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.HiddenFor(m => m.CRSDetails.CompanyCRSDetailsID)
+                            @Html.HiddenFor(m => m.CRSDetails.CompanyCRSDetails_CRSClassification_Name, new { id = "CompanyCRSDetails_CRSClassification_Hdn" })
+                            @Html.HiddenFor(m => m.CRSDetails.CompanyCRSDetails_TypeofActiveNonFinancialEntity_Name, new { id = "CompanyCRSDetails_TypeofActiveNonFinancialEntity_Hdn" })
+                            <label asp-for="CRSDetails.CompanyCRSDetails_CRSClassification" class="control-label"></label>
+                            @(Html.Kendo().DropDownListFor(m => m.CRSDetails.CompanyCRSDetails_CRSClassification)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .HtmlAttributes(new { @class = "form-control", onchange = "validateCrsDetails(); ShowRespectedCRSField();", id= "CompanyCRSDetails_CRSClassification" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("CRS_CLASSIFICATION_Read", "Applicant");
+            });
+        }))
+                        </div>
+                        <div class="form-group" style="display:none" id="CompanyCRSDetails_TypeofActiveNonFinancialEntity_DIV">
+                            <label asp-for="CRSDetails.CompanyCRSDetails_TypeofActiveNonFinancialEntity" class="control-label"></label>
+                            @(Html.Kendo().DropDownListFor(m => m.CRSDetails.CompanyCRSDetails_TypeofActiveNonFinancialEntity)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .HtmlAttributes(new { @class = "form-control", onchange = "validateCrsDetails(); ShowRespectedFieldNFE();", id= "CompanyCRSDetails_TypeofActiveNonFinancialEntity" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("TYPE_OF_ACTIVE_NON_FINANCIAL_ENTITY_NFE_Read", "Applicant");
+            });
+        }))
+                        </div>
+                        <div class="form-group" style="display:none" id="CompanyCRSDetails_NameofEstablishedSecuritiesMarket_DIV">
+                            <label asp-for="CRSDetails.CompanyCRSDetails_NameofEstablishedSecuritiesMarket" class="control-label"></label>
+                            @Html.Kendo().TextBoxFor(model => model.CRSDetails.CompanyCRSDetails_NameofEstablishedSecuritiesMarket).HtmlAttributes(new { @class = "form-control", onfocusout = "validateCrsDetails()" })
+                            @*@(Html.Kendo().DropDownListFor(m => m.CRSDetails.CompanyCRSDetails_NameofEstablishedSecuritiesMarket)
+                                    .OptionLabel("- Select - ")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .HtmlAttributes(new { @class = "form-control", onchange = "validateCrsDetails()" })
+                                .DataSource(source => {
+                                    source.Read(read =>
+                                    {
+                                        read.Action("NAME_OF_ESTABLISHED_SECURITES_MARKET_Read", "Applicant");
+                                    });
+                                }))*@
+                        </div>
+                        <div class="form-group" style="display:none" id="CompanyCRSDetails_TypeofFinancialInstitution_DIV">
+                            <label asp-for="CRSDetails.CompanyCRSDetails_TypeofFinancialInstitution" class="control-label"></label>
+                            @(Html.Kendo().DropDownListFor(m => m.CRSDetails.CompanyCRSDetails_TypeofFinancialInstitution)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .HtmlAttributes(new { @class = "form-control", onchange = "validateCrsDetails()",id= "CompanyCRSDetails_TypeofFinancialInstitution" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("TYPE_OF_FINANCIAL_INSITUTION_Read", "Applicant");
+            });
+        }))
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </li>
+    </ul>
+</div>
+<script src="~/scripts/custom/applicant/applicant_crsdetails.js"></script>

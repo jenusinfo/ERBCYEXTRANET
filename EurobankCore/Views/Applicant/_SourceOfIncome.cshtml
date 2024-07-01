@@ -1,0 +1,130 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Eurobank.Helpers.Validation;
+
+@*@{
+    List<ValidationResultModel> validationResults = null;
+    string sectionValidationClass = "";
+    if (ViewBag.ErrorSummaryMsgs != null)
+    {
+        validationResults = ViewBag.ErrorSummaryMsgs;
+        if (validationResults.Any(j => !j.IsValid))
+        {
+            validationResults = validationResults.Where(j => !j.IsValid).ToList();
+        }
+
+        if (validationResults != null && validationResults.Count > 0)
+        {
+            if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.ORGIN_OF_ANNUAL_INCOME))
+            {
+                sectionValidationClass = "bg-danger-row";
+            }
+            else
+            {
+                sectionValidationClass = "bg-success-row";
+            }
+        }
+        else
+        {
+            sectionValidationClass = "bg-success-row";
+        }
+    }
+}*@
+<style type="text/css">
+	.k-grid-header .k-header > .k-link {
+		margin: -0.75rem 0.0rem;
+		text-overflow: initial;
+	}
+
+		.k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+			vertical-align: text-bottom;
+			margin-left: 0px;
+		}
+
+	.k-grid th, .k-grid td {
+		padding: 0.75rem 0.50rem;
+		text-align: center;
+	}
+
+</style>
+
+@*<div class="shadow-box col-md-12">
+	<h4>@ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome")</h4>*@
+
+	<div class="shadow-box col-md-12">
+		<ul id="accordionSourceOfIncome">
+			<li id="chartSection" class="k-state-active">
+            <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+					@ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.AccordionHeader")
+				</span>
+				<div id="accordionContentOne">
+					@(Html.Kendo().Grid<Eurobank.Models.Application.Applicant.SourceOfIncomeModel>
+        ()
+        .Name("SourceOfIncome")
+        .Columns(columns =>
+        {
+            columns.Template
+            (
+            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+            ).Width(30);
+            columns.Bound(p => p.SourceOfAnnualIncomeName).Title(ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.GridHeader.SourceOfAnnualIncomeName")).Width(150);
+            columns.Bound(p => p.SpecifyOtherSource).Title(ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.GridHeader.SpecifyOtherSource")).Width(150);
+            columns.Bound(p => p.AmountOfIncome).Title(ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.GridHeader.AmountOfIncome")).Width(150).HtmlAttributes(new { style = "text-align: right;" }).HeaderHtmlAttributes(new { style = "text-align: right;" }).Format("{0:N2}");
+            columns.Bound(p => p.StatusName).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+
+
+        })
+        .Events(e =>
+        {
+            e.Edit("addConfirmButton_SourceOfIncome");
+            e.DataBound("onGridDataBoundSourceOfIncome");
+            e.Cancel("onGridCancel");
+        })
+        .ToolBar(toolbar => { if(Model.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditSourceOfIncome").DisplayDeleteConfirmation(false).Window(w=>w.Title(ResHelper.GetString("Eurobank.Application.Applicant.SourceOfIncome.PopUp.Title")).Width(800))).EnableCustomBinding(true)
+        .Pageable()
+        .Sortable()
+        .Scrollable()
+         .HtmlAttributes(new { style = "max-height:550px;" })
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+        .Sort(x => x.Add("StatusName").Descending())
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+
+            model.Id(p => p.Id);
+            model.Field(p => p.SourceOfAnnualIncome);
+            model.Field(p => p.SourceOfAnnualIncomeName);
+            model.Field(p => p.SpecifyOtherSource);
+            model.Field(p => p.Status);
+            model.Field(p => p.StatusName);
+            model.Field(p => p.AmountOfIncome);
+        })
+        //.Model(model => model.Id(p => p.AddressGuid))
+        .Events(events => events.Error("error_handlerAddressDetails"))
+        .ServerOperation(true)
+        .Create(update => update.Action("SourceOfIncomePopup_Create", "Applicant",new { apID = Model.Id  }))
+        .Read(read => read.Action("SourceOfIncome_Read", "Applicant", new { apID = Model.Id }))
+        .Update(update => update.Action("SourceOfIncomePopup_Update", "Applicant", new { apID = Model.Id }))
+        .Destroy(update => update.Action("SourceOfIncomePopup_Destroy", "Applicant"))
+        )
+		)
+				</div>
+			</li>
+		</ul>
+	</div>
+@*</div>*@
+<ul id="context-menuSourceOfIncome">
+	@if(Model.IsEdit)
+	{
+        <li id="editRowSOIn">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+		<li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+	}
+	else
+	{
+		<li id="editRowSOIn">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-preview"></span></li>
+	}
+</ul>
+<script src="~/Scripts/Custom/Applicant/Applicant_SourceOfIncome.js"></script>

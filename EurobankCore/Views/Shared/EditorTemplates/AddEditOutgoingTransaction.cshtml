@@ -1,0 +1,32 @@
+﻿@model Eurobank.Models.Application.SourceOfOutgoingTransactionsModel
+@using Kendo.Mvc.UI
+
+
+<div class="form-group">
+	<label asp-for="NameOfBeneficiary" class="control-label"></label>
+	@Html.Kendo().TextBoxFor(model => model.NameOfBeneficiary).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,65,'NameOfBeneficiaryError')",@onKeyDown="return limitlength(this,65,'NameOfBeneficiaryError')" })
+	@Html.ValidationMessageFor(X => X.NameOfBeneficiary)
+	<span id="NameOfBeneficiaryError" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="CountryOfBeneficiary" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.CountryOfBeneficiary).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+	@Html.ValidationMessageFor(X => X.CountryOfBeneficiary)
+</div>
+<div class="form-group">
+	<label asp-for="CountryOfBeneficiaryBank" class="control-label"></label>
+	@(Html.Kendo().DropDownListFor(m => m.CountryOfBeneficiaryBank).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+	@Html.ValidationMessageFor(X => X.CountryOfBeneficiaryBank)
+</div>
+
+
+
+

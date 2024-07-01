@@ -1,0 +1,111 @@
+﻿@model Eurobank.Models.Application.EBankingSubscriberDetailsModel
+@using Kendo.Mvc.UI
+@{
+    string applicationNumber = Convert.ToString(ViewBag.ApplicationNumber);
+}
+<div class="form-group">
+    <label asp-for="Subscriber" class="control-label"></label>
+    @(Html.Kendo().DropDownListFor(m => m.Subscriber).BindTo((System.Collections.IEnumerable)ViewBag.EbankSubscribers)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").Events(e =>
+{
+	e.DataBound("onSubscriberSgGroupDataBound").Select("onSubscriberSgGroupSelect");
+}).HtmlAttributes(new { @class = "form-control", onchange= "onChangeEbankingSubscribersLegal()" }))
+    @Html.ValidationMessageFor(X => X.Subscriber)
+    @*@Html.HiddenFor(m => m.Subscriber, new { @id = "hdnSubscriber"})*@
+</div>
+<div class="form-group">
+    <label asp-for="IdentityPassportNumber" class="control-label"></label>
+    @Html.Kendo().TextBoxFor(model => model.IdentityPassportNumber).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.IdentityPassportNumber)
+
+</div>
+<div class="form-group">
+    <label asp-for="CountryOfIssue" class="control-label"></label>
+    @*@Html.Kendo().TextBoxFor(model => model.CountryOfIssue).HtmlAttributes(new { @class = "form-control" })*@
+    @(Html.Kendo().DropDownListFor(m => m.CountryOfIssue).BindTo((System.Collections.IEnumerable)ViewBag.CountryIdentification)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+    @Html.ValidationMessageFor(X => X.CountryOfIssue)
+
+</div>
+<div class="form-group">
+    <label asp-for="AccessLevel" class="control-label"></label><span id="spanAccessLevel"></span>
+    @(Html.Kendo().DropDownListFor(m => m.AccessLevel).BindTo((System.Collections.IEnumerable)ViewBag.AccessLevels)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control",onchange= "ShowSignatoryGroup()" }))
+    @Html.ValidationMessageFor(X => X.AccessLevel)
+</div>
+
+<div class="form-group" id="SignatoryGroupDIV" style="display:none">
+    <label asp-for="SignatoryGroupName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.SignatoryGroupName")</label>
+    @*@Html.Kendo().TextBoxFor(model => model.SignatoryGroupName).HtmlAttributes(new { @class = "form-control" })*@
+    @*@(Html.Kendo().DropDownListFor(m => m.SignatoryGroupName).BindTo((System.Collections.IEnumerable)ViewBag.SignatoryGroup)
+        .OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+        .DataValueField("Value")
+        .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+            @Html.ValidationMessageFor(X => X.SignatoryGroupName)*@
+    @(Html.Kendo().DropDownListFor(m => m.SignatoryGroupName)
+        .DataValueField("Value")
+        .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }).OptionLabel("-Select-")
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("GetSignatoryGroupForEBanking", "Applications",new  { applicationNumber = applicationNumber });
+            });
+        }))
+    @Html.ValidationMessageFor(X => X.SignatoryGroupName)
+</div>
+<div class="form-group">
+    <label asp-for="AccessToAllPersonalAccounts" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.AccessToAllPersonalAccounts")</label>
+    @(Html.Kendo().DropDownListFor(m => m.AccessToAllPersonalAccounts)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").Events(e =>
+{
+	e.DataBound("onAllPersonalAccountDataBound");
+}).HtmlAttributes(new { @class = "form-control" }).DataSource(source =>
+{
+	source.Read(read =>
+	{
+		read.Action("AccessToAllPersonalAccount_Read", "Applications");
+	});
+}))
+    @Html.ValidationMessageFor(X => X.AccessToAllPersonalAccounts)
+</div>
+<div class="form-group" style="display:none" id="AutomaticallyAddFuturePersonalAccountsID">
+    <label asp-for="AutomaticallyAddFuturePersonalAccounts" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.AutomaticallyAddFuturePersonalAccounts")</label>
+    @(Html.Kendo().DropDownListFor(m => m.AutomaticallyAddFuturePersonalAccounts).BindTo((System.Collections.IEnumerable)ViewBag.AutomaticallyAddFuturePersonalAccount)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+    @Html.ValidationMessageFor(X => X.AutomaticallyAddFuturePersonalAccounts)
+</div>
+
+
+<div class="form-group">
+    <label asp-for="LimitAmount" class="control-label"></label>
+    @(Html.Kendo().DropDownListFor(m => m.LimitAmount)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").Events(e =>
+{
+    e.DataBound("onLimitAmountDataBound");
+}).DataSource(source =>
+{
+    source.Read(read =>
+    {
+        read.Action("LimitAmount_Read", "Applications");
+    });
+}).HtmlAttributes(new { @class = "form-control", @title = "The amount is maximum allowable limit. Moreover, ability to change the defaulted limit in the future." }))
+    @*@Html.ValidationMessageFor(X => X.AccessLevel)*@
+</div>
+
+
+
+

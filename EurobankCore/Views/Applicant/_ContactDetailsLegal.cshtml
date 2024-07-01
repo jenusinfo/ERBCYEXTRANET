@@ -1,0 +1,108 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Eurobank.Helpers.Validation;
+@{
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.COMMUNICATION_DETAILS))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<div class="shadow-box col-md-12">
+        <ul id="accordionContactDetails">
+            <li id="chartSection" class="k-state-active">
+				<span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+					Contact Details
+				</span>
+                <div id="accordionContactDetailsContentOne" class="row m-0">
+                    @*<div class="form-group">
+                        <input type="button" id="btnPersonSearch" onclick="companySearchGrid();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Search")" class="btn btn-primary mt-3">
+                        <input type="button" id="btnPersonClear" onclick="clearCompanyContact();" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Clear")" class="btn btn-primary mt-3">
+                    </div>*@
+                    
+                        @Html.HiddenFor(model => model.ContactDetailsLegal.ContactDetailsLegalID)
+                        @Html.HiddenFor(model => model.PersonalDetails.Id)
+                        @Html.HiddenFor(model => model.Type)
+				<div class="col-md-6">
+					@*<label asp-for="ContactDetailsLegal.ContactDetailsLegal_PreferredMailingAddress" class="control-label"></label>
+					@(Html.Kendo().DropDownListFor(m => m.ContactDetailsLegal.ContactDetailsLegal_PreferredMailingAddress)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateContactDetailsLegal()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("PreferredMailingAddress_Read", "Applicant");
+			});
+		}))*@
+					@(Html.Kendo().Window().Name("SuccessWindow")
+    .Title("Alert")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(300)
+)
+					@Html.ValidationMessageFor(m => m.ContactDetailsLegal.ContactDetailsLegal_PreferredMailingAddress)
+					<div class="form-group">
+						<label asp-for="ContactDetailsLegal.ContactDetailsLegal_EmailAddressForSendingAlerts" class="control-label"></label>
+						@(Html.Kendo().TextBoxFor(m=>m.ContactDetailsLegal.ContactDetailsLegal_EmailAddressForSendingAlerts).HtmlAttributes(new { @class="form-control", title = "This email address will be the preferred method of communication with the Bank for receiving ERB alerts", id= "ContactDetailsLegal_EmailAddressForSendingAlerts", onfocusout = "validateContactDetailsLegal()",@onkeyup="return limitlength(this,50,'ContactDetailsLegalEmailAddressForSendingAlertsError')",@onKeyDown="return limitlength(this,50,'ContactDetailsLegalEmailAddressForSendingAlertsError')" }))
+					 	<span class="text-danger"> @Html.ValidationMessageFor(m => m.ContactDetailsLegal.ContactDetailsLegal_EmailAddressForSendingAlerts) </span>
+                        <span id="ContactDetailsLegalEmailAddressForSendingAlertsError" class="text-danger"></span>
+					</div>
+
+					<label asp-for="ContactDetailsLegal.ContactDetailsLegal_PreferredCommunicationLanguage" class="control-label"></label>
+					@(Html.Kendo().DropDownListFor(m => m.ContactDetailsLegal.ContactDetailsLegal_PreferredCommunicationLanguage)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .HtmlAttributes(new { @class = "form-control",id= "ContactDetailsLegal_PreferredCommunicationLanguage", onchange = "validateContactDetailsLegal()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("PreferredCommunicationLanguage_Read", "Applicant");
+            });
+        }))
+					@(Html.Kendo().Window().Name("SuccessWindow")
+    .Title("Alert")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(300)
+)
+					@Html.ValidationMessageFor(m => m.ContactDetailsLegal.ContactDetailsLegal_PreferredCommunicationLanguage)
+				<div class="pt-3">
+					@*<div class="form-group">
+						<label asp-for="ContactDetailsLegal.ContactDetailsLegal_SaveInRegistry" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.SaveInRegistry")</label>
+						@(Html.Kendo().CheckBoxFor(m => m.ContactDetailsLegal.ContactDetailsLegal_SaveInRegistry).HtmlAttributes(new { @class = "form-control" }))
+						@Html.ValidationMessageFor(X => X.ContactDetailsLegal.ContactDetailsLegal_SaveInRegistry)
+					</div>*@
+				</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+            </li>
+        </ul>
+  
+</div>
+<script src="~/scripts/custom/applicant/applicant_contactdetailslegal.js"></script>

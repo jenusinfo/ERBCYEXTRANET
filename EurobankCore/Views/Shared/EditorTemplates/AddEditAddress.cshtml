@@ -1,0 +1,96 @@
+﻿@model Eurobank.Models.FormModels.AddressViewModel
+@using Kendo.Mvc.UI
+
+<div class="leftpopup">
+		<form asp-action="AddEditAddress">
+			@Html.HiddenFor(m => m.CountryName)
+			@Html.HiddenFor(m => m.AddresTypeName)
+
+			<div class="row form-group">
+				<div class="col">
+					<label asp-for="AddressType" class="control-label"></label>
+				</div>
+
+				<div class="col">
+					@(Html.Kendo().DropDownListFor(m => m.AddressType).BindTo((System.Collections.IEnumerable)ViewBag.addressType)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text"))
+					@Html.ValidationMessageFor(X => X.AddressType)
+				</div>
+			</div>
+			<div class="form-group">
+				<label asp-for="StreetLane1" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.StreetLane1).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.StreetLane1)
+
+			</div>
+			<div class="form-group">
+				<label asp-for="StreetLane2" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.StreetLane2).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.StreetLane2)
+			</div>
+			<div class="form-group">
+				<label asp-for="City" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.City).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.City)
+			</div>
+			<div class="form-group">
+				<label asp-for="PostalCode" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.PostalCode).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.PostalCode)
+
+			</div>
+
+			<div class="form-group">
+				<label asp-for="AddressDocument" class="control-label"></label>
+				@(Html.Kendo().Upload()
+		.Name("files")
+		.HtmlAttributes(new { aria_label = "files", @style = "width:300px;" })
+		//.Validation(validation =>
+		//{
+		//	validation.AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".bmp", ".gif" });
+		//	validation.MaxFileSize(500000);
+		//})
+		.Messages(m => m.Select("Select Image"))
+		.Multiple(false)
+
+						 .Async(a => a
+			 .Save("Events_Save", "CommonForm")
+			 .Remove("Remove", "CommonForm")
+			 .AutoUpload(true)
+		 )
+
+
+	.Events(events => events
+.Select("onSelect")
+//.Upload("onUpload")
+)
+
+		)
+				
+
+			</div>
+			<div class="row form-group">
+				<div class="col">
+					<label asp-for="Country" class="control-label"></label>
+				</div>
+				<div class="col">
+					@(Html.Kendo().DropDownListFor(m => m.Country).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text"))
+					@*<select id="ddlCountry" name="Country" asp-items="ViewBag.Country">
+			<option value="0">--Select Country--</option>
+		</select>*@
+					@Html.ValidationMessageFor(X => X.Country)
+				</div>
+			</div>
+
+
+		</form>
+	
+</div>
+
+
+

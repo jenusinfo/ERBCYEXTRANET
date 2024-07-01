@@ -1,0 +1,156 @@
+﻿@model Eurobank.Models.Registries.AddressRegistryModel
+@using Kendo.Mvc.UI
+
+<style type="text/css">
+	input{
+		text-transform:uppercase;
+	}
+    .k-window-content, .k-prompt-container {
+        overflow-y: scroll;
+    }
+    .sidebarscroll {
+        overflow-y: scroll !important;
+    }
+	</style>
+<div class="row sidebarscroll">
+	<div class="col-md-12">
+        <form asp-action="AddEditAddress">
+            @*@Html.HiddenFor(m => m.CountryName)
+        @Html.HiddenFor(m => m.AddresTypeName)*@
+
+
+            <div class="form-group">
+                <label asp-for="AddressType" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.AddressType).BindTo((System.Collections.IEnumerable)ViewBag.addressType)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text")
+                    .HtmlAttributes(new { @class = "form-control", @onchange = "ShowRespectedDivAddressRegistry(); ShowHideFieldsOnAddressType();" }))
+                @Html.ValidationMessageFor(X => X.AddressType)
+            </div>
+            <div class="form-group">
+                <label asp-for="LocationName" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.LocationName).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,50,'LocationNameError')", @onKeyDown = "return limitlength(this,50,'LocationNameError')" })
+                @Html.ValidationMessageFor(X => X.LocationName)
+                <span id="LocationNameError" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AddresLine1" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.AddresLine1).HtmlAttributes(new { @class = "form-control", title = "Please enter Street Name and Details:  No, Flat No", @onkeyup = "return limitlength(this,35,'AddressLine1Error')", @onKeyDown = "return limitlength(this,35,'AddressLine1Error')" })
+                @Html.ValidationMessageFor(X => X.AddresLine1)
+                <span id="AddressLine1Error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AddresLine2" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.AddresLine2).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,35,'AddressLine2Error')", @onKeyDown = "return limitlength(this,35,'AddressLine2Error')" })
+                @Html.ValidationMessageFor(X => X.AddresLine2)
+                <span id="AddressLine2Error" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="divAddPOBox" style="display:none;">
+                <label asp-for="POBox" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.POBox).HtmlAttributes(new { @class = "form-control", @onkeypress = "return allowAlphaNumericSpace(event);", @onkeyup = "return limitlength(this,19,'POBoxError')", @onKeyDown = "return limitlength(this,19,'POBoxError')" })
+                @Html.ValidationMessageFor(X => X.POBox)
+                <span id="POBoxError" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostalCode" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.PostalCode).HtmlAttributes(new { @class = "form-control", @onkeypress = "return allowAlphaNumericSpace(event);", @onkeyup = "return limitlength(this,35,'PostalCodeError')", @onKeyDown = "return limitlength(this,35,'PostalCodeError')" })
+                @Html.ValidationMessageFor(X => X.PostalCode)
+                <span id="PostalCodeError" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.City).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,35,'CityError')", @onKeyDown = "return limitlength(this,35,'CityError')" })
+                @Html.ValidationMessageFor(X => X.City)
+                <span id="CityError" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.Country).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text")
+.Filter("startswith")
+.HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.Country)
+            </div>
+            <div id="PhoneNoDIV" style="display:none">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label asp-for="PhoneNo" class="control-label ">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.PhoneNo")</label>
+                            @(Html.Kendo().DropDownListFor(m => m.CountryCode_PhoneNo)
+			.OptionLabel("- Country Code - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+			.Filter("startswith")
+                                .HtmlAttributes(new { @id = "CountryCode_PhoneNo", @class = "form-control", @onchange = "ChangeMaxLengthLegalAddressPhone()" })
+                    .DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("Country_Code_prefix_Read", "Applications");
+			});
+		}))
+                            @Html.ValidationMessageFor(X => X.CountryCode_PhoneNo)
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="control-label" style="padding-top:20px"></label>
+                            @Html.TextBoxFor(model => model.PhoneNo, new { @class = "form-control MobileNumber phone", @id = "PhoneNo", @onkeypress = "return isNumberKey(event);", @onKeyDown = "return limitlengthAccToCountry(this,'PhoneNoError','CountryCode_PhoneNo')", @onkeyup = "return limitlengthAccToCountry(this,'PhoneNoError','CountryCode_PhoneNo')" })
+                            @Html.ValidationMessageFor(X => X.PhoneNo)
+                            <span id="PhoneNoError" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="FaxNoDIV" style="display:none">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label asp-for="FaxNo" class="control-label ">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.FaxNo")</label>
+                            @(Html.Kendo().DropDownListFor(m => m.CountryCode_FaxNo)
+			.OptionLabel("- Country Code - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+.Filter("startswith")
+                                .HtmlAttributes(new { @id = "CountryCode_FaxNo", @class = "form-control", @onchange = "ChangeMaxLengthLegalAddressFax()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("Country_Code_prefix_Read", "Applications");
+			});
+		}))
+                            @Html.ValidationMessageFor(X => X.CountryCode_FaxNo)
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="control-label" style="padding-top:20px"></label>
+                            @Html.TextBoxFor(model => model.FaxNo, new { @class = "form-control MobileNumber phone", @id = "FaxNo", @type = "tel", @onkeypress = "return isNumberKey(event);", @onKeyDown = "return limitlengthAccToCountry(this,'FaxNoError','CountryCode_FaxNo')", @onkeyup = "return limitlengthAccToCountry(this,'FaxNoError','CountryCode_FaxNo')" })
+                            @Html.ValidationMessageFor(X => X.FaxNo)
+                            <span id="FaxNoError" class="text-danger"></span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+	</div>
+</div>
+<script src="~/Scripts/KendoProcess/CommonDataValidationProcess.js"></script>
+<script type="text/javascript">
+		$(document).ready(function() {
+			$(".sidebarscroll").niceScroll({
+				cursorborder: "",
+				cursorcolor: "#0F0",
+				cursoropacitymax: 0.7,
+				boxzoom: false
+			});
+
+
+		});
+    
+</script>
+
+

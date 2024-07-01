@@ -1,0 +1,182 @@
+﻿@model Eurobank.Models.SupportViewModel
+
+@{
+	ViewBag.Title = ResHelper.GetString("EuroBank.PageTitle.Support");
+}
+
+@*<h4>@Model.Name</h4>*@
+
+@*<editable-area area-identifier="areaSupportItem" />*@
+<span id="loader"></span>
+<div class="container">
+	<div class="pt-4 pb-5">
+		<div class="d-flex justify-content-center">
+			@*<div class="searchbox">
+				<input type="search" class="form-control">				
+			</div>*@
+			<div class="input-group input-group-lg col-md-4">
+				<input type="text" class="form-control" />
+				<span class="input-group-addon">
+					<a href="" class="btn btn-light btn-lg"> <i class="fa fa-search"></i> </a>
+				</span>
+			</div>
+		</div>
+
+		<div class="mt-4 mb-5 support-section">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="supp-box">
+						<div class="row m-0 align-items-baseline">
+							<div class="col-2 p-0">
+								<div class="supp-icon"> 
+									<img src="~/Content/Images/get-started.png" />
+								</div>
+							</div>
+							<div class="col-10 pr-0">
+								<h4 class="mb-4">Get Started</h4>
+								<p> The Digital Self Service platform is an innovative portal that allows you to onboard customers to the bank.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<div class="supp-box">
+						<div class="row m-0 align-items-baseline">
+							<div class="col-2 p-0">
+								<div class="supp-icon"> <img src="~/Content/Images/reach-phone.png" /> </div>
+							</div>
+							<div class="col-10 pr-0">
+								<h4 class="mb-4">Reach us by phone</h4>
+                                <p> General enquiries:+357 22 476476. Check <a href="https://www.eurobank.com.cy/en-us/contact-support/contact-information/office-hours-and-banking-holidays" target="_blank">working hours</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<div class="supp-box">
+						<div class="row m-0 align-items-baseline">
+							<div class="col-2 p-0">
+								<div class="supp-icon"> <img src="~/Content/Images/email-us.png" /> </div>
+							</div>
+							<div class="col-10 pr-0">
+								<h4 class="mb-4">Email us direcly</h4>
+                                <p> General enquiries: dssp@eurobank.com.cy or send us a message <a href="https://www.eurobank.com.cy/en-us/contact-support/contact/contact-us" target="_blank">here</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+    
+ @*<editable-area area-identifier="areaSupportSelftSeartedPortal" />*@
+
+@*<div class="white_bg self-service">
+	<div class="pt-5 pb-5">
+		<div class="container">
+			<h2 class="iconbg"> Get Started with Self Service Portal </h2>
+			<div class="pt-5">
+				<div class="row">
+					<div class="col-md-4">
+						<h5 class="mb-3"> Trending Topics </h5>
+						<ul class="file-bullet">
+							<li>Lorem Ipsum is simply dummy</li>
+							<li>Lorem Ipsum is simply dummy</li>
+							<li>Lorem Ipsum is simply dummy</li>
+						</ul>
+					</div>
+
+					<div class="col-md-4">
+						<h5 class="mb-3"> Trending Topics </h5>
+						<ul class="file-bullet">
+							<li>Lorem Ipsum is simply dummy</li>
+							<li>Lorem Ipsum is simply dummy</li>
+							<li>Lorem Ipsum is simply dummy</li>
+						</ul>
+					</div>
+
+					<div class="col-md-4">
+						<h5 class="mb-3"> Trending Topics </h5>
+						<ul class="file-bullet">
+							<li>Lorem Ipsum is simply dummy</li>
+							<li>Lorem Ipsum is simply dummy</li>
+							<li>Lorem Ipsum is simply dummy</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>    *@
+
+@*<div class="container">
+	<div class="row">
+		<div class="pt-5 pb-5 w-100 faq-accordian">
+			<editable-area area-identifier="areaSupport" />
+		</div>
+	</div>
+</div>*@
+
+@*<div class="white_bg">
+	<div class="container">
+		<div class="row pt-5 pb-5">
+			<div class="col-md-6">
+				<div class="contact-details">
+					<div class="pb-4">
+						<h3> Visit Us </h3>
+						<p>
+							28, Spyrou Kyprianou Avenue Nicosia, <br />
+							1075, CY,
+						</p>
+					</div>
+
+					<div class="pb-4">
+						<h3> Email Us</h3>
+						<a href="mailto:ebanking@eurobank.com.cy"> ebanking@eurobank.com.cy </a>
+					</div>
+
+					<div class="pb-4">
+						<h3> Call Us</h3>
+						<p>+35722208000</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="support-form">
+					<h3 class="mb-3">GET IN TOUCH </h3>
+					<p class="mb-4"> We’ve all heard how crucial it is to set intentions, goals and targets. Powerful goals electrify us. Clear intentions energize and pull us forward.</p>
+					<editable-area area-identifier="areaContact" />
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>*@
+<script>
+	var loadingPanelVisible = false;
+    $("#loader").kendoLoader({
+        visible: false
+    });
+    function showHideLoader() {
+        var loader = $("#loader").data("kendoLoader");
+        loadingPanelVisible = !loadingPanelVisible;
+        if (loadingPanelVisible) {
+            loader.show();
+        } else {
+            loader.hide();
+        }
+    }
+    //Menu
+    $("#navbarNavDropdown > ul > li").click(function () {
+        showHideLoader()
+    })
+	//Logo
+	$(".logo-image").click(function () {
+		showHideLoader()
+	})
+</script>
+

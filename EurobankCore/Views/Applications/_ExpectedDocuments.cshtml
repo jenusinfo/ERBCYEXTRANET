@@ -1,0 +1,174 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Validation;
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: center;
+    }
+</style>
+
+@{
+    int appID = 0;
+    if (ViewBag.ApplicationId != null)
+    {
+        appID = Convert.ToInt32(ViewBag.ApplicationId);
+    }
+    string applicationNumber = string.Empty;
+    if (ViewBag.ApplicationNumber != null)
+    {
+        applicationNumber = Convert.ToString(ViewBag.ApplicationNumber);
+    }
+    bool isLegalEntity = false;
+    if (Model != null)
+    {
+        isLegalEntity = string.Equals(Model.EntityTypeCode, "LEGAL-ENTITY", StringComparison.OrdinalIgnoreCase);
+    }
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.APPLICATION_EXPECTED_DOCUMENTS))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionExpectedDocuments">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.ExpectedDocuments")
+                </span>
+                <div id="accordionExpectedDocumentsContentOne">
+
+
+                    @(Html.Kendo().Grid<Eurobank.Models.Documents.DocumentsViewModel>
+		()
+		.Name("ExpectedDocuments")
+		.Columns(columns =>
+		{
+							columns.Template
+							(
+							@"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+							).Width(30);
+							columns.Bound(p => p.Entity_Name).Width(150);
+							columns.Bound(p => p.EntityRole_Name).Width(150);
+							columns.Bound(p => p.EntityType_Name).ClientTemplate("#= bindRolesData(data) #").Width(150);
+							columns.Bound(p => p.DocumentType_Name).Width(150);
+							columns.Bound(p => p.RequiresSignatureStatus).Width(150);
+							columns.Bound(p => p.uploadedBy).Width(150);
+							columns.Bound(p => p.uploadedOn).ClientTemplate("#= (uploadedOn == null) ? ' ' : kendo.toString(uploadedOn, \"dd/MM/yyyy \") #").Width(150);
+			columns.Bound(p => p.BankDocuments_Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+
+		})
+		.Events(e =>
+
+		{
+			e.Edit("addExpectedConfirmButton");
+			e.DataBound("onGridDataBoundExpectedDocument");
+			e.Cancel("onGridCancel");
+			e.SaveChanges("onSavechangeExpectedDocument");
+		})
+		 //.ToolBar(toolbar => toolbar.ClientTemplate("<a class='k-button' style='margin-left: auto;' href='" + Url.Action("AddNewExpectedDouments", "Applications", new { id = Model.Id, entityType=Model.EntityType }) + "'>New</a>"))
+		 .ToolBar(toolbar => { if (Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
+		.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode==Eurobank.Helpers.DataAnnotation.Constants.LegalEntity? "LegalAddEditExpectedDocuments" : "AddEditExpectedDocuments").DisplayDeleteConfirmation(false).Window(w=>w.Title("Expected Documents-Upload").Width(800))).EnableCustomBinding(true)
+		.Pageable()
+		.Sortable()
+		.Scrollable()
+		.HtmlAttributes(new { style = "max-height:550px;" })
+		.DataSource(dataSource => dataSource
+		.Ajax()
+		.PageSize(10)
+		 .Sort(x => x.Add("BankDocuments_Status_Name").Descending())
+		//.Events(e => e.RequestStart("hideIdField"))
+		.Model(model =>
+
+		{
+
+			model.Id(p => p.DocId);
+			model.Field(p => p.EntityType);
+			model.Field(p => p.FileUpload);
+			model.Field(p => p.FileUpload1);
+		})
+		 //.Model(model => model.Id(p => p.AddressGuid))
+		 .Events(events => events.Error("error_handlerExpectedDocuments").Sync("Sync_handlerExpectedDocuments"))
+
+		.ServerOperation(true)
+		.Create(update => update.Action("ExpectedDocumentsPopup_Create", "Applications",new { id=Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+		.Read(read => read.Action("ExpectedDocuments_Read", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+		.Update(update => update.Action("ExpectedDocumentsPopup_Update", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+		.Destroy(update => update.Action("ExpectedDocumentsPopup_Destroy", "Applications"))
+		)
+		)
+
+
+                </div>
+
+            </li>
+
+        </ul>
+
+    </div>
+</div>
+<div id="EntityRole">
+    @(Html.Kendo().Window()
+	.Name("EntityRoleWindow")
+	.Title("Related Party Roles")
+	.Content(@<text>
+
+	<table>
+		<tbody id="EntityRoletbodyId">
+
+		</tbody>
+	</table>
+
+    </text>)
+	.Visible(false)
+	.Width(900)
+	.Height(900)
+	.Actions(actions => actions.Close())
+
+)
+</div>
+@Html.Hidden("IsExpectedDocAttachmentAllowed", Model.ApplicationDetails.IsExpectedDocAttachmentAllowed)
+@Html.Hidden("GetRelatedPartyRolesUrl", Url.Action("GetRelatedPartyRoles", "Applications"))
+@Html.Hidden("IsLegalEntity", isLegalEntity)
+@Html.Hidden("DownloadFileUrl", Url.Action("DownloadFile", "CommonForm"))
+@Html.Hidden("ApplicationNumber", applicationNumber)
+<ul id="context-menuExpectedDocuments">
+
+    <li id="editRowExpDoc">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+
+    <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+</ul>
+<script src="~/Scripts/Custom/Application/ExpectedDocuments.js"></script>
+

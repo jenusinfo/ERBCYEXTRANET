@@ -1,0 +1,265 @@
+﻿@model Eurobank.Models.Application.Common.AddressDetailsModel
+@using Kendo.Mvc.UI
+@using Eurobank.Helpers.Process;
+@using Microsoft.AspNetCore.Mvc;
+@using Eurobank.Models.Application.Common;
+@{
+	var userModel = UserProcess.GetUser(User.Identity.Name);
+	bool isIntroducer = userModel != null && string.Equals(userModel.UserType, ApplicationUserType.INTRODUCER.ToString(), StringComparison.OrdinalIgnoreCase);
+
+}
+<style>
+	#divRegisteredAddresss {
+		display: none;
+	}
+
+	th > input[type=checkbox] {
+		/*height: 0;
+		border-bottom-width: 0;*/
+		display: none;
+	}
+
+	.k-window-content, .k-prompt-container {
+		overflow-y: scroll;
+	}
+</style>
+
+<script>
+	function onSearchWindowClose() {
+		$('#AddressLine1').change();
+		$('#AddressLine1').focus();
+		$('#AddressLine1').focusout();
+		$('#AddressLine2').change();
+		$('#AddressLine2').focus();
+		$('#AddressLine2').focusout();
+		$('#POBox').change();
+		$('#POBox').focus();
+		$('#POBox').focusout();
+		$('#PostalCode').change();
+		$('#PostalCode').focus();
+		$('#PostalCode').focusout();
+		$('#City').change();
+		$('#City').focus();
+		$('#City').focusout();
+		$('#Country').change();
+		$('#Country').focus();
+		$('#Country').focusout();
+
+		var dropdownlist = $("#Country").data("kendoDropDownList");
+		dropdownlist.trigger("change");
+		dropdownlist.focus();
+		$('#AddressLine1').focus();
+
+	}
+</script>
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(model => model.AddressRegistryId)
+<div class="form-group">
+	<label asp-for="AddressType" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.AddressType")</label>
+	@(Html.Kendo().DropDownListFor(m => m.AddressType).BindTo((System.Collections.IEnumerable)ViewBag.AddressTypes)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control",@onchange = "ShowHideFieldsOnAddressType()" }))
+	@Html.ValidationMessageFor(X => X.AddressType)
+</div>
+
+<div class="form-group">
+	<input type="button" id="btnSearch" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Search")" class="btn btn-primary mt-3">
+	<input type="button" id="btnClear" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Clear")" class="btn btn-primary mt-3">
+</div>
+
+<div id="divRegisteredAddresss">
+
+	@(Html.Kendo().Window()
+    .Name("SearchWindow")
+    .Title(ResHelper.GetString("Eurobank.Application.Applicant.Address.Search.Header"))
+    .Content(@<text>
+        @(Html.Kendo().Grid<Eurobank.Models.Registries.AddressRegistryModel>
+()
+.Name("RegAddressDetails")
+.Columns(columns =>
+{
+	//columns.Select().Width(50);
+    columns.Bound(p => p.LocationName).Title("Name").Width(200);
+					columns.Bound(p => p.AddresLine1).Title("Address Line 1").Width(200);
+					columns.Bound(p => p.AddresLine2).Title("Address Line 2").Width(200);
+    columns.Bound(p => p.PostalCode).Width(150);
+    columns.Bound(p => p.POBox).Width(120);
+    columns.Bound(p => p.City).Width(150);
+    columns.Bound(p => p.CountryName).Title("Country").Width(150);
+    
+    //if (isLegalEntity == true)
+    //{
+    //    columns.Bound(p => p.PhoneNo);
+    //    columns.Bound(p => p.FaxNo);
+    //}
+})
+@*.ToolBar(toolbar =>
+        toolbar.ClientTemplate("<div class='toolbar search-address'>" +
+        "<input type='text' name='toolLocationName' placeholder='Location Name' class ='k-textbox' id='toolLocationName'/>" +
+        "<input type='text' name='toolAddressLine1' placeholder='Address Line 1' class ='k-textbox' id='toolAddressLine1'/>" +
+        "<input type='text' name='toolAddressLine2' placeholder='Address Line 2' class ='k-textbox' id='toolAddressLine2'/>" +
+        "<input type='text' name='toolPostalCode' placeholder='Postal Code' class ='k-textbox' id='toolPostalCode'/>" +
+        "<input type='text' name='toolCity' placeholder='City' class ='k-textbox' id='toolCity'/>" +
+        "<input type='text' name='toolPOBox' placeholder='P O Box' class ='k-textbox' id='toolPOBox'/>" +
+        "<input type='text' name='toolCountryName' placeholder='Country' class ='k-textbox' id='toolCountryName'/>" +
+        "<button class='k-button' onclick='searchAddresses()'>Search</button></div>"))*@
+		.ToolBar(toolbar =>
+        toolbar.ClientTemplate("<div class='toolbar'> " +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+"<input type='text' name='toolLocationName' placeholder='Name' class='k-textbox' id='toolLocationName'>" +
+"</div></div></div></div>" +
+"<div class='toolbar'>" +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+"<input type='text' name='toolAddressLine1' placeholder='Address Line 1' class='k-textbox' id='toolAddressLine1'>" +
+"</div></div></div></div>" +
+"<div class='toolbar'>" +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+"<input type='text' name='toolAddressLine2' placeholder='Address Line 2' class='k-textbox' id='toolAddressLine2'>" +
+"</div></div></div></div>" +
+"<div class='toolbar'>" +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+"<input type='text' name='toolPostalCode' placeholder='Postal Code' class='k-textbox' id='toolPostalCode'>" +
+"</div></div></div></div>" +
+"<div class='toolbar'>" +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+		"<input type='text' name='toolPOBox' placeholder='P O Box' class='k-textbox' id='toolPOBox'>" +
+"</div></div></div></div>" +
+"<div class='toolbar'>" +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+		"<input type='text' name='toolCity' placeholder='City' class='k-textbox' id='toolCity'>" +
+"</div></div></div></div>" +
+"<div class='toolbar'>" +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+"<input type='text' name='toolCountryName' placeholder='Country' class='k-textbox' id='toolCountryName'>" +
+"</div></div></div></div>" +
+"<div class='toolbar'>" +
+"<div class='row'><div class='col-md-12'><div class='input-group'>" +
+"<button class='k-button' onclick='searchAddresses()'>Search</button>" +
+"</div></div></div></div>"))
+.Pageable()
+		.Selectable(x => x.Mode(GridSelectionMode.Single))
+.Sortable()
+.Scrollable()
+.HtmlAttributes(new { style = "height:550px;" })
+.DataSource(dataSource => dataSource
+.Ajax()
+.PageSize(10)
+.Model(model =>
+{
+
+    //model.Id(p => p.Id);
+    model.Field(p => p.AddressType);
+    model.Field(p => p.AddressTypeName);
+    model.Field(p => p.AddresLine1);
+    model.Field(p => p.AddresLine2);
+    model.Field(p => p.PostalCode);
+    model.Field(p => p.POBox);
+    model.Field(p => p.City);
+    model.Field(p => p.Country);
+    model.Field(p => p.CountryName);
+    //model.Field(p => p.Status);
+})
+.ServerOperation(true)
+//.Read(read => read.Action("RegisteredAddresses_Read", "Registries"))
+.Read(read => read.Action("AddressRegistry_Read", "Registries"))
+))
+
+	<div class="form-group d-flex justify-content-end">
+		<input type="button" id="btnAddressCancel" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Cancel")" class="btn btn-link mt-3 mr-3 k-grid-cancel">
+		<input type="button" id="btnAddressSelect" value="@ResHelper.GetString("Eurobank.Application.Applicant.Button.Address.Select")" class="btn btn-primary mt-3">
+	</div>
+    </text>)
+	.Resizable()
+	.Visible(false)
+	.Width(600)
+	.Events(events => events
+			.Close("onSearchWindowClose")
+			.Deactivate("onSearchWindowClose")
+		)
+	.Actions(actions => actions.Close())
+//.Events(ev => ev.Close("onSearchWindowClose"))
+)
+
+
+
+
+</div>
+
+<div class="form-group">
+	<label asp-for="AddressLine1" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.AddressLine1")</label>
+	@Html.Kendo().TextBoxFor(model => model.AddressLine1).HtmlAttributes(new { @class = "form-control", title = "Please enter Street Name and Details:  No, Flat No",@onkeyup="return limitlength(this,35,'AddressLine1Error')",@onKeyDown="return limitlength(this,35,'AddressLine1Error')" })
+	@Html.ValidationMessageFor(X => X.AddressLine1)
+	<span id="AddressLine1Error" class="text-danger"></span>
+
+</div>
+<div class="form-group">
+	<label asp-for="AddressLine2" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.AddressLine2")</label>
+	@Html.Kendo().TextBoxFor(model => model.AddressLine2).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,35,'AddressLine2Error')",@onKeyDown="return limitlength(this,35,'AddressLine2Error')" })
+	@Html.ValidationMessageFor(X => X.AddressLine2)
+	<span id="AddressLine2Error" class="text-danger"></span>
+
+</div>
+<div class="form-group" id="divAddPOBox" style="display:none;">
+    <label asp-for="POBox" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.POBox")</label>
+    @Html.Kendo().TextBoxFor(model => model.POBox).HtmlAttributes(new { @class = "form-control", @onkeypress = "return allowAlphaNumericSpace(event);", @onkeyup = "return limitlength(this,19,'IndividualPOBoxError')", @onKeyDown = "return limitlength(this,19,'IndividualPOBoxError')" })
+    @Html.ValidationMessageFor(X => X.POBox)
+    <span id="IndividualPOBoxError" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="PostalCode" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.PostalCode")</label>
+	@Html.Kendo().TextBoxFor(model => model.PostalCode).HtmlAttributes(new { @class = "form-control", @onkeypress = "return allowAlphaNumericSpace(event);",@onkeyup="return limitlength(this,35,'PostalCodeError')",@onKeyDown="return limitlength(this,35,'PostalCodeError')" })
+	@Html.ValidationMessageFor(X => X.PostalCode)
+	<span id="PostalCodeError" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="City" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.City")</label>
+	@Html.Kendo().TextBoxFor(model => model.City).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,35,'CityError')",@onKeyDown="return limitlength(this,35,'CityError')",@onkeypress = "return alphaOnly(event);" })
+	@Html.ValidationMessageFor(X => X.City)
+	<span id="CityError" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="Country" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.Country")</label>
+	@(Html.Kendo().DropDownListFor(m => m.Country).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text")
+.Filter("startswith")
+.HtmlAttributes(new { @class = "form-control" }))
+	@Html.ValidationMessageFor(X => X.Country)
+</div>
+
+@if(!ViewBag.IsRelatedParty)
+{
+	<div class="form-group d-none"> @*d-none added for issue id 652*@
+		<label asp-for="MainCorrespondenceAddress" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.MainCorrespondenceAddress")</label>
+		@(Html.Kendo().CheckBoxFor(m => m.MainCorrespondenceAddress).HtmlAttributes(new { @class = "form-control" }))
+		@Html.ValidationMessageFor(X => X.MainCorrespondenceAddress)
+	</div>
+}
+
+
+@if(isIntroducer)
+{
+	<div class="form-group">
+		<label asp-for="SaveInRegistry" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.SaveInRegistry")</label>
+		@(Html.Kendo().CheckBoxFor(m => m.SaveInRegistry).HtmlAttributes(new { @class = "form-control" }))
+		@Html.ValidationMessageFor(X => X.SaveInRegistry)
+	</div>
+	<div class="form-group" id="LocationID" style="display:none">
+		<label asp-for="LocationName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.Location")</label>
+		@(Html.Kendo().TextBoxFor(m => m.LocationName).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,50,'LocationNameError')", @onKeyDown = "return limitlength(this,50,'LocationNameError')" }))
+		@Html.ValidationMessageFor(X => X.LocationName)
+		<span id="LocationNameError" class="text-danger"></span>
+	</div>
+}
+<div id="divMailingAddressSame" class="form-group" style="display:none">
+	<label asp-for="MailingAddressSame" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.Address.Label.MailingAddressSame")</label>
+	@(Html.Kendo().CheckBoxFor(m => m.MailingAddressSame).HtmlAttributes(new { @class = "form-control" }))
+	@Html.ValidationMessageFor(X => X.MailingAddressSame)
+</div>
+<script src="~/Scripts/KendoProcess/CommonDataValidationProcess.js"></script>
+<script src="~/Scripts/Custom/Editor/AddEditAddressDetails.js"></script>
+
+
+

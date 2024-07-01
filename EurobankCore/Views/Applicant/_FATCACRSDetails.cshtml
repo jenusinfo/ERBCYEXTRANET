@@ -1,0 +1,169 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Eurobank.Helpers.Validation;
+@{
+	//List<ValidationResultModel> validationResults = null;
+	//string sectionValidationClass = "";
+	//if (ViewBag.ErrorSummaryMsgs != null)
+	//{
+	//	validationResults = ViewBag.ErrorSummaryMsgs;
+	//	if (validationResults.Any(j => !j.IsValid))
+	//	{
+	//		validationResults = validationResults.Where(j => !j.IsValid).ToList();
+	//	}
+
+	//	if (validationResults != null && validationResults.Count > 0)
+	//	{
+	//		if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.FATCA_DETAILS))
+	//		{
+	//			sectionValidationClass = "bg-danger-row";
+	//		}
+	//		else
+	//		{
+	//			sectionValidationClass = "bg-success-row";
+	//		}
+	//	}
+	//	else
+	//	{
+	//		sectionValidationClass = "bg-success-row";
+	//	}
+	//}
+}
+<div class="shadow-box col-md-12" id="st_FATCACSR">
+	<ul id="accordionFATCACSR">
+		<li id="chartSection" class="k-state-active">
+			<span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+				@ResHelper.GetString("Eurobank.FATCACSRDetails")
+			</span>
+			<div id="FATCACSRaccordionContentOne">
+				<div class="row m-0">
+					<div class="col-md-12">
+						<div class="col-md-6">
+							<div class="form-group">
+								@Html.HiddenFor(m => m.FATCACRSDetails.FATCADetailsID)
+								<label asp-for="FATCACRSDetails.FATCADetails_FATCAClassification" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.FATCACRSDetails.FATCADetails_FATCAClassification)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.Events(e =>
+		{
+			e.Select("onSelectFATCAClassification").DataBound("onDataBoundFATCAClassi");
+		})
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateFatcaDetails()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("FATCA_CLASSIFICATION_Read", "Applicant");
+			});
+		}))
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="col-md-6">
+							<div class="form-group" id="divFatcaUSEntityType">
+								<label asp-for="FATCACRSDetails.FATCADetails_USEtityType" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.FATCACRSDetails.FATCADetails_USEtityType)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateFatcaDetails()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("US_ENTITY_TYPE_Read", "Applicant");
+			});
+		}))
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="col-md-6">
+							<div class="form-group" id="divFatcaUSForeignFinancialType">
+								<label asp-for="FATCACRSDetails.FATCADetails_TypeofForeignFinancialInstitution" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.FATCACRSDetails.FATCADetails_TypeofForeignFinancialInstitution)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.Events(e =>
+		{
+			e.Select("onSelectForeignFinancialIns").DataBound("onDataBoundForeignFinan");
+		})
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateFatcaDetails()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("TYPE_OF_FOREIGN_FINANCIAL_INSTITUTION_Read", "Applicant");
+			});
+		}))
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="col-md-6">
+							<div class="form-group" id="divFatcaNonForeignFinancialType">
+								<label asp-for="FATCACRSDetails.FATCADetails_TypeofNonFinancialForeignEntity" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.FATCACRSDetails.FATCADetails_TypeofNonFinancialForeignEntity)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.Events(e =>
+		{
+			e.Select("onSelectNonForeignFinancialIns").DataBound("onDataBoundNonForeignFinan");
+		})
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateFatcaDetails()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("TYPE_OF_NON_FINANCIAL_FOREIGN_ENTITY_NFFE_Read", "Applicant");
+			});
+		}))
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="col-md-6">
+							<div class="form-group" id="divGIINNumber">
+								<label asp-for="FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber" class="control-label"></label>
+								@Html.Kendo().TextBoxFor(model => model.FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,19,'FATCADetailsGlobalIntermediaryIdentificationNumberError')",@onKeyDown="return limitlength(this,19,'FATCADetailsGlobalIntermediaryIdentificationNumberError')" })
+								<span id="FATCADetailsGlobalIntermediaryIdentificationNumberError" class="text-danger"></span>
+
+								@*@(Html.Kendo().DropDownListFor(m => m.FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateFatcaDetails()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("GLOBAL_INTERMEDIARY_IDENTIFICATION_NUMBER_GIIN_Read", "Applicant");
+			});
+		}))*@
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label asp-for="FATCACRSDetails.ExemptionReason" class="control-label"></label>
+								@Html.Kendo().TextBoxFor(model => model.FATCACRSDetails.ExemptionReason).HtmlAttributes(new { @class = "form-control" })
+								@*@(Html.Kendo().DropDownListFor(m => m.FATCACRSDetails.ExemptionReason)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control", onchange = "validateFatcaDetails()" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("EXEMPTION_REASON_Read", "Applicant");
+			});
+		}))*@
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+	</ul>
+</div>
+<script src="~/scripts/custom/applicant/applicant_fatcacrsdetails.js"></script>

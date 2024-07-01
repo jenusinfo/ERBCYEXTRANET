@@ -1,0 +1,127 @@
+﻿@using Kendo.Mvc.UI
+
+@model Eurobank.Models.IdentificationDetails.IdentificationDetailsViewModel
+
+<div class="shadow-box">
+	
+	@(Html.Kendo().Grid<Eurobank.Models.IdentificationDetails.IdentificationDetailsViewModel>
+			()
+			.Name("IdentificationDetails")
+			.Columns(columns =>
+			{
+				columns.Bound(p => p.IdentificationDetails_CitizenshipName).Width(200);
+				columns.Bound(p => p.IdentificationDetails_TypeOfIdentificationName).Width(200);
+				columns.Bound(p => p.IdentificationDetails_IdentificationNumber).Width(200);
+				columns.Bound(p => p.IdentificationDetails_IssueDate).ClientTemplate("#= (IdentificationDetails_IssueDate == null) ? ' ' : kendo.toString(IdentificationDetails_IssueDate, \"dd/MM/yyyy \") #").Width(150);
+				columns.Bound(p => p.IdentificationDetails_ExpiryDate).ClientTemplate("#= (IdentificationDetails_ExpiryDate == null) ? ' ' : kendo.toString(IdentificationDetails_ExpiryDate, \"dd/MM/yyyy \") #").Width(150);
+				columns.Command(command => { command.Custom("Delete").Click("DisplayDeleteConfirmation"); }).Width(100);
+			})
+			.Events(e =>
+			{
+				e.Edit("onGridEditing");
+				e.DataBound("onGridDataBound");
+				e.Cancel("onGridCancel");
+			})
+			.ToolBar(toolbar =>
+			{
+				toolbar.ClientTemplate(@"<div class='toolbar'>
+								<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <select id='column-IdentificationDetails'  class='form-control'></select>
+
+									</div>
+
+								</div>
+
+							</div>
+							</div>
+<div class='toolbar'>
+							<div class='row'>
+				                    <div class='col-md-12'>
+				                        <div class='input-group'>
+				                            <span class='input-group-addon'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></span>
+				                            <input type = 'text' class='form-control' id='searchboxIdentificationDetails' placeholder='Search All'>
+
+				                        </div>
+				                    </div>
+				                </div>
+				            </div>
+<div  style='margin-left: auto;'>
+<a class='new-contact k-grid-add'   ><span class='k-icon k-i-plus-circle mr-1'></span>NEW</a>
+</div>
+
+");
+
+			})
+
+			.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditIdentificationDetails").Window(w => w.Title("Identification").Width(800))).EnableCustomBinding(true)
+			.Pageable()
+			.Sortable()
+			.Scrollable()
+
+			.HtmlAttributes(new { style = "height:550px;" })
+			.DataSource(dataSource => dataSource
+			.Ajax()
+			.PageSize(10)
+			//.Events(e => e.RequestStart("onEdit"))
+			.Model(model =>
+			{
+
+				model.Id(p => p.IdentificationDetailsID);
+				model.Field(p => p.IdentificationDetails_Citizenship);
+				model.Field(p => p.IdentificationDetails_CountryOfIssue);
+				model.Field(p => p.IdentificationDetails_ExpiryDate);
+				model.Field(p => p.IdentificationDetails_IdentificationNumber);
+				model.Field(p => p.IdentificationDetails_IssueDate);
+				model.Field(p => p.IdentificationDetails_TypeOfIdentification);
+				model.Field(p => p.PnodeGUID);
+			})
+
+			//.Model(model => model.Id(p => p.AddressGuid))
+			.ServerOperation(true)
+			.Create(update => update.Action("IdentificationPopup_Create", "Identifications", new { pNodeAliaspath=Model.NodeAliaspath, nodeGUID = Model.PnodeGUID }))
+			.Read(read => read.Action("Identification_Read", "Identifications", new { pNodeAliaspath = Model.NodeAliaspath }))
+			//.Update(update => update.Action("IncommingTransactionPopup_Update", "Applications"))
+			.Destroy(update => update.Action("IdentificationPopup_Destroy", "Identifications"))
+			)
+		)
+</div>
+<script>
+	function onEdit(e) {
+		alert();
+		e.container.addClass('k-window-lg');
+	}
+	$(document).ready(function() {
+
+		var grid = $("#IdentificationDetails").data("kendoGrid");
+		var gridColumns = grid.options.columns;
+		htmlOptionsAddress = "<option value=''>All</option>";
+		for(var i = 0; i < gridColumns.length - 1; i++) {
+			htmlOptionsAddress += "<option value='" + gridColumns[i].field + "'>" + gridColumns[i].title + "</option>";
+		}
+		$("#column-IdentificationDetails")
+			.append(htmlOptionsAddress);
+
+		//change event
+		$("#searchboxIdentificationDetails").keyup(function() {
+			var val = $('#searchbox').val();
+			var fieldID = $('#column-list').val();
+
+			$("#IdentificationDetails").data("kendoGrid").dataSource.filter({
+				logic: "or",
+				filters: [
+					{
+						field: fieldID,
+						operator: "contains",
+						value: val
+					},
+
+				]
+			});
+
+
+		});
+	});
+</script>

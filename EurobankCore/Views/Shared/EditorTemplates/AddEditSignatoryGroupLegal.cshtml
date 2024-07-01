@@ -1,0 +1,105 @@
+﻿@model Eurobank.Models.Application.Applicant.LegalEntity.SignatoryGroupModel
+@using Kendo.Mvc.UI
+@using Eurobank.Models.KendoExtention
+@using Eurobank.Helpers.DataAnnotation
+@{
+
+	RadioGroupViewModel SignatureRights = new RadioGroupViewModel();
+	List<IInputGroupItem> signatureGroupRights = ServiceHelper.SignatureMandateTypeGroup();
+	string anyOneCanSign = string.Empty;
+	string allJointly = string.Empty;
+	if(signatureGroupRights != null)
+	{
+		SignatureRights.Items = signatureGroupRights.Where(u => !string.Equals(u.Label, "Other", StringComparison.OrdinalIgnoreCase)).ToList();
+		anyOneCanSign = signatureGroupRights.Where(u => string.Equals(u.Label, "Any one alone can sign", StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Label;
+		allJointly = signatureGroupRights.Where(u => string.Equals(u.Label, "All Jointly", StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Label;
+	}
+
+	string applicationNumber = string.Empty;
+	int applicationId = 0;
+	if(ViewBag.ApplicationNumber != null)
+	{
+		applicationNumber = Convert.ToString(ViewBag.ApplicationNumber);
+	}
+	if(ViewBag.ApplicationId != null)
+	{
+		applicationId = Convert.ToInt32(ViewBag.ApplicationId);
+	}
+
+}
+
+<script>
+	function onAllOrJointGroupChange() {
+		$('#SignatureRightsValue').val($('#AllOrJointGroup').data("kendoRadioGroup").value());
+		$('#SignatureRightsValue').trigger("change");
+	}
+</script>
+
+<div class="form-group">
+	<label asp-for="SignatoryGroupName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.SignatoryGroupName")</label>
+	@*@Html.Kendo().TextBoxFor(model => model.SignatoryGroupName).HtmlAttributes(new { @class = "form-control" })*@
+	@(Html.Kendo().DropDownListFor(m => m.SignatoryGroupName)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").DataSource(source =>
+{
+	source.Read(read =>
+	{
+		read.Action("SignatoryGroupDropdown_Read", "Applications", new { @apID = applicationId });
+	});
+}).Events(e =>
+{
+	e.DataBound("onSignatoryGroupDataBound").Change("onSignatoryGroupNameChange");
+}).HtmlAttributes(new { @class = "form-control" }))
+	@Html.ValidationMessageFor(X => X.SignatoryGroupName)
+
+</div>
+
+<div class="form-group">
+	<label asp-for="SignatoryPersons" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.SignatoryPersons")</label>
+	@(Html.Kendo().MultiSelectFor(X => X.SignatoryPersonsList)
+			.AutoClose(false).DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }).Placeholder(ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.SignatoryPersons"))
+		//.DataSource(source =>
+		//{
+		//	source.Read(read =>
+		//	{
+		//		read.Action("SignatoryPersons_Read", "Applications", new { @applicationNumber = applicationNumber });
+		//	});
+		//})
+		.BindTo((System.Collections.IEnumerable)ViewBag.SignatoryPerson)
+		)
+	@Html.ValidationMessageFor(X => X.SignatoryPersons)
+	@Html.HiddenFor(X => X.SignatoryPersonsList, new { @id = "hdnSignatoryPersonsList" })
+</div>
+
+<div class="form-group" id="divSignatureRights">
+	<label asp-for="SignatureRightsValue" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.SignatureRightsValue")</label>
+	@(Html.Kendo().RadioGroup()
+			.Name("AllOrJointGroup")
+			.Layout("vertical").Events(e =>
+		{
+			e.Change("onAllOrJointGroupChange");
+		})
+			.Value(Model != null ? Model.SignatureRightsValue : "")
+			.BindTo(SignatureRights.Items)
+
+        )
+	@Html.ValidationMessageFor(X => X.SignatureRightsValue)
+	@Html.HiddenFor(u => u.SignatureRightsValue)
+</div>
+@*<div class="form-group">
+	<label asp-for="StartDate" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.StartDate")</label>
+	@Html.Kendo().DatePickerFor(model => model.StartDate).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+	@Html.ValidationMessageFor(X => X.StartDate)
+
+</div>
+<div class="form-group">
+	<label asp-for="EndDate" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.SignatoryGroup.Label.EndDate")</label>
+	@Html.Kendo().DatePickerFor(model => model.EndDate).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+	@Html.ValidationMessageFor(X => X.EndDate)
+</div>*@
+
+
+
+

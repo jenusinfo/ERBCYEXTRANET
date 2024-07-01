@@ -1,0 +1,76 @@
+﻿@model Eurobank.Models.Applications.ApplicationDetailsModelView
+@using Kendo.Mvc.UI
+
+<div class="row app-header">
+	<div class="col-lg-3">
+		
+	</div>
+	<div class="col-lg-9 fixapp-info">
+		<div class="shadow-box mb-2">
+			<div class="row">
+				<div class="col">
+					<label>APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+				</div>
+				<div class="col">
+					<label>STATUS :  @Model.ApplicationDetails_ApplicationStatus</label>
+				</div>
+				<div class="col">
+					<label>TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+				</div>
+				<div class="col">
+					<label>INTRODUCER : @Model.ApplicationDetails_IntroducerName</label>
+				</div>
+				<div class="col text-right">
+					<div class="dropdown info-dropdown">
+						<button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="fa fa-info-circle" aria-hidden="true"></i> INFO
+						</button>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+							<ul>
+								<li>
+									<strong>APPLICATION ID :</strong>
+									 @Model.ApplicationDetails_ApplicationNumber
+								</li>
+								<li>
+									<strong>APPLICATION TYPE :</strong>
+									 @Model.ApplicationDetails_ApplicationTypeName
+								</li>
+								<li>
+									<strong>SUBMITTED ON :</strong>
+									 @Model.ApplicationDetails_SubmittedOn
+								</li>
+								<li>
+									<strong>CREATED BY :</strong>
+									 @Model.ApplicationDetails_SubmittedBy
+								</li>
+								<li>
+									<strong>CREATED ON :</strong>
+									@Model.ApplicationDetails_CreatedOn
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			@*<h5 class="mb-3">INFO</h5>*@
+			@*<div class="row">
+			<div class="col">
+				<label>APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+			</div>
+			<div class="col">
+				<label>APPLICATION TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+			</div>
+			<div class="col">
+				<label>Submitted On : @Model.ApplicationDetails_SubmittedOn</label>
+			</div>
+			<div class="col">
+				<label>Created By : @Model.ApplicationDetails_SubmittedBy</label>
+			</div>
+			<div class="col">
+				<label>Created On : @Model.ApplicationDetails_CreatedOn</label>
+			</div>
+		</div>*@
+		</div>
+	</div>
+</div>

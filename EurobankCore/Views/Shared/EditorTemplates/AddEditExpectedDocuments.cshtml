@@ -1,0 +1,223 @@
+﻿@model Eurobank.Models.Documents.DocumentsViewModel
+@using Kendo.Mvc.UI
+@{
+    int appID = 0;
+    if (ViewBag.ApplicationId != null)
+    {
+        appID = Convert.ToInt32(ViewBag.ApplicationId);
+    }
+    string applicationNumber = string.Empty;
+    if (ViewBag.ApplicationNumber != null)
+    {
+        applicationNumber = Convert.ToString(ViewBag.ApplicationNumber);
+    }
+}
+<div class="">
+
+    <div class="form-group">
+        @Html.HiddenFor(m => m.FileName)
+        <label asp-for="Entity" class="control-label"></label>
+        @(Html.Kendo().DropDownListFor(m => m.Entity).BindTo((System.Collections.IEnumerable)ViewBag.DocumentsEntityName)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", @onchange = "SelectExpectedEntityType()" }))
+        @Html.ValidationMessageFor(X => X.Entity)
+    </div>
+    <div class="form-group">
+        <label asp-for="EntityType" class="control-label"></label>
+        @(Html.Kendo().DropDownListFor(m => m.EntityRole).BindTo((System.Collections.IEnumerable)ViewBag.DocumentEntityType)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control",@id= "EntityRoleID" }))
+        @Html.ValidationMessageFor(X => X.EntityType)
+    </div>
+
+    @*<div class="form-group">
+            <label asp-for="EntityType" class="control-label"></label>
+            @(Html.Kendo().DropDownListFor(m => m.EntityType)
+                .OptionLabel("- Select - ")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .HtmlAttributes(new { @class = "form-control" })
+
+            .DataSource(source => {
+                source.Read(read =>
+                {
+                    read.Action("EntityType_Read", "Applications");
+                });
+            }))
+            @Html.ValidationMessageFor(X => X.EntityType)
+        </div>*@
+    @*<div class="form-group">
+            <label asp-for="EntityRole" class="control-label"></label>
+            @(Html.Kendo().DropDownListFor(m => m.EntityRole)
+                .OptionLabel("- Select - ")
+            .DataTextField("Text")
+            .DataValueField("Text")
+            .HtmlAttributes(new { @class = "form-control" })
+            .Enable(false)
+            .DataSource(source => {
+                source.Read(read =>
+                {
+                    read.Action("EntityRole_Read", "Applications");
+                });
+            }))
+            @Html.ValidationMessageFor(X => X.EntityType)
+        </div>*@
+    <div class="form-group">
+        <label asp-for="DocumentType" class="control-label"></label>
+        @(Html.Kendo().DropDownListFor(m => m.DocumentType)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("ExpectedDocumentType_Read", "Applications");
+			});
+		}))
+        @Html.ValidationMessageFor(X => X.DocumentType)
+    </div>
+    <div class="form-group">
+        <label asp-for="RequiresSignature" class="control-label"></label>
+        @(Html.Kendo().DropDownListFor(m => m.RequiresSignature)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("RequiresSignature_Read", "Applications");
+			});
+		}))
+        @Html.ValidationMessageFor(X => X.RequiresSignature)
+    </div>
+    <div class="form-group">
+        <div id="FileUplaodDIV">
+            @(Html.Kendo().Upload()
+				.Name("files")
+				.Async(a => a
+					.Save("Documents_Save", "CommonForm", new { applicationNumber = applicationNumber })
+					.Remove("Async_Remove", "CommonForm")
+					.AutoUpload(false)
+
+				)
+				.Events(events => events
+				.Success("onExpectedFileSuccess")
+			)
+				.DropZone(".dropZoneElement")
+			//.Validation(validation =>
+			//{
+			//    validation.AllowedExtensions(Model.AllowedExtensions);
+			//    if (@Model.IsLimited)
+			//    {
+			//        validation.MaxFileSize(3145728);
+			//    }
+			//})
+            )
+            @Html.ValidationMessageFor(X => X.Consent)
+        </div>
+
+        @*@(Html.Kendo().Upload()
+                    .Name("files")
+                    .HtmlAttributes(new { aria_label = "files", @style = "width:300px;" })
+                        //.Validation(validation =>
+                        //{
+                        //	validation.AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".bmp", ".gif" });
+                        //	validation.MaxFileSize(500000);
+                        //})
+
+
+                    .Messages(m => m.Select("Select Image"))
+                    .Multiple(false)
+
+                                     .Async(a => a
+                         .Save("Documents_Save", "CommonForm")
+                         .Remove("Remove", "CommonForm")
+                         .AutoUpload(true)
+
+                )
+
+
+            //.Upload("onUpload")
+            )*@
+
+        <div id="prevUploadExpectedDoc">
+            @*<input type="button" id="btnShowExpectedFile" value="OpenFile" />*@
+            <button type="button" id="btnShowExpectedFile">
+                <i class="fa fa-info-circle" aria-hidden="true"></i> Open
+            </button>
+        </div>
+
+        <div id="showBankDocBlockInd" style="display:none">
+            @(Html.Kendo().Window()
+    .Name("ExpectedDocWindow")
+    .Title("Expected Document")
+	.Visible(false)
+    .Content(@<text>
+            <div id="ExpectedDocPdfViewer">
+				<div class="mod" id="documentModal">
+	<div class="m-dialog">
+		<div class="m-content">
+			<div class="m-header">
+				<h5 class="m-title" id="ExpectedDocumentModalLabel"></h5>
+				<a href="" download id="ExpectedDocumentDownload" class="ms-auto">
+					Download
+				</a>
+			</div>
+            <div class="m-body">
+				<div class="row">
+					@*<div class="col-4">
+						<div id="divComment" class="download-PDF"></div>
+					</div>*@
+					<div class="col-12" id="pdfDocumetsExpected">
+						<embed id="embDocumentExpected" src="" width="100%" height="800" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
+					</div>
+
+					<div class="col-12" id="othersDocumetsExpected" style="display:none" >
+						<div class="info-box info-bg2 bghover">
+							<h3 class="box-titl">No Preview Avaliable </h3>
+							<div class="box-botm">
+								<a href="" download  id="ExpectedDocumentDownloadOthers" class="box-action" >Download</a>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
+            </div>
+		</div>
+	</div>
+</div>
+			</div>
+    </text>)
+)
+
+        </div>
+
+    </div>
+    <div class="form-group d-none">
+        @Html.Kendo().CheckBoxFor(model => model.Consent)
+    </div>
+</div>
+<script>
+    $('#btnShowExpectedFile').click(function () {
+        var popup = $("#ExpectedDocWindow").data('kendoWindow');
+        popup.open();
+    });
+    $(document).ready(function () {
+        if ($("#IsExpectedDocAttachmentAllowed").val() == "True") {
+            $("#FileUplaodDIV").css("display", "block");
+        }
+        else {
+            $("#FileUplaodDIV").css("display", "none");
+        }
+    });
+</script>
+
+

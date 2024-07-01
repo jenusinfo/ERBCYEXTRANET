@@ -1,0 +1,93 @@
+﻿@model Eurobank.Models.Applications.ApplicationDetailsModelView
+@using Kendo.Mvc.UI
+
+<div class="row app-header">
+    <div class="col-lg-3">
+
+    </div>
+    <div class="col-lg-9 fixapp-info">
+        <div class="shadow-box mb-2">
+            <div class="row">
+                <div class="col">
+                    <label>APPLICATION ID : <span class="HeaderTextColor">@Model.ApplicationDetails_ApplicationNumber</span></label>
+                </div>
+                <div class="col">
+                    @*<label>STATUS :  <span class="HeaderTextColor">@Model.ApplicationDetails_ApplicationStatus</span></label>*@
+                    <label>STATUS :  <span class="HeaderTextColor">@Model.ApplicationDetails_ApplicationStatusName</span></label>
+                </div>
+                <div class="col">
+                    <label>TYPE : <span class="HeaderTextColor">@Model.ApplicationDetails_ApplicationTypeName </span></label>
+                </div>
+                <div class="col">
+                    <label>BUSINESS ASSOCIATE : <span class="HeaderTextColor">@Model.ApplicationDetails_IntroducerName</span></label>
+                </div>
+				<div class="col">
+					<div class="d-flex justify-content-end">
+						<div class="dropdown info-dropdown mr-3">
+                            <button type="button" id="btnPrintSummary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="applicationPrintSummary()">
+                                <i class="k-icon k-i-print" aria-hidden="true"></i> SUMMARY
+							</button>
+							@*<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<ul>
+									<li>
+										<strong>APPLICATION ID :</strong>
+										<span class="HeaderTextColor"> @Model.ApplicationDetails_ApplicationNumber</span>
+									</li>
+									<li>
+										<strong>APPLICATION TYPE :</strong>
+										<span class="HeaderTextColor"> @Model.ApplicationDetails_ApplicationTypeName</span>
+									</li>
+									<li>
+										<strong>SUBMITTED ON :</strong>
+										<span class="HeaderTextColor">@Model.ApplicationDetails_SubmittedOn</span>
+									</li>
+									<li>
+										<strong>CREATED BY :</strong>
+										<span class="HeaderTextColor"> @Model.ApplicationDetails_SubmittedBy</span>
+									</li>
+									<li>
+										<strong>CREATED ON :</strong>
+										<span class="HeaderTextColor"> @Model.ApplicationDetails_CreatedOn</span>
+									</li>
+								</ul>
+							</div>*@
+						</div>
+
+						<div class="dropdown info-dropdown">
+							<button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fa fa-caret-square-o-down" aria-hidden="true"></i> ACTION
+							</button>
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <ul>
+                                    <li><span class="k-icon k-i-print"></span>&nbsp;&nbsp;<a class="k-color-dark" href="javascript:;" onclick="applicationPrintFriendly()">Print Detailed</a></li>
+                                    <li><i class="k-icon k-i-print"></i>&nbsp;&nbsp;<a class="k-color-dark" href="javascript:;" onclick="applicationPrintSummary()">Print Summary</a></li>
+                                    <li><i class="k-icon k-i-download"></i>&nbsp;&nbsp;<a class="k-color-dark" href="javascript:;" onclick="applicationExportXML()">Export XML</a></li>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span>&nbsp;&nbsp;<a class="k-color-dark" href="javascript:;">Close</a></li>
+                                </ul>
+							</div>
+						</div>
+					</div>
+				</div>
+            </div>
+
+            @*<h5 class="mb-3">INFO</h5>*@
+            @*<div class="row">
+                    <div class="col">
+                        <label>APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+                    </div>
+                    <div class="col">
+                        <label>APPLICATION TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+                    </div>
+                    <div class="col">
+                        <label>Submitted On : @Model.ApplicationDetails_SubmittedOn</label>
+                    </div>
+                    <div class="col">
+                        <label>Created By : @Model.ApplicationDetails_SubmittedBy</label>
+                    </div>
+                    <div class="col">
+                        <label>Created On : @Model.ApplicationDetails_CreatedOn</label>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</div>

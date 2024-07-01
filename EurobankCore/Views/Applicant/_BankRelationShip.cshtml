@@ -1,0 +1,212 @@
+﻿@model Eurobank.Models.Application.Applicant.ApplicantModel
+@using Eurobank.Helpers.Validation;
+@{
+    var m = Model;
+    string hasAccountInOtherBank = "true";
+    if (Model.PersonalDetails != null)
+    {
+        hasAccountInOtherBank = Model.PersonalDetails.HasAccountInOtherBank == true ? "true" : "false";
+    }
+    if (Model.CompanyDetails != null)
+    {
+        hasAccountInOtherBank = Model.CompanyDetails.HasAccountInOtherBank == true ? "true" : "false";
+    }
+    //string isPEPFamily = Model.PersonalDetails.IsRelatedToPep == true ? "true" : "false";
+    bool isLegalEntity = string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+}
+@if (isLegalEntity)
+{
+    @*List<ValidationResultModel> validationResults = null;
+    string sectionValidationClass = "";
+    if (ViewBag.ErrorSummaryMsgs != null)
+    {
+        validationResults = ViewBag.ErrorSummaryMsgs;
+        if (validationResults.Any(j => !j.IsValid))
+        {
+            validationResults = validationResults.Where(j => !j.IsValid).ToList();
+        }
+
+        if (validationResults != null && validationResults.Count > 0)
+        {
+            if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.EXISTING_BANK_RELATIONSHIP))
+            {
+                sectionValidationClass = "bg-danger-row";
+            }
+            else
+            {
+                sectionValidationClass = "bg-success-row";
+            }
+        }
+        else
+        {
+            sectionValidationClass = "bg-success-row";
+        }
+    }*@
+
+    <div class="shadow-box col-md-12" id="stBankRelationship">
+        <ul id="accordionBankRelationship">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.BankRelationship")
+                </span>
+                <div id="BankRelationshipaccordionContentOne">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label asp-for="CompanyDetails.HasAccountInOtherBankName" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.CompanyDetails.HasAccountInOtherBankName)
+	.OptionLabel("- Select - ")
+.DataTextField("Text")
+.DataValueField("Value")
+                                    .Events(e =>
+                                    {
+                                        e.Change("showhideFieldofBankingRelationshipLegal").DataBound("onDataBoundBankingRelationshipLegal");
+                                    })
+		.HtmlAttributes(new { @class = "form-control" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("IsApplicant_Read", "Applicant");
+			});
+		}))
+							</div>
+
+
+
+                            <div class="form-group" id="divCompanyDetailsNameOfBankingInstitution">
+
+								<label asp-for="CompanyDetails.NameOfBankingInstitution" class="control-label"></label>
+								@Html.Kendo().TextBoxFor(model => model.CompanyDetails.NameOfBankingInstitution).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBankingRelationshipLegal()",@onkeyup="return limitlength(this,50,'CompanyDetailsNameOfBankingInstitutionError')",@onKeyDown="return limitlength(this,50,'CompanyDetailsNameOfBankingInstitutionError')" })
+								@Html.ValidationMessageFor(X => X.CompanyDetails.NameOfBankingInstitution)
+                                <span id="CompanyDetailsNameOfBankingInstitutionError" class="text-danger"></span>
+                                
+							</div>
+
+                            <div class="form-group" id="divCompanyDetailsCountryOfBankingInstitution">
+								<label asp-for="CompanyDetails.CountryOfBankingInstitution" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.CompanyDetails.CountryOfBankingInstitution)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+        .HtmlAttributes(new { @class = "form-control", onchange = "validateBankingRelationshipLegal()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("CountryOfTaxResidency_Read", "Applicant");
+            });
+        }))
+							</div>
+
+						</div>
+					</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    @*List<ValidationResultModel> validationResults = null;
+    string sectionValidationClass = "";
+    if (ViewBag.ErrorSummaryMsgs != null)
+    {
+        validationResults = ViewBag.ErrorSummaryMsgs;
+        if (validationResults.Any(j => !j.IsValid))
+        {
+            validationResults = validationResults.Where(j => !j.IsValid).ToList();
+        }
+
+        if (validationResults != null && validationResults.Count > 0)
+        {
+            if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.EXISTING_BANK_RELATIONSHIP))
+            {
+                sectionValidationClass = "bg-danger-row";
+            }
+            else
+            {
+                sectionValidationClass = "bg-success-row";
+            }
+        }
+        else
+        {
+            sectionValidationClass = "bg-success-row";
+        }
+    }*@
+
+    <div class="shadow-box col-md-12" id="stBankRelationship">
+
+
+        <ul id="accordionBankRelationship">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.BankRelationship")
+                </span>
+				<div id="BankRelationshipaccordionContentOne">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label asp-for="PersonalDetails.HasAccountInOtherBankName" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.PersonalDetails.HasAccountInOtherBankName)
+	.OptionLabel("- Select - ")
+.DataTextField("Text")
+.DataValueField("Value")
+                                    .Events(e =>
+                                    {
+                                        e.Change("showhideFieldofBankingRelationshipIndividual").DataBound("onDataBoundBankingRelationshipIndividual");
+                                    })
+                                    .HtmlAttributes(new { @class = "form-control" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("IsApplicant_Read", "Applicant");
+			});
+		}))
+							</div>
+
+
+                            <div class="form-group" id="divNameOfBankingInstitution">
+
+								<label asp-for="PersonalDetails.NameOfBankingInstitution" class="control-label"></label>
+								@Html.Kendo().TextBoxFor(model => model.PersonalDetails.NameOfBankingInstitution).HtmlAttributes(new { @class = "form-control", onfocusout = "validateBankingRelationshipIndividual()",@onkeyup="return limitlength(this,50,'PersonalDetailsNameOfBankingInstitutionError')",@onKeyDown="return limitlength(this,50,'PersonalDetailsNameOfBankingInstitutionError')" })
+								@Html.ValidationMessageFor(X => X.PersonalDetails.NameOfBankingInstitution)
+                                <span id="PersonalDetailsNameOfBankingInstitutionError" class="text-danger"></span>
+							</div>
+
+                            <div class="form-group" id="divCountryOfBankingInstitution">
+								<label asp-for="PersonalDetails.CountryOfBankingInstitution" class="control-label"></label>
+								@(Html.Kendo().DropDownListFor(m => m.PersonalDetails.CountryOfBankingInstitution)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+        .HtmlAttributes(new { @class = "form-control", onchange = "validateBankingRelationshipIndividual()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("CountryOfTaxResidency_Read", "Applicant");
+            });
+        }))
+							</div>
+
+						</div>
+					</div>
+
+
+				</div>
+            </li>
+        </ul>
+
+    </div>
+}
+<script src="~/scripts/custom/applicant/applicant_bankrelationship.js"></script>
+@*<script>
+    $("#accordionBankRelationship").kendoPanelBar({
+        expandMode: "multiple" //options are 'single' and 'multiple'. 'multiple' is the default value
+    });
+
+    var accordion = $("#accordionBankRelationship").data("kendoPanelBar");
+    accordion.collapse("#chartSection");
+</script>*@
+
+

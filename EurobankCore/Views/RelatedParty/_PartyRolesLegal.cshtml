@@ -1,0 +1,381 @@
+﻿@model Eurobank.Models.Application.RelatedParty.RelatedPartyModel
+@using Eurobank.Helpers.Validation;
+@{
+    bool isUBO = false;
+    bool isLegal = false;
+    string ApplicantEntityType = string.Empty;
+    string ApplicantCountryOfIncorporation = string.Empty;
+    if (Model != null)
+    {
+        ApplicantEntityType = Convert.ToString(TempData["ApplicantEntityType"]);
+        ApplicantCountryOfIncorporation = Convert.ToString(TempData["ApplicantCountryOfIncorporation"]);
+        isLegal = string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+        if (Model.CompanyDetails != null)
+        {
+            isUBO = Model.CompanyDetails.IsRelatedPartyUBO;
+        }
+        else if (Model.PersonalDetails != null)
+        {
+            isUBO = Model.PersonalDetails.IsRelatedPartyUBO;
+        }
+    }
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.RELATED_PARTY_ROLES))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionPartyRoles">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    Related Party Roles
+                </span>
+                <div id="accordionPartyRolesContentOne" class="row m-0">
+                    @Html.HiddenFor(model => model.PartyRolesLegal.RelatedPartyRolesLegalID)
+                    @*<div class="row pt-4">
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsDirector" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsDirector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                </div>
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAlternativeDirector" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAlternativeDirector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                </div>
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsSecretary" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsSecretary).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                </div>
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsShareholder" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsShareholder).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                </div>
+                                @if (Model != null && !string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="d-flex justify-content-between mb-4 form-group">
+                                        <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedContactPerson" class="control-label"></label>
+                                        @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedContactPerson).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                    </div>
+                                }
+
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedSignatory" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedSignatory).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                </div>
+                                @if (Model != null && !string.Equals(Model.Type, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="d-flex justify-content-between mb-4 form-group">
+                                        <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedPerson" class="control-label"></label>
+                                        @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedPerson).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-4 form-group">
+                                        <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsDesignatedEBankingUser" class="control-label"></label>
+                                        @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsDesignatedEBankingUser).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-4 form-group">
+                                        <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedCardholder" class="control-label"></label>
+                                        @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedCardholder).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                    </div>
+                                }
+
+                                @if (isUBO)
+                                {
+                                    <div class="d-flex justify-content-between mb-4 form-group">
+                                        <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsUltimateBeneficiaryOwner" class="control-label"></label>
+                                        @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsUltimateBeneficiaryOwner).Events(e => e.Change("validatePartyRolesLegal")).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round" }))
+                                    </div>
+                                }
+
+                            </div>
+                        </div>*@
+
+                    <div class="row pt-4">
+                        <div class="col-md-4">
+                            <div id="RelatedPartyRoles_IsDirector_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsDirector" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsDirector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsDirector" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsAlternativeDirector_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAlternativeDirector" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAlternativeDirector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsAlternativeDirector" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsSecretary_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsSecretary" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsSecretary).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsSecretary" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsAlternateSecretery_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAlternateSecretery" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAlternateSecretery).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsAlternateSecretery" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsPresidentOfCouncil_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsPresidentOfCouncil" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsPresidentOfCouncil).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsPresidentOfCouncil" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsVicePresidentOfCouncil_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsVicePresidentOfCouncil" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsVicePresidentOfCouncil).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsVicePresidentOfCouncil" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsSecretaryOfCouncil_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsSecretaryOfCouncil" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsSecretaryOfCouncil).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsSecretaryOfCouncil" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsTreasurerOfCouncil_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsTreasurerOfCouncil" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsTreasurerOfCouncil).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsTreasurerOfCouncil" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsMemberOfCouncil_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsMemberOfCouncil" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsMemberOfCouncil).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsMemberOfCouncil" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsChairmanOfTheBoardOfDirector_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsChairmanOfTheBoardOfDirector" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsChairmanOfTheBoardOfDirector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsChairmanOfTheBoardOfDirector" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsPresidentOfCommittee_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsPresidentOfCommittee " class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsPresidentOfCommittee).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsPresidentOfCommittee" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsVicePresidentOfCommittee_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsVicePresidentOfCommittee" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsVicePresidentOfCommittee).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsVicePresidentOfCommittee" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsSecretaryOfCommittee_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsSecretaryOfCommittee " class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsSecretaryOfCommittee).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsSecretaryOfCommittee" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsTreasurerOfCommittee_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsTreasurerOfCommittee " class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsTreasurerOfCommittee).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsTreasurerOfCommittee" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsMemeberOfCommittee_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsMemeberOfCommittee " class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsMemeberOfCommittee).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsMemeberOfCommittee" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsTrustee_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsTrustee " class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsTrustee).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsTrustee" }))
+                                </div>
+                            </div>
+                            <div style="display:none" id="RelatedPartyRoles_IsSettlor_DIV">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsSettlor" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsSettlor).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsSettlor" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsProtector_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsProtector" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsProtector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsProtector" }))
+                                </div>
+                            </div>
+                            @if(string.Equals(ApplicantEntityType,"TRUST",StringComparison.OrdinalIgnoreCase))
+                            {
+                                if(isUBO)
+                                {
+                                    <div id="RelatedPartyRoles_IsBenificiary_DIV">
+                                        <div class="d-flex justify-content-between mb-4 form-group">
+                                            <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsBenificiary" class="control-label"></label>
+                                            @(Html.Kendo().SwitchFor(m => m.PartyRolesLegal.RelatedPartyRoles_IsBenificiary).Checked(true).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class = "slider round", @id = "RelatedPartyRoles_IsBenificiary", @disabled = "disabled" }))
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                            <div id="RelatedPartyRoles_IsBenificiary_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsBenificiary" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsBenificiary).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsBenificiary" }))
+                                </div>
+                            </div>
+                            }
+                            <div id="RelatedPartyRoles_IsFounder_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsFounder" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsFounder).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsFounder" }))
+                                </div>
+                            </div>
+                            @if (isUBO && !(string.Equals(ApplicantEntityType, "Pension Fund", StringComparison.OrdinalIgnoreCase) || string.Equals(ApplicantEntityType, "Provident Fund", StringComparison.OrdinalIgnoreCase) || string.Equals(ApplicantEntityType, "Trade Union", StringComparison.OrdinalIgnoreCase)))
+                            {
+                                <div id="RelatedPartyRoles_IsUltimateBeneficiaryOwner_DIV">
+                                    <div class="d-flex justify-content-between mb-4 form-group">
+                                        <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsUltimateBeneficiaryOwner" class="control-label"></label>
+                                        @(Html.Kendo().SwitchFor(m => m.PartyRolesLegal.RelatedPartyRoles_IsUltimateBeneficiaryOwner).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class = "slider round", @id = "RelatedPartyRoles_IsUltimateBeneficiaryOwner", @checked= "checked",@disabled= "disabled" }))
+                                    </div>
+                                </div>
+                            }
+                            <div id="RelatedPartyRoles_IsAuthorisedCardholder_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedCardholder" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedCardholder).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsAuthorisedCardholder" }))
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div id="RelatedPartyRoles_IsViceChairmanOfTheBoardOfDirector_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsViceChairmanOfTheBoardOfDirector" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsViceChairmanOfTheBoardOfDirector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsViceChairmanOfTheBoardOfDirector" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsSecretaryOfTheBoardOfDirector_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsSecretaryOfTheBoardOfDirector " class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsSecretaryOfTheBoardOfDirector).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsSecretaryOfTheBoardOfDirector" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsTreasurerOfBoardOfDirectors_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsTreasurerOfBoardOfDirectors" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsTreasurerOfBoardOfDirectors).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsTreasurerOfBoardOfDirectors" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsMemeberOfBoardOfDirectors_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsMemeberOfBoardOfDirectors" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsMemeberOfBoardOfDirectors).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsMemeberOfBoardOfDirectors" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsShareholder_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsShareholder" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsShareholder).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsShareholder" }))
+                                </div>
+                            </div>
+
+                            <div id="RelatedPartyRoles_IsAuthorisedSignatory_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedSignatory" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedSignatory).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsAuthorisedSignatory" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsAuthorisedPerson_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedPerson" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedPerson).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsAuthorisedPerson" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsDesignatedEBankingUser_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsDesignatedEBankingUser" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsDesignatedEBankingUser).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round",@id= "RelatedPartyRoles_IsDesignatedEBankingUser" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsAuthorisedContactPerson_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsAuthorisedContactPerson" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsAuthorisedContactPerson).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsAuthorisedContactPerson" }))
+                                </div>
+                            </div>
+
+                            <div id="RelatedPartyRoles_IsPartner_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsPartner" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsPartner).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsPartner" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_GeneralPartner_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_GeneralPartner" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_GeneralPartner).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_GeneralPartner" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_LimitedPartner_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_LimitedPartner" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_LimitedPartner).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_LimitedPartner" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsFundMlco_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsFundMlco" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsFundMlco).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsFundMlco" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsFundAdministrator_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsFundAdministrator" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsFundAdministrator).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsFundAdministrator" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsManagementCompany_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsManagementCompany" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsManagementCompany).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsManagementCompany" }))
+                                </div>
+                            </div>
+                            <div id="RelatedPartyRoles_IsHolderOfManagementShares_DIV" style="display:none">
+                                <div class="d-flex justify-content-between mb-4 form-group">
+                                    <label asp-for="PartyRolesLegal.RelatedPartyRoles_IsHolderOfManagementShares" class="control-label"></label>
+                                    @(Html.Kendo().SwitchFor(m=>m.PartyRolesLegal.RelatedPartyRoles_IsHolderOfManagementShares).Events(e => e.Change("validatePartyRolesLegal")).HtmlAttributes(new { @class= "slider round", @id = "RelatedPartyRoles_IsHolderOfManagementShares" }))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </li>
+        </ul>
+    </div>
+</div>
+@Html.Hidden("ApplicantEntityType", ApplicantEntityType)
+@Html.Hidden("ApplicantCountryOfIncorporation", ApplicantCountryOfIncorporation)
+@Html.Hidden("IsLegal", isLegal)
+@Html.Hidden("IsUBO", isUBO)
+<script src="~/Scripts/Custom/RelatedParty/RelatedParty_PartyRolesLegal.js"></script>

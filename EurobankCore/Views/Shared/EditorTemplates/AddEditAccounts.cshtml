@@ -1,0 +1,65 @@
+﻿@model Eurobank.Models.Applications.Accounts.AccountsDetailsViewModel
+@using Kendo.Mvc.UI
+
+
+	<div class="form-group">
+		<ul class="errors">@Html.ValidationMessage("AlreadyExists")</ul>
+	</div>
+		
+		<div class="form-group">
+			<label asp-for="Accounts_AccountType" class="control-label"></label>
+			@(Html.Kendo().DropDownListFor(m => m.Accounts_AccountType)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("TypeofAccount_Read", "Applications");
+			});
+		})
+    )
+
+			@Html.ValidationMessageFor(X => X.Accounts_AccountType)
+
+		</div>
+		<div class="form-group">
+			<label asp-for="Accounts_Currency" class="control-label"></label>
+			@(Html.Kendo().DropDownListFor(m => m.Accounts_Currency)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+        .HtmlAttributes(new { @class = "form-control" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Accounts_Currency_Read", "Applications");
+            });
+        })
+    )
+			@Html.ValidationMessageFor(X => X.Accounts_Currency)
+		</div>
+		@*<div class="form-group">
+			<label asp-for="Accounts_StatementFrequency" class="control-label"></label>
+			@(Html.Kendo().DropDownListFor(m => m.Accounts_StatementFrequency)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("Accounts_StatementFrequency_Read", "Applications");
+			});
+		})
+    )
+			@Html.ValidationMessageFor(X => X.Accounts_StatementFrequency)
+		</div>*@
+
+
+
+
+
+

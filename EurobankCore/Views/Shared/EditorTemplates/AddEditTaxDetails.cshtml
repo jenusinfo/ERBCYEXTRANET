@@ -1,0 +1,51 @@
+﻿@model Eurobank.Models.Applications.TaxDetails.TaxDetailsViewModel
+@using Kendo.Mvc.UI
+
+@Html.HiddenFor(m => m.TaxDetails_TinUnavailableReasonName)
+@Html.HiddenFor(m => m.Status)
+<div class="form-group">
+    <label asp-for="TaxDetails_CountryOfTaxResidency" class="control-label"></label>
+
+    @(Html.Kendo().DropDownListFor(m => m.TaxDetails_CountryOfTaxResidency)
+		.BindTo((System.Collections.IEnumerable)ViewBag.Countries)
+        .OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+        .HtmlAttributes(new { @class = "form-control" })
+    )
+    @Html.ValidationMessageFor(X => X.TaxDetails_CountryOfTaxResidency)
+</div>
+
+<div class="form-group">
+    <label asp-for="TaxDetails_TaxIdentificationNumber" class="control-label"></label>
+    @Html.Kendo().TextBoxFor(model => model.TaxDetails_TaxIdentificationNumber).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,35,'TaxDetails_TaxIdentificationNumberError')", @onKeyDown = "return limitlength(this,35,'TaxDetails_TaxIdentificationNumberError')" })
+    @Html.ValidationMessageFor(X => X.TaxDetails_TaxIdentificationNumber)
+    <span id="TaxDetails_TaxIdentificationNumberError" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="TaxDetails_TinUnavailableReason" class="control-label"></label>
+    @(Html.Kendo().DropDownListFor(m => m.TaxDetails_TinUnavailableReason)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .HtmlAttributes(new { @class = "form-control",onchange= "ShowTaxDetailsRespectedField()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("JustificationForTinUnavalability_Read", "Applicant");
+            });
+        })
+    )
+    @Html.ValidationMessageFor(X => X.TaxDetails_TinUnavailableReason)
+</div>
+<div class="form-group" id="JustificationForTinUnavalabilityID" style="display:none">
+    <label asp-for="TaxDetails_JustificationForTinUnavalability" class="control-label"></label>
+    @Html.Kendo().TextBoxFor(model => model.TaxDetails_JustificationForTinUnavalability).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,65,'TaxDetails_JustificationForTinUnavalabilityError')", @onKeyDown = "return limitlength(this,65,'TaxDetails_JustificationForTinUnavalabilityError')" })
+    @Html.ValidationMessageFor(X => X.TaxDetails_JustificationForTinUnavalability)
+    <span id="TaxDetails_JustificationForTinUnavalabilityError" class="text-danger"></span>
+</div>
+<script src="~/scripts/custom/editor/addedittaxdetails.js"></script>
+
+

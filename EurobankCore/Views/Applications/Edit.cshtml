@@ -1,0 +1,370 @@
+﻿@using CMS.DataEngine
+@using CMS.SiteProvider
+@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Models.Application.Common;
+@using Kendo.Mvc.UI;
+@using Eurobank.Helpers.Validation;
+@{
+    ViewBag.Title = Model.ApplicationNumber;
+    Layout = "~/Views/Shared/_Layout_Applications.cshtml";
+    bool isLegalEntity = string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+    List<ValidationResultModel> validationResults = null;
+    if (ViewBag.ErrorSummaryMsgs != null)
+    {
+        validationResults = ViewBag.ErrorSummaryMsgs;
+        if (validationResults.Any(j => !j.IsValid))
+        {
+            validationResults = validationResults.Where(j => !j.IsValid).ToList();
+        }
+    }
+}
+<style>
+    input {
+        text-transform: uppercase;
+    }
+</style>
+
+<span id="loader">
+</span>
+
+<form id="applicationsForm" asp-action="Edit">
+
+
+
+    @Html.Partial("_ApplicationDetails", Model.ApplicationDetails)
+
+    @Html.Partial("_Applicants", Model)
+
+    @if (validationResults != null && validationResults.Count > 0)
+    {
+        <div id="errorList" class="toast-popup p-3" aria-live="polite" aria-atomic="true">
+
+            @foreach (ValidationResultModel err in validationResults)
+            {
+                <div class="toast alert alert-danger" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+                    <div class="toastheader">
+                        <strong class="mr-auto">@err.ApplicationModuleName.ToString().Replace("_", " ") </strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" onclick="toastCloseClick()" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    @foreach (ValidationError et in err.Errors)
+                    {
+                        <div class="toastbody"> @et.ErrorMessage</div>
+                    }
+
+                </div>
+            }
+            <div style="text-align:end;">
+                <button type="button" class=" btn btn-sm btn-dark" onclick="showHideApplicantErroList();">Close</button>
+                <button type="button" class=" btn btn-sm btn-dark" onclick="clearApplicantErroList();" data-toggle="tooltip" data-placement="top" title="Close all error messages">CLEAR ALL</button> @*<span class="fa fa-times"></span>*@
+            </div>
+
+        </div>
+    }
+
+
+
+
+    @if (Model.ApplicationDetails != null && string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase))
+    {
+        <!--<div class="shadow-box">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4>@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.AccordionHeader")</h4>
+                        <div id="accordionContentOne">
+                            <div class="form-group">
+                                <label asp-for="GroupStructureLegalParent.DoesTheEntityBelongToAGroup" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.DoesTheEntityBelongToAGroup")</label>
+                                @(Html.Kendo().DropDownListFor(m => m.GroupStructureLegalParent.DoesTheEntityBelongToAGroupName).BindTo((System.Collections.IEnumerable)ViewBag.EntityBelongToAGroup)
+        .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+        .DataValueField("Value")
+        .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))-->
+        @*@Html.ValidationMessageFor(X => X.GroupStructureLegalParent.DoesTheEntityBelongToAGroup)*@
+        <!--</div>
+
+                        <div class="form-group">
+                            <label asp-for="GroupStructureLegalParent.GroupName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.GroupName")</label>
+                            @Html.Kendo().TextBoxFor(model => model.GroupStructureLegalParent.GroupName).HtmlAttributes(new { @class = "form-control" })
+                            @Html.ValidationMessageFor(X => X.GroupStructureLegalParent.GroupName)
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="GroupStructureLegalParent.GroupActivities" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.GroupActivities")</label>
+                            @Html.Kendo().TextBoxFor(model => model.GroupStructureLegalParent.GroupActivities).HtmlAttributes(new { @class = "form-control" })
+                            @Html.ValidationMessageFor(X => X.GroupStructureLegalParent.GroupActivities)
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>-->
+        @Html.Partial("_GroupStructure", Model)
+    }
+
+    @Html.Partial("_RelatedParties", Model)
+
+
+
+
+    @Html.HiddenFor(model => model.ApplicationNumber)
+    @Html.HiddenFor(model => model.Application_NodeGUID)
+    @Html.HiddenFor(model => model.Id, new { id = "ApplicationId" })
+    @*@{
+            List<ValidationResultModel> validationResults_BankAccountPurpose = null;
+            string sectionValidationClass_BankAccountPurpose = "";
+            if (ViewBag.ErrorSummaryMsgs != null)
+            {
+                validationResults_BankAccountPurpose = ViewBag.ErrorSummaryMsgs;
+                if (validationResults_BankAccountPurpose.Any(j => !j.IsValid))
+                {
+                    validationResults_BankAccountPurpose = validationResults_BankAccountPurpose.Where(j => !j.IsValid).ToList();
+                }
+
+                if (validationResults_BankAccountPurpose != null && validationResults_BankAccountPurpose.Count > 0)
+                {
+                    if (validationResults_BankAccountPurpose.Any(x => x.ApplicationModuleName == ApplicationModule.BANK_ACCOUNT_PURPOSE_AND_ANTICIPATED_ACTIVITY))
+                    {
+                        sectionValidationClass_BankAccountPurpose = "bg-danger-row";
+                    }
+                    else
+                    {
+                        sectionValidationClass_BankAccountPurpose = "bg-success-row";
+                    }
+                }
+                else
+                {
+                    sectionValidationClass_BankAccountPurpose = "bg-success-row";
+                }
+            }
+        }*@
+    <div class="shadow-box col-md-12">
+        <div class="col-md-12">
+            <ul id="accordionPurposeAndActivity">
+                <li id="chartSection" class="k-state-active">
+                    <span class="k-link sectionValidationClass_BankAccountPurpose" id="Span1" style="width:auto; height:auto;">
+                        @ResHelper.GetString("Eurobank.Application.PurposeAndActivity")
+                    </span>
+                    <div id="PurposeAndActivityaccordionContentOne">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label asp-for="PurposeAndActivity.ReasonForOpeningTheAccountGroup" class="control-label">@ResHelper.GetString("Eurobank.Application.PurposeAndActivity.Label.ReasonForOpeningTheAccount")</label>
+                                </div>
+                                <div class="col-md-8">
+                                    @*@(Html.Kendo().MultiSelect()
+                        .Name("ReasonForOpeningTheAccountGroup")
+                        .AutoClose(false)
+                        .HtmlAttributes(new { onchange = "validatePurposeAndActivity()" })
+                      .Placeholder(@ResHelper.GetString("Eurobank.Application.PurposeAndActivity.Label.ReasonForOpeningTheAccount"))
+                        .Value(Model.PurposeAndActivity.ReasonForOpeningTheAccountGroup.MultiSelectValue)
+                        .BindTo(Model.PurposeAndActivity.ReasonForOpeningTheAccountGroup.Items)
+                    )*@
+                                    @(Html.Kendo().MultiSelect()
+            .Name("ReasonForOpeningTheAccountGroup")
+            .AutoClose(false)
+            .HtmlAttributes(new { onchange = "validatePurposeAndActivity()" })
+          .Placeholder(@ResHelper.GetString("Eurobank.Application.PurposeAndActivity.Label.ReasonForOpeningTheAccount"))
+          .DataTextField("Text")
+        .DataValueField("Value")
+            .Value(Model.PurposeAndActivity.ReasonForOpeningTheAccountGroup.MultiSelectValue)
+            .DataSource(source =>
+            {
+                source.Read(read =>
+                {
+                    read.Action("ResonForOpeningAccountLegal_Read", "Applications", new { applicationNumber = Model.ApplicationNumber, applicationType= Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName });
+                });
+            })
+        )
+                                    @*@(Html.Kendo().CheckBoxGroup()
+                        .Name("ReasonForOpeningTheAccountGroup")
+                        .Layout("horizontal")
+                        .Value(Model.PurposeAndActivity.ReasonForOpeningTheAccountGroup.CheckBoxGroupValue)
+                        .BindTo(Model.PurposeAndActivity.ReasonForOpeningTheAccountGroup.Items)
+                    )*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label asp-for="PurposeAndActivity.ExpectedNatureOfInAndOutTransactionGroup" class="control-label">@ResHelper.GetString("Eurobank.Application.PurposeAndActivity.Label.ExpectedNatureOfInAndOutTransaction")</label>
+                                </div>
+                                <div class="col-md-8">
+
+                                    @(Html.Kendo().MultiSelect()
+			.Name("ExpectedNatureOfInAndOutTransactionGroup")
+			.AutoClose(false)
+			.HtmlAttributes(new { onchange = "validatePurposeAndActivity()" })
+		  .Placeholder(@ResHelper.GetString("Eurobank.Application.PurposeAndActivity.Label.ExpectedNatureOfInAndOutTransaction"))
+			.Value(Model.PurposeAndActivity.ExpectedNatureOfInAndOutTransactionGroup.MultiSelectValue)
+			.BindTo(Model.PurposeAndActivity.ExpectedNatureOfInAndOutTransactionGroup.Items)
+        )
+                                    @*@(Html.Kendo().CheckBoxGroup()
+                        .Name("ExpectedNatureOfInAndOutTransactionGroup")
+                        .Layout("horizontal")
+                        .Value(Model.PurposeAndActivity.ExpectedNatureOfInAndOutTransactionGroup.CheckBoxGroupValue)
+                        .BindTo(Model.PurposeAndActivity.ExpectedNatureOfInAndOutTransactionGroup.Items)
+                    )*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label asp-for="PurposeAndActivity.ExpectedFrequencyOfInAndOutTransactionGroup" class="control-label">@ResHelper.GetString("Eurobank.Application.PurposeAndActivity.Label.ExpectedFrequencyOfInAndOutTransaction")</label>
+                                </div>
+                                <div class="col-md-8">
+
+                                    @(Html.Kendo().RadioGroup()
+			.Name("ExpectedFrequencyOfInAndOutTransactionGroup")
+			.Layout("horizontal")
+			.HtmlAttributes(new { onchange = "validatePurposeAndActivity()" })
+			.Value(Model.PurposeAndActivity.ExpectedFrequencyOfInAndOutTransactionGroup.RadioGroupValue)
+			.BindTo(Model.PurposeAndActivity.ExpectedFrequencyOfInAndOutTransactionGroup.Items)
+        )
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label asp-for="PurposeAndActivity.ExpectedIncomingAmount" class="control-label">@ResHelper.GetString("Eurobank.Application.PurposeAndActivity.Label.ExpectedIncomingAmount")</label>
+                                </div>
+                                <div class="col-md-8">
+                                    @Html.Kendo().TextBoxFor(model => model.PurposeAndActivity.ExpectedIncomingAmount).HtmlAttributes(new { @class = "form-control custom-decimal thousands-separator", @value = "", onkeyup = "setTwoNumberDecimal();limitlengththousandsseparator(this,16,'PurposeAndActivityExpectedIncomingAmountError')", onfocusout = "validatePurposeAndActivity();limitlengththousandsseparator(this,16,'PurposeAndActivityExpectedIncomingAmountError')",@onKeyDown="limitlengththousandsseparator(this,16,'PurposeAndActivityExpectedIncomingAmountError')" }) @*, @maxlength = "16"*@
+                                    @Html.ValidationMessageFor(X => X.PurposeAndActivity.ExpectedIncomingAmount)
+                                    @*<input type="submit" value="@ResHelper.GetString("Eurobank.Application.Edit.Button.Submit")" class="btn btn-primary mt-3">*@
+                                    <span id="PurposeAndActivityExpectedIncomingAmountError" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.ApplicationDetails.IsVisibleSaveAsDraftButton)
+                        {
+                            <button id="btnApplicationSaveAsDraft" form="applicationsForm" name="appplicationButton" value="SAVE_AS_DRAFT" type="submit" class="btn btn-success mr-3 btnShowLoader">Save AS DRAFT</button>
+                        }
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    @Html.Partial("_SourceofIncomingTransaction", Model)
+    @Html.Partial("_SourceOfOutgoingTransaction", Model)
+    @Html.Partial("_AccountDetails", Model)
+    @if (isLegalEntity)
+    {
+        @Html.Partial("_SignatoryGroup", Model)
+    }
+
+    @if (isLegalEntity)
+    {
+        @Html.Partial("_SignatureMandateLegal", Model)
+    }
+    else
+    {
+        @Html.Partial("_SignatureMandateIndividuals", Model)
+    }
+
+
+
+    @*@if (Model.IsEbankingShow)
+        {
+            @Html.Partial("_EBankingSubscriberDetails", Model)
+        }
+        @if (Model.IsCardShow && Model.IsCardNew)
+        {
+            @Html.Partial("_DebitCardDetails", Model)
+        }*@
+    @Html.Partial("_EBankingSubscriberDetails", Model)
+    @Html.Partial("_DebitCardDetails", Model)
+    @Html.HiddenFor(x => x.IsCardNew)
+
+    @Html.Partial("_ExpectedDocuments", Model)
+    @Html.Partial("_BankDocuments", Model)
+    @Html.Partial("_NoteDetails", Model)
+
+    <div id="DecisionHistoryDiv">
+        @Html.Partial("_DecisionHistory", Model)
+    </div>
+</form>
+
+<div id="stSubmitConfirm" class="fix-appbtn" style="clear:both;">
+    <div class="row justify-content-between pt-3">
+        @*<div class="row">*@
+        <div class="col-6">
+            <a href="@Url.Action("Index", "Applications")">
+                <button id="btnApplicationClose" type="button" class="btn btn-link">Close</button>
+            </a>
+
+        </div>
+        <div class="col-6 text-right">
+            @if (Model.ApplicationDetails.IsVisibleSaveAsDraftButton)
+            {
+                <button id="btnApplicationSaveAsDraft" form="applicationsForm" name="appplicationButton" value="SAVE_AS_DRAFT" type="submit" class="btn btn-success mr-3 btnShowLoader">Save AS DRAFT</button>
+            }
+            @if (Model.ApplicationDetails.IsVisibleSubmitButton)
+            {
+                <button id="btnApplicationFinalSubmit" form="applicationsForm" name="appplicationButton" value="CONFIRM" type="submit" class="btn btn-primary">SUBMIT</button>
+            }
+
+        </div>
+    </div>
+</div>
+@(Html.Kendo().Window()
+        .Name("DebitcardConfirmation")
+        .Title("Debit Card - Warning")
+        .Content(@<text>
+            <div>Are you sure you want uncheck Debit Card, there are still records inside?</div>
+            <div class="col-12 text-right">
+                <button name="btnSelectCardDetailsYes" value="YES" type="button" class="btn btn-primary" onclick="SelectCardDetailsYes()">Yes</button>
+                <button name="btnSelectCardDetailsNo" value="NO" type="button" class="btn btn-primary" onclick="SelectCardDetailsNo()">No</button>
+            </div>
+        </text>)
+        //.Resizable()
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Events(e=>e.Close("SelectDebitCardchk"))
+        .Actions(actions => actions.Close())
+
+        )
+@(Html.Kendo().Window()
+        .Name("EbankingConfirmation")
+        .Title("Digital Banking - Warning")
+        .Content(@<text>
+            <div>Are you sure you want uncheck Digital Banking, there are still records inside?</div>
+            <div class="col-12 text-right">
+                <button name="btnEbankingYes" value="YES" type="button" class="btn btn-primary" onclick="SelectEbankingYes()">Yes</button>
+                <button name="btnEbankingNo" value="NO" type="button" class="btn btn-primary" onclick="SelectEbankingNo()">No</button>
+            </div>
+        </text>)
+        //.Resizable()
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Events(e=>e.Close("SelectEbankingchk"))
+        .Actions(actions => actions.Close())
+
+        )
+@Html.Hidden("IsDecissionCommentsAllowed", Model.ApplicationDetails.IsDecissionCommentsAllowed)
+@Html.HiddenFor(m => m.ApplicationDetails.IsEdit, new { id = "ApplicationIsEdit" })
+@Html.Hidden("ValidatePurposeAndActivityUrl", Url.Action("ValidatePurposeActivity", "Applications"))
+@Html.Hidden("Application_LeftMenu_PurposeAndActivity", ResHelper.GetString("Eurobank.Application.LeftMenu.PurposeAndActivity"))
+@Html.Hidden("GetIdentityCardUrl", Url.Action("GetIdentityCard", "Applications"))
+@Html.Hidden("DebitCardDestoryAllUrl", Url.Action("DebitCardDestoryAll", "Applications"))
+@Html.Hidden("EbankingDestroyAllUrl", Url.Action("EbankingDestroyAll", "Applications"))
+@Html.Hidden("GetpersonTypeUrl", Url.Action("GetpersonType", "Applications"))
+@Html.Hidden("SelectEntityTypeUrl", Url.Action("GetEntityTypeByPersonGUID", "Applications"))
+@Html.Hidden("RedirectPrintSummary", Url.Action("PrintSummary", "Applications"))
+@Html.Hidden("RedirectPrintFriendly", Url.Action("PrintFriendly", "Applications"))
+@Html.Hidden("ExportXMLUrlJS", Url.Action("ExportXMLJS", "Applications"))
+@Html.Hidden("ValidateGroupStructureUrl", Url.Action("ValidateGroupStructure", "Applications"))
+@Html.Hidden("hdnIndividualSignatureMandateLabel", ResHelper.GetString("Eurobank.Application.Individual.SignatureMandate.Option"))
+<script src="~/Scripts/Custom/Application/ApplicationEdit.js"></script>
+<script src="~/Scripts/Custom/Editor/AddEditExpectedDocuments.js"></script>
+<script src="~/Scripts/Custom/Editor/AddEditBankDocuments.js"></script>
+
+
+

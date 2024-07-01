@@ -1,0 +1,208 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Validation;
+@{
+
+    bool isLegal = string.Equals(@ViewBag.SelectedApplicationType, "LEGAL ENTITY", StringComparison.OrdinalIgnoreCase);
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.RELATED_PARTIES))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+}
+
+
+<style type="text/css">
+    .k-grid-header .k-header > .k-link {
+        margin: -0.75rem 0.0rem;
+        text-overflow: initial;
+    }
+
+        .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-desc-sm, .k-grid-header .k-header > .k-link > .k-icon.k-i-sort-asc-sm {
+            vertical-align: text-bottom;
+            margin-left: 0px;
+        }
+
+    .k-grid th, .k-grid td {
+        padding: 0.75rem 0.50rem;
+        text-align: center;
+    }
+</style>
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionRelatedParties">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.RelatedParties")
+                </span>
+                <div id="accordionRelatedPartiesContentOne">
+
+                    @if (Model.ApplicationDetails.IsEdit)
+                    {
+                        @if (!isLegal)
+                        {
+                            <div class="d-flex justify-content-between">
+                                @*<h3>@ResHelper.GetString("Eurobank.Application.Applicants")</h3>*@
+                                <h3></h3>
+                                <a class="new-contact" href="@Url.Action("Index", "RelatedParty", new { application = Model.Application_NodeGUID })">
+                                    <span class="k-icon k-i-plus-circle mr-1"></span>
+                                    New
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex justify-content-between">
+                                @*<h3>@ResHelper.GetString("Eurobank.Application.Applicants")</h3>*@
+                                <h3></h3>
+                                <a class="new-contact" onclick="OpenConfirmationAddRelatedParty()">
+                                    <span class="k-icon k-i-plus-circle mr-1"></span>
+                                    New
+                                </a>
+                            </div>
+                            <div id="divAddRelatedPartyWindow">
+
+                                @(Html.Kendo().Window()
+    .Name("AddrealtedPartyWindow")
+    .Title("Select type of Related Party")
+    .Content(@<text>
+							<label><b>Individual</b>
+	<input type="radio" name="radio" id="RadioIndividual" onclick="ShowUBO()" />
+	</label>
+							<label><b>Legal Entity</b>
+	<input type="radio" name="radio" id="RadioLegalEntity" onclick="ShowUBO()"/>
+	</label>
+                                <div id="UBODiv" style="display:none">
+                                <div>
+                                    <label><b> Is Related Party a UBO?</b></label>
+                                </div>
+                                <div>
+
+                                    <label><b>Yes</b><input type="radio" name="radioUBO" id="RadioYes" onclick="HideErrorDiv()"/></label>
+                                    <label><b>No</b><input type="radio" name="radioUBO" id="RadioNo" onclick="HideErrorDiv()"/></label>
+                                </div>
+                                    </div>
+                                <div id="UBOerrorMsg" style="display:none"><span style="color:red">Please select a option of Is related party a UBO?</span></div>
+<div class="col-12 text-right">
+            <button form="applicationsForm" name="appplicationButton" value="CONFIRM" type="button" class="btn btn-primary" onclick="CreateRelatedParty()">Confirm to Proceed</button>
+        </div>
+    </text>)
+	//.Resizable()
+	.Visible(false)
+	.Width(900)
+	.Height(900)
+	.Actions(actions => actions.Close())
+
+)
+
+
+
+
+                            </div>
+                        }
+                    }
+
+
+                    @(Html.Kendo().Grid<Eurobank.Models.Application.RelatedParty.RelatedPartyModel>
+        ()
+        .Name("RelatedParties")
+        .Columns(columns =>
+        {
+                            columns.Template
+                            (
+                            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                            ).Width(30);
+            columns.Bound(p => p.Id).Hidden();
+                            columns.Bound(p => p.FirstIdentificationNumber).Title(ResHelper.GetString("Eurobank.Application.RelatedParties.Grid.Header.Id")).Width(150);
+            //columns.Bound(p => p.rowID).Title("ID").Width(70);
+            //columns.Bound(p => p.RelatedPartyNumber).Title(ResHelper.GetString("Eurobank.Application.RelatedParties.Grid.Header.Id")).Width(70);
+                            columns.Bound(p => p.FullName).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+                            columns.Bound(p => p.Role).Encoded(false).HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align:center;" }).Width(150);
+                            //columns.Bound(p => p.Invited).HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align:center;" }).Width(150);
+                            //columns.Bound(p => p.IdVerified).HtmlAttributes(new { style = "text-align: center;" }).HeaderHtmlAttributes(new { style = "text-align:center;" }).Width(150);
+            columns.Bound(p => p.Status).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+            
+        })
+         .Events(e =>
+         {
+             e.Edit("onGridEditing");
+             e.DataBound("onRelatedPartyDataBound");
+             e.Cancel("onGridCancel");
+         })
+        //.ToolBar(toolbar => toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }))
+
+        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditOutgoingTransaction").DisplayDeleteConfirmation("Delete?").Window(w=>w.Title("Source Of Incoming Transactions").Width(800))).EnableCustomBinding(true)
+        .Pageable()
+        .Sortable()
+        .Scrollable()
+         .HtmlAttributes(new { style = "max-height:550px;" })
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+         .Sort(x => x.Add("Status").Descending())
+        //.Events(e => e.RequestStart("hideIdField"))
+        .Model(model =>
+        {
+            model.Id(p => p.Id);
+            model.Field(p => p.RelatedPartyNumber);
+            model.Field(p => p.FullName);
+            model.Field(p => p.Role);
+            model.Field(p => p.Invited);
+            model.Field(p => p.IdVerified);
+            model.Field(p => p.FirstIdentificationNumber);
+            model.Field(p => p.Status);
+            model.Field(p => p.Type);
+        })
+        //.Model(model => model.Id(p => p.AddressGuid))
+        .ServerOperation(true)
+        //.Create(update => update.Action("OutgoingTransactionPopup_Create", "Applications",new { apID = Model.Id}))
+        .Read(read => read.Action("RelatedParty_Read", "Applications"))
+        //.Update(update => update.Action("OutgoingTransactionPopup_Update", "Applications"))
+        .Destroy(update => update.Action("RelatedPartyPopup_Destroy", "Applications"))
+        .Events(events => events.RequestEnd("onRequestEnd"))
+        )
+		)
+
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@Html.Hidden("hdnApplication_LeftMenu_RelatedParties", @ResHelper.GetString("Eurobank.Application.LeftMenu.RelatedParties"))
+@Html.Hidden("RedirectToRelatedParty", Url.Action("Index", "RelatedParty"))
+@Html.HiddenFor(m => m.Application_NodeGUID, new { id = "ApplicationNodeGUID" })
+<ul id="context-menuRelatedParties">
+
+    @if (Model.ApplicationDetails.IsEdit)
+    {
+        <li id="editRowRelatedP">Edit/View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-pencil"></span></li>
+        <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
+    }
+    else
+    {
+        <li id="editRowRelatedP">View &nbsp;&nbsp;&nbsp;&nbsp;<span class="k-icon k-i-preview"></span></li>
+    }
+</ul>
+<script src="~/Scripts/Custom/Application/RelatedParties.js"></script>
+

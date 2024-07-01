@@ -1,0 +1,45 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Kendo.Mvc.UI
+
+<style type="text/css">
+
+	.k-stepper .k-step .k-step-indicator {
+		border-color: #204088;
+		color: #ffffff;
+		background-color: #204088;
+	}
+
+	.k-progressbar {
+		color: #212529;
+		background-color: #204088;
+	}
+</style>
+
+<div class="col-lg-3 fixsidebar">
+	<div class="sidebarhover">
+		<div class="shadow-box application-logo">
+			<a href="@Url.Kentico().PageUrl(ContentItemIdentifiers.HOME)">
+				<img class="push-hide" src="~/Content/Images/logo.jpg" />
+				<img class="pull-show" src="~/Content/Images/icon-logo.jpg" />
+			</a>
+		</div>
+		<div class="demo-section k-content wide shadow-box">
+			@(Html.Kendo().Stepper()
+		.Name("ApplicationStepper")
+		.Orientation(StepperOrientationType.Vertical)
+		.Linear(false)
+		.Steps(s =>
+		{
+			foreach(var menu in Model.LeftMenuApplicant.LeftMenuItems)
+			{
+				s.Add().Label(menu.Label).Icon(menu.Icon).Selected(menu.Selected.HasValue ? menu.Selected.Value : false).Enabled(true).Error(menu.Error.HasValue ? menu.Error.Value : false);
+			}
+		})
+		.Events(events => events.Select(Model.LeftMenuApplicant.LeftmenuClientMathodName.ToString()))
+		)
+		</div>
+	</div>
+	<div class="pushmenu">
+		<i class="fa fa-bars" aria-hidden="true"></i>
+	</div>
+</div>

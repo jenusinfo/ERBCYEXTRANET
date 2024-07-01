@@ -1,0 +1,160 @@
+﻿@model Eurobank.Models.Application.ApplicationViewModel
+@using Eurobank.Helpers.Process;
+@using Eurobank.Models.Application.Common;
+@using Eurobank.Helpers.Validation;
+@{
+    //var userModel = UserProcess.GetUser(User.Identity.Name);
+    //bool isInternal = userModel != null && string.Equals(userModel.UserType, ApplicationUserType.INTERNAL.ToString(), StringComparison.OrdinalIgnoreCase);
+    //bool isDisabledDecision = false;
+    //if (isInternal && (string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationStatusName, "PENDING CHECKER", StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationStatusName, "PENDING SIGNATURES", StringComparison.OrdinalIgnoreCase) || string.Equals(Model.ApplicationDetails.ApplicationDetails_ApplicationStatusName, "PENDING INITIATOR", StringComparison.OrdinalIgnoreCase)))
+    //{
+    //    isDisabledDecision = true;
+    //}
+    //List<ValidationResultModel> validationResults = null;
+    //string sectionValidationClass = "";
+    //if (ViewBag.ErrorSummaryMsgs != null)
+    //{
+    //    validationResults = ViewBag.ErrorSummaryMsgs;
+    //    if (validationResults.Any(j => !j.IsValid))
+    //    {
+    //        validationResults = validationResults.Where(j => !j.IsValid).ToList();
+    //    }
+
+    //    if (validationResults != null && validationResults.Count > 0)
+    //    {
+    //        if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.DECISION_HISTORY))
+    //        {
+    //            sectionValidationClass = "bg-danger-row";
+    //        }
+    //        else
+    //        {
+    //            sectionValidationClass = "bg-success-row";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sectionValidationClass = "bg-success-row";
+    //    }
+    //}
+
+
+}
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionDecisionHistorys">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.DecisionHistory")
+                </span>
+                <div id="accordionContentOne">
+
+                    <div class="row">
+
+
+
+                        @*<form asp-action="DecisionHistory" asp-controller="Applications" class="row" id="DecisionHistoryForm">*@
+                        <div class="col-12">
+                            <div class="col-md-6">
+                                @Html.HiddenFor(m => m.DecisionHistoryViewModel.DecisionHistoryID)
+                                @Html.HiddenFor(m => m.ApplicationNumber)
+                                @Html.HiddenFor(m => m.Id)
+                                <div class="form-group">
+                                    <label asp-for="DecisionHistoryViewModel.DecisionHistory_Decision" class="control-label"></label>
+
+                                    @*@(Html.Kendo().DropDownListFor(m => m.DecisionHistoryViewModel.DecisionHistory_Decision)
+                                            .OptionLabel("- Select - ")
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")
+                                        .HtmlAttributes(new { @class = "form-control",@id= "DecisionHistory_DecisionID" })
+                                        .DataSource(source => {
+                                            source.Read(read =>
+                                            {
+                                                read.Action("DecisionHistory_Decision_Read", "Applications");
+                                            });
+                                        }))
+                                                                    @Html.ValidationMessageFor(X => X.DecisionHistoryViewModel.DecisionHistory_Decision)*@
+
+                                    @(Html.Kendo().DropDownListFor(m => m.DecisionHistoryViewModel.DecisionHistory_Decision).BindTo((System.Collections.IEnumerable)ViewBag.DecisionList)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value").Events(e =>
+		{
+			e.Select("onDecisionDDLChange");
+		})
+		.HtmlAttributes(new { @class = "form-control",@id= "DecisionHistory_DecisionID" })
+        )
+                                    @Html.ValidationMessageFor(X => X.DecisionHistoryViewModel.DecisionHistory_Decision)
+                                </div>
+                                <div class="form-group" id="divDecisionHistoryEscalateTo" style="display:none">
+                                    <label asp-for="DecisionHistoryViewModel.DecisionHistory_EscalateTo" class="control-label"></label>
+
+                                    @(Html.Kendo().DropDownListFor(m => m.DecisionHistoryViewModel.DecisionHistory_EscalateTo).BindTo((System.Collections.IEnumerable)ViewBag.EscalateToUsers)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text").DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control",@id= "DecisionHistory_EscalateToID" })
+        )
+                                    @Html.ValidationMessageFor(X => X.DecisionHistoryViewModel.DecisionHistory_Decision)
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="DecisionHistoryViewModel.DecisionHistory_Stage" class="control-label"></label>
+                                    @Html.Kendo().TextBoxFor(model => model.DecisionHistoryViewModel.DecisionHistory_Stage).HtmlAttributes(new { @class = "form-control", @id = "DecisionHistory_StageID", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(X => X.DecisionHistoryViewModel.DecisionHistory_Stage)
+                                </div>
+                                <div class="form-group decision-commnt">
+                                    <label asp-for="DecisionHistoryViewModel.DecisionHistory_Comments" class="control-label"></label>
+                                    @Html.Kendo().TextAreaFor(model => model.DecisionHistoryViewModel.DecisionHistory_Comments).Rows(3).Resizable("both").HtmlAttributes(new { @class = "form-control k-textbox", style = "width: 100%;", @id = "DecisionHistory_CommentsID" })
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                @*<button type="button" id="DecisionHistoryBtn" class="btn btn-primary float-lg-left">Save</button>*@
+                            </div>
+                        </div>
+                        <div class="col-12">
+
+
+                            @(Html.Kendo().Grid<Eurobank.Models.Applications.DecisionHistory.DecisionHistoryViewModel>
+		()
+		.Name("DecisionHistory")
+		.Columns(columns =>
+		{
+                                    columns.Bound(p => p.DecisionHistory_When).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+                                    columns.Bound(p => p.DecisionHistory_Who).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+                                    columns.Bound(p => p.DecisionHistory_Stage).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+                                    columns.Bound(p => p.DecisionHistory_DecisionName).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(150);
+			columns.Bound(p => p.DecisionHistory_Comments).HtmlAttributes(new { style = "text-align: left;" }).HeaderHtmlAttributes(new { style = "text-align:left;" }).Width(400);
+		})
+
+
+		.Pageable()
+		.Sortable()
+		.Scrollable()
+		.HtmlAttributes(new { style = "height:550px;" })
+		.DataSource(dataSource => dataSource
+		.Ajax()
+		.PageSize(10)
+		//.Events(e => e.RequestStart("hideIdField"))
+		.Model(model =>
+		{
+
+			model.Id(p => p.DecisionHistoryID);
+		})
+		//.Model(model => model.Id(p => p.AddressGuid))
+		.ServerOperation(true)
+
+		.Read(read => read.Action("DecisionHistorys_Read", "Applications", new { id = Model.Id }))
+
+		)
+		)
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@Html.Hidden("IsDisabledDecision", Model.ApplicationDetails.IsDecissionCommentsAllowed)
+@Html.Hidden("DecisionHistoryStageUrl", Url.Action("GetNextStage", "Applications"))
+@Html.Hidden("ApplicationId", Model.Id)
+<script src="~/Scripts/Custom/Application/DecisionHistory.js"></script>
+

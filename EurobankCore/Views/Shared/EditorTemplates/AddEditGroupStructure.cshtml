@@ -1,0 +1,75 @@
+﻿@model Eurobank.Models.Application.Applicant.LegalEntity.CompanyGroupStructureModel
+@using Kendo.Mvc.UI
+@{
+	int appID = 0;
+	if(ViewBag.ApplicationId != null)
+	{
+		appID = Convert.ToInt32(ViewBag.ApplicationId);
+	}
+	string applicationNumber = string.Empty;
+	if(ViewBag.ApplicationNumber != null)
+	{
+		applicationNumber = Convert.ToString(ViewBag.ApplicationNumber);
+	}
+}
+
+
+<div class="form-group">
+	<label asp-for="EntityType" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.EntityType")</label>
+	@(Html.Kendo().DropDownListFor(m => m.EntityType).BindTo((System.Collections.IEnumerable)ViewBag.GroupStructureEntityTypes)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+	@Html.ValidationMessageFor(X => X.EntityType)
+</div>
+<div class="form-group">
+	<label asp-for="EntityName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.EntityName")</label>
+	@Html.Kendo().TextBoxFor(model => model.EntityName).HtmlAttributes(new { @class = "form-control",@onKeyDown="return limitlength(this,50,'GroupStructureEntityNameError')",@onKeyUp ="return limitlength(this,50,'GroupStructureEntityNameError')" })
+	@Html.ValidationMessageFor(X => X.EntityName)
+	<span id="GroupStructureEntityNameError" class="text-danger"></span>
+</div>
+<div class="form-group">
+	@*<label asp-for="Parent" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.Parent")</label>*@
+	@*@(Html.Kendo().DropDownListFor(m => m.Parent).BindTo((System.Collections.IEnumerable)ViewBag.Parents)
+		.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+		.DataValueField("Value")
+		.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))*@
+	@*@(Html.Kendo().DropDownListFor(m => m.Parent)
+			.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+			.DataValueField("Value")
+			.DataTextField("Text").HtmlAttributes(new { @class = "form-control" })
+			.DataSource(source => {
+				source.Read(read =>
+				{
+					read.Action("GroupStructureParent_Read", "Applications",new  { applicationId = appID, applicationNumber = applicationNumber });
+				});
+			}))
+		@Html.ValidationMessageFor(X => X.Parent)*@
+</div>
+@*<div class="form-group">
+		<label asp-for="GroupName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.GroupName")</label>
+		@Html.Kendo().TextBoxFor(model => model.GroupName).HtmlAttributes(new { @class = "form-control" })
+		@Html.ValidationMessageFor(X => X.GroupName)
+
+	</div>
+	<div class="form-group">
+		<label asp-for="GroupActivities" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.GroupActivities")</label>
+		@Html.Kendo().TextBoxFor(model => model.GroupActivities).HtmlAttributes(new { @class = "form-control" })
+		@Html.ValidationMessageFor(X => X.GroupActivities)
+
+	</div>*@
+@*<div class="form-group">
+		<label asp-for="BusinessActivities" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyGroupStructure.Label.BusinessActivities")</label>
+		@Html.Kendo().TextBoxFor(model => model.BusinessActivities).HtmlAttributes(new { @class = "form-control" })
+		@Html.ValidationMessageFor(X => X.BusinessActivities)
+	</div>*@
+
+<script>
+//$("input").keyup(function(e) {
+//		TextBoxUpperCase(this);
+//	});
+
+</script>
+
+
+

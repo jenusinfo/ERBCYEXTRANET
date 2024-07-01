@@ -1,0 +1,127 @@
+﻿@model Eurobank.Models.Applications.ApplicationDetailsModelView
+@using Kendo.Mvc.UI
+@using Eurobank.Helpers.Validation;
+@*@{
+    List<ValidationResultModel> validationResults = null;
+    string sectionValidationClass = "";
+    if (ViewBag.ErrorSummaryMsgs != null)
+    {
+        validationResults = ViewBag.ErrorSummaryMsgs;
+        if (validationResults.Any(j => !j.IsValid))
+        {
+            validationResults = validationResults.Where(j => !j.IsValid).ToList();
+        }
+
+        if (validationResults != null && validationResults.Count > 0)
+        {
+            if (validationResults.Any(x => x.ApplicationModuleName == ApplicationModule.APPLICATION_ACCOUNT))
+            {
+                sectionValidationClass = "bg-danger-row";
+            }
+            else
+            {
+                sectionValidationClass = "bg-success-row";
+            }
+        }
+        else
+        {
+            sectionValidationClass = "bg-success-row";
+        }
+    }
+}*@
+
+<style>
+    .checked-readonly > input[type="checkbox"] {
+        pointer-events: none;
+    }
+</style>
+@*@Html.Partial("_ApplicationDetailsHeader", Model)*@
+
+<div class="shadow-box col-md-12">
+    <div class="col-md-12">
+        <ul id="accordionApplicationDetails">
+            <li id="chartSection" class="k-state-active">
+                <span class="k-link sectionValidationClass" id="Span1" style="width:auto; height:auto;">
+                    @ResHelper.GetString("Eurobank.Application.ApplicationDetails")
+                </span>
+                <div id="accordionApplicationDetailsContentOne">
+                    @*<div class="col-md-12">
+                            <label class="col-md-2">APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+                            <label class="col-md-2">STATUS :  @Model.ApplicationDetails_ApplicationStatus</label>
+                            <label class="col-md-2">TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+                            <label class="col-md-2">INTRODUCER : @Model.ApplicationDetails_IntroducerName</label>
+
+
+                        </div>
+                        <div class="col-md-12">
+                            <h5>INFO</h5>
+                            <label class="col-md-2">APPLICATION ID : @Model.ApplicationDetails_ApplicationNumber</label>
+                            <label class="col-md-2">APPLICATION TYPE : @Model.ApplicationDetails_ApplicationTypeName</label>
+                            <label class="col-md-2">Submitted On : @Model.ApplicationDetails_SubmittedOn</label>
+                            <label class="col-md-2">Created By : @Model.ApplicationDetails_SubmittedBy</label>
+                            <label class="col-md-2">Created On : @Model.ApplicationDetails_CreatedOn</label>
+                        </div>*@
+
+                    @*<form asp-action="Edit" c>*@
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="ApplicationDetails_SubmittedBy" class="control-label"></label>
+                                @Html.Kendo().TextBoxFor(model => model.ApplicationDetails_SubmittedBy).HtmlAttributes(new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ApplicationDetails_ResponsibleOfficer" class="control-label"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ResponsibleOfficer).BindTo((System.Collections.IEnumerable)ViewBag.responsibleOfficer)
+.OptionLabel(new { Text = "-Select-", Value = "" })
+.DataValueField("Value")
+                                    .DataTextField("Text").HtmlAttributes(new { @class = "form-control", @readonly = "readonly" }))
+                                @Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleOfficer)
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ApplicationDetails_ApplicationType" class="control-label"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ApplicationType).BindTo((System.Collections.IEnumerable)ViewBag.applicationType)
+.OptionLabel(new { Text = "-Select-", Value = "" })
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", @readonly = "readonly" }))
+                                @Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicationType)
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="ApplicationDetails_SubmittedOn" class="control-label"></label>
+                                @Html.Kendo().TextBoxFor(model => model.ApplicationDetails_SubmittedOn).HtmlAttributes(new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ApplicationDetails_ResponsibleBankingCenter" class="control-label w-100"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ResponsibleBankingCenter).BindTo((System.Collections.IEnumerable)ViewBag.bankingService)
+.OptionLabel(new { Text = "-Select-", Value = "" })
+.DataValueField("Value")
+                                    .DataTextField("Text").HtmlAttributes(new { @class = "form-control", @readonly = "readonly" }))
+                                @Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleBankingCenter)
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ApplicationDetails_ApplicatonServices" class="control-label"></label>
+                                <br />
+                                @(Html.Kendo().CheckBoxGroup()
+            .Name("ApplicationDetails_ApplicatonServices")
+            .Layout("horizontal")
+            .Value(Model.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue)
+									.BindTo(Model.ApplicationDetails_ApplicatonServicesGroup.Items)
+                                .Events(e => e.Change("onChangeApplicatonServices")))
+                                @*@Html.Kendo().CheckBoxGroupFor(X => X.ApplicationDetails_ApplicatonServices).Layout("horizontal").BindTo((System.Collections.IEnumerable)ViewBag.applicatonServices)*@
+
+
+                                @Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicatonServices)
+                            </div>
+
+                        </div>
+                    </div>
+                    @*</form>*@
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<script src="~/Scripts/Custom/Application/ApplicationDetails.js"></script>
+

@@ -1,0 +1,60 @@
+﻿@model Eurobank.Models.IdentificationDetails.IdentificationDetailsViewModel
+@using Kendo.Mvc.UI
+
+<div class="row">
+	<div class="col-md-12">
+		<form asp-action="AddEditAddress">
+			<div class="form-group">
+				<label asp-for="CitizenshipValue" class="control-label"></label>
+				@(Html.Kendo().DropDownListFor(m => m.CitizenshipValue).BindTo((System.Collections.IEnumerable)ViewBag.CountryIdentification)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", title = "In case of multiple citizenships, please select the relevant countries" }))
+				@Html.ValidationMessageFor(X => X.IdentificationDetails_Citizenship)
+			</div>
+			<div class="form-group">
+				<label asp-for="IdentificationDetails_TypeOfIdentification" class="control-label"></label>
+				@(Html.Kendo().DropDownListFor(m => m.IdentificationDetails_TypeOfIdentification).BindTo((System.Collections.IEnumerable)ViewBag.identificationType)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control",onchange="ClearIdentificationNumber()" }))
+				@Html.ValidationMessageFor(X => X.IdentificationDetails_TypeOfIdentification)
+			</div>
+			<div class="form-group">
+				<label asp-for="IdentificationDetails_IdentificationNumber" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.IdentificationDetails_IdentificationNumber).HtmlAttributes(new { @class = "form-control", onkeypress = "allowAlphaNumericSpace(event)",@onkeyup="return limitlength(this,50,'IdentificationDetails_IdentificationNumberError')",@onKeyDown="return limitlength(this,50,'IdentificationDetails_IdentificationNumberError')" })
+				@Html.ValidationMessageFor(X => X.IdentificationDetails_IdentificationNumber)
+				<span id="IdentificationDetails_IdentificationNumberError" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="CountryOfIssueValue" class="control-label"></label>
+				@(Html.Kendo().DropDownListFor(m => m.CountryOfIssueValue).BindTo((System.Collections.IEnumerable)ViewBag.CountryIdentification)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+				@Html.ValidationMessageFor(X => X.CountryOfIssueValue)
+			</div>
+            <div class="form-group">
+                <label asp-for="IdentificationDetails_IssueDate" class="control-label"></label>
+                @*@Html.Kendo().TextBoxFor(model => model.IdentificationDetails_IssueDate).HtmlAttributes(new { @class = "form-control datepicker1" })*@
+                @Html.Kendo().DatePickerFor(model => model.IdentificationDetails_IssueDate).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.IdentificationDetails_IssueDate)
+            </div>
+            <div class="form-group">
+                <label asp-for="IdentificationDetails_ExpiryDate" class="control-label"></label>
+                @*@Html.Kendo().TextBoxFor(model => model.IdentificationDetails_ExpiryDate).HtmlAttributes(new { @class = "form-control datepicker1" })*@
+                @Html.Kendo().DatePickerFor(model => model.IdentificationDetails_ExpiryDate).Format("dd/MM/yyyy").HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.IdentificationDetails_ExpiryDate)
+            </div>
+			
+
+		</form>
+	</div>
+</div>
+<script src="~/Scripts/KendoProcess/CommonDataValidationProcess.js"></script>
+<script src="~/Scripts/Custom/Editor/AddEditIdentificationDetails.js"></script>
+
+
+

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<grid>
+	<actions>
+		<action name="edit" caption="$General.Edit$" fonticonclass="icon-edit" fonticonstyle="allow" />
+		<action name="#delete" caption="$General.Delete$" fonticonclass="icon-bin" fonticonstyle="critical" confirmation="$General.ConfirmDelete$" />
+	</actions>
+	<columns>
+		<column source="CorporateAccount_ExpectedDocument_PersonType" caption="Person Type" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/PERSON-TYPE" />
+					<filterparameter name="source" value="CorporateAccount_ExpectedDocument_PersonType" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_ExpectedDocument_PersonRole" caption="Person Role" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/PERSON-ROLE" />
+					<filterparameter name="source" value="CorporateAccount_ExpectedDocument_PersonRole" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_ExpectedDocument_Jurisdiction" caption="Jurisdiction" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/JURISDICTION" />
+					<filterparameter name="source" value="CorporateAccount_ExpectedDocument_Jurisdiction" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_ExpectedDocument_ExpectedDocumentType" caption="Expected Document Type" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/EXPECTED-DOCUMENT-TYPE" />
+					<filterparameter name="source" value="CorporateAccount_ExpectedDocument_ExpectedDocumentType" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_ExpectedDocument_MandatoryOptionalConditional" caption="Mandatory / Optional / Conditional" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/MANDATORY-OPTIONAL-CONDITIONAL" />
+					<filterparameter name="source" value="CorporateAccount_ExpectedDocument_MandatoryOptionalConditional" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_ExpectedDocument_IsActive" caption="Is Active" externalsourcename="#yesno">
+			<filter type="bool" />
+		</column>
+	</columns>
+	<options>
+		<key name="DisplayFilter" value="true" />
+		<key name="FilterLimit" value="0" />
+	</options>
+</grid>

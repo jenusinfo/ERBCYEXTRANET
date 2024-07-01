@@ -1,0 +1,372 @@
+﻿@model Eurobank.Models.Registries.PersonsRegistry
+@using Kendo.Mvc.UI
+@*<script>
+        kendo.culture("en-GB");
+        var culture = kendo.culture();
+        culture.calendar.patterns.d = "dd MMM yyyy";
+        culture.calendar.patterns.D = "dd MMM yyyy";
+        culture.calendar.patterns.t = "HH:mm";
+        culture.calendar.patterns.T = "HH:mm";
+        culture.calendar.patterns.g = "dd MMM yyyy HH:mm";
+        culture.calendar.patterns.G = "dd MMM yyyy HH:mm";
+
+    </script>*@
+@*<div class="row sidebarscroll">*@
+    <style type="text/css">
+        input{
+            text-transform : uppercase;
+        }
+    </style>
+<div class="col-md-12">
+    <form asp-action="AddEditAddress">
+        @*@Html.HiddenFor(m => m.CountryName)
+            @Html.HiddenFor(m => m.AddresTypeName)*@
+        <div class="form-group">
+            <label asp-for="ApplicationType" class="control-label"></label>
+
+            @(Html.Kendo().DropDownListFor(m => m.ApplicationType).BindTo((System.Collections.IEnumerable)ViewBag.applicationType)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control", onchange = "ShowRespectedDiv()",id= "ApplicationTypeID" }))
+            @Html.ValidationMessageFor(X => X.ApplicationType)
+        </div>
+        <div id="PersonDetailsDIV" style="display:none">
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+
+
+                @(Html.Kendo().DropDownListFor(m => m.Title).BindTo((System.Collections.IEnumerable)ViewBag.titleList)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.Title)
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.FirstName).HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.FirstName)
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.LastName).HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.LastName)
+            </div>
+            <div class="form-group">
+                <label asp-for="FatherName" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.FatherName).HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.FatherName)
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.Gender).BindTo((System.Collections.IEnumerable)ViewBag.gendar)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.Gender)
+            </div>
+            <div class="form-group">
+                <label asp-for="DateofBirth" class="control-label"></label>
+
+                @Html.Kendo().DatePickerFor(model => model.DateofBirth).Format("dd/MM/yyyy").ParseFormats(new string[] { "MM/dd/yyyy" }).Value("").HtmlAttributes(new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(X => X.DateofBirth)
+            </div>
+            <div class="form-group">
+                <label asp-for="PlaceofBirth" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.PlaceofBirth).HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.PlaceofBirth)
+            </div>
+            <div class="form-group">
+                <label asp-for="CountryofBirth" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.CountryofBirth).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.CountryofBirth)
+            </div>
+            <div class="form-group">
+                <label asp-for="EducationLevel" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.EducationLevel).BindTo((System.Collections.IEnumerable)ViewBag.educationLevel)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.EducationLevel)
+            </div>
+
+            <hr />
+            <h4>Identification Details</h4>
+            <div class="form-group">
+                <label asp-for="Citizenship" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.Citizenship).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.Citizenship)
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeofIdentification" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.TypeofIdentification).BindTo((System.Collections.IEnumerable)ViewBag.identificationType)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.TypeofIdentification)
+            </div>
+            <div class="form-group">
+                <label asp-for="IdentificationNumber" class="control-label"></label>
+                @Html.Kendo().TextBoxFor(model => model.IdentificationNumber).HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.IdentificationNumber)
+            </div>
+            <div class="form-group">
+                <label asp-for="IssuingCountry" class="control-label"></label>
+                @(Html.Kendo().DropDownListFor(m => m.IssuingCountry).BindTo((System.Collections.IEnumerable)ViewBag.Country)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.Filter("startswith")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.IssuingCountry)
+            </div>
+            <div class="form-group">
+                <label asp-for="IssueDate" class="control-label"></label>
+
+                @Html.Kendo().DatePickerFor(model => model.IssueDate).Format("dd/MM/yyyy").ParseFormats(new string[] { "MM/dd/yyyy" }).Value("").HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.IssueDate)
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpiryDate" class="control-label"></label>
+                @Html.Kendo().DatePickerFor(model => model.ExpiryDate).Format("dd/MM/yyyy").ParseFormats(new string[] { "MM/dd/yyyy" }).Value("").HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.ExpiryDate)
+            </div>
+            <hr />
+            <h4>Contact Details</h4>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="WorkTelNoNumber" class="control-label "></label>
+                        @(Html.Kendo().DropDownListFor(m => m.WorkTelNoCountryCode)
+            .OptionLabel("- Country Code - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+                            .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_WorkTelNoNumber", @placeholder = "Type Country", @onchange = "ChangeMaxLengthIndividualWorkNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Registries");
+            });
+        }))
+                        @Html.ValidationMessageFor(X => X.WorkTelNoCountryCode)
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="form-group">
+                        <label class="control-label" style="padding-top:20px;"></label>
+                        @Html.Kendo().TextBoxFor(model => model.WorkTelNoNumber).HtmlAttributes(new { @class = "form-control", @id = "ContactDetails_WorkTelNoNumber", @onkeypress = "return isNumberKey(event);", @maxlength = "10" })
+                        @Html.ValidationMessageFor(X => X.WorkTelNoNumber)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="MobileTelNoNumber" class="control-label "></label>
+                        @(Html.Kendo().DropDownListFor(m => m.MobileTelNoCountryCode)
+            .OptionLabel("- Country Code - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+                            .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_MobileTelNoNumber", @placeholder = "Type Country", onchange = "ChangeMaxLengthIndividualMobileNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Registries");
+            });
+        }))
+                        @Html.ValidationMessageFor(X => X.MobileTelNoCountryCode)
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="form-group">
+                        <label class="control-label" style="padding-top:20px;"></label>
+                        @Html.Kendo().TextBoxFor(model => model.MobileTelNoNumber).HtmlAttributes(new { @class = "form-control", @id = "ContactDetails_MobileTelNoNumber", @onkeypress = "return isNumberKey(event);", @maxlength = "10" })
+                        @Html.ValidationMessageFor(X => X.MobileTelNoNumber)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="HomeTelNoNumber" class="control-label "></label>
+                        @(Html.Kendo().DropDownListFor(m => m.HomeTelNoCountryCode)
+            .OptionLabel("- Country Code - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+                            .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_HomeTelNoNumber", @placeholder = "Type Country", @onchange = "ChangeMaxLengthIndividualHomeNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Registries");
+            });
+        }))
+                        @Html.ValidationMessageFor(X => X.HomeTelNoCountryCode)
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="form-group">
+                        <label class="control-label" style="padding-top:20px;"></label>
+                        @Html.Kendo().TextBoxFor(model => model.HomeTelNoNumber).HtmlAttributes(new { @class = "form-control", @id = "ContactDetails_HomeTelNoNumber", @onkeypress = "return isNumberKey(event);", @maxlength = "10" })
+                        @Html.ValidationMessageFor(X => X.HomeTelNoNumber)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="FaxNoFaxNumber" class="control-label "></label>
+                        @(Html.Kendo().DropDownListFor(m => m.FaxNoCountryCode)
+            .OptionLabel("- Country Code - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+                            .HtmlAttributes(new { @class = "form-control", @id = "Country_Code_FaxNoFaxNumber", @placeholder = "Type Country", @onchange = "ChangeMaxLengthIndividualFaxNo()" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("Country_Code_prefix_Read", "Registries");
+            });
+        }))
+                        @Html.ValidationMessageFor(X => X.FaxNoCountryCode)
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="form-group">
+                        <label class="control-label" style="padding-top:20px;"></label>
+                        @Html.Kendo().TextBoxFor(model => model.FaxNoFaxNumber).HtmlAttributes(new { @class = "form-control", @id = "ContactDetails_FaxNoFaxNumber", @onkeypress = "return isNumberKey(event);", @maxlength = "10" })
+                        @Html.ValidationMessageFor(X => X.FaxNoFaxNumber)
+                    </div>
+                </div>
+            </div>
+
+
+            @*<div class="form-group">
+                    <label asp-for="EmailAddress" class="control-label"></label>
+                    @Html.Kendo().TextBoxFor(model => model.EmailAddress).HtmlAttributes(new { @class = "form-control" })
+                    @Html.ValidationMessageFor(X => X.EmailAddress)
+                </div>*@
+            @*<div class="form-group">
+                    <label asp-for="ConsentforMarketingPurposes" class="control-label"></label>
+                    @Html.Kendo().TextBoxFor(model => model.ConsentforMarketingPurposes).HtmlAttributes(new { @class = "form-control" })
+                    @Html.ValidationMessageFor(X => X.ConsentforMarketingPurposes)
+                </div>*@
+            @*<div class="form-group">
+                                <label asp-for="PreferredCommunicationLanguage" class="control-label"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.PreferredCommunicationLanguage).BindTo((System.Collections.IEnumerable)ViewBag.communicationLanguage)
+                .OptionLabel("- Select - ")
+                .DataValueField("Value")
+                .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                                @Html.ValidationMessageFor(X => X.PreferredCommunicationLanguage)
+                            </div>*@
+        </div>
+
+        <div id="CompanyDetailsDIV" style="display:none">
+            <div class="form-group">
+                <label asp-for="RegisteredName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.RegisteredName")</label>
+                @Html.Kendo().TextBoxFor(model => model.RegisteredName).HtmlAttributes(new { @class = "form-control" })
+                @Html.ValidationMessageFor(X => X.RegisteredName)
+            </div>
+            @*<div class="form-group">
+                    <label asp-for="TradingName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.TradingName")</label>
+                    @Html.Kendo().TextBoxFor(model => model.TradingName).HtmlAttributes(new { @class = "form-control" })
+                    @Html.ValidationMessageFor(X => X.TradingName)
+                </div>*@
+            <div class="form-group">
+                <label asp-for="EntityType" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.EntityType")</label>
+                @(Html.Kendo().DropDownListFor(m => m.EntityType).BindTo((System.Collections.IEnumerable)ViewBag.CompanyEntities)
+	.OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+	.DataValueField("Value")
+	.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.EntityType)
+            </div>
+            <div class="form-group">
+                <label asp-for="CountryofIncorporation" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.CountryofIncorporation")</label>
+                @(Html.Kendo().DropDownListFor(m => m.CountryofIncorporation).BindTo((System.Collections.IEnumerable)ViewBag.Countries)
+    .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+    .DataValueField("Value")
+    .Filter("startswith")
+    .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                @Html.ValidationMessageFor(X => X.CountryofIncorporation)
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RegistrationNumber" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.RegistrationNumber")</label>
+                @Html.Kendo().TextBoxFor(model => model.RegistrationNumber).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,50,'CompanyDetailsRegistrationNumberError')", @onKeyDown = "return limitlength(this,50,'CompanyDetailsRegistrationNumberError')" })
+                @Html.ValidationMessageFor(X => X.RegistrationNumber)
+                <span id="CompanyDetailsRegistrationNumberError" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DateofIncorporation" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.DateofIncorporation")</label>
+                @Html.Kendo().DatePickerFor(model => model.DateofIncorporation).Format("dd/MM/yyyy").ParseFormats(new string[] { "MM/dd/yyyy" }).Value("").HtmlAttributes(new { @class = "form-control", @onkeypress = "return isNumberKeyWithSlash(event);" })
+                @Html.ValidationMessageFor(X => X.DateofIncorporation)
+            </div>
+            @*<div class="form-group">
+                            <label asp-for="ListingStatus" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.Label.ListingStatus")</label>
+                            @(Html.Kendo().DropDownListFor(m => m.ListingStatus).BindTo((System.Collections.IEnumerable)ViewBag.ListingStatuses)
+                .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                .DataValueField("Value")
+                .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                            @Html.ValidationMessageFor(X => X.ListingStatus)
+                        </div>*@
+            @*<div class="form-group">
+                            <label asp-for="SharesIssuedToTheBearerName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.CorporationSharesIssuedToTheBearer")</label>
+                            @(Html.Kendo().DropDownListFor(m => m.CorporationSharesIssuedToTheBearer).BindTo((System.Collections.IEnumerable)ViewBag.CorporationShares)
+                .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                .DataValueField("Value")
+                .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                            @Html.ValidationMessageFor(X => X.SharesIssuedToTheBearerName)
+                        </div>*@
+            @*<div class="form-group">
+                            <label asp-for="IsOfficeinCyprusName" class="control-label">@ResHelper.GetString("Eurobank.Application.Applicant.CompanyDetails.IstheEntitylocatedandoperatesanofficeinCyprus")</label>
+                            @(Html.Kendo().DropDownListFor(m => m.IstheEntitylocatedandoperatesanofficeinCyprus).BindTo((System.Collections.IEnumerable)ViewBag.EntityLocatedAndOperates)
+                .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                .DataValueField("Value")
+                .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                            @Html.ValidationMessageFor(X => X.IsOfficeinCyprusName)
+                        </div>*@
+
+            <hr />
+            @*<h4>Contact Details</h4>
+                            <div class="form-group">
+                                <label asp-for="ContactDetailsLegal_PreferredMailingAddress" class="control-label"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ContactDetailsLegal_PreferredMailingAddress).BindTo((System.Collections.IEnumerable)ViewBag.PreferredMailingAddress)
+                    .OptionLabel(new { Text = ResHelper.GetString("Eurobank.General.DropDownList.Select"), Value = "" })
+                    .DataValueField("Value")
+                    .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                                @Html.ValidationMessageFor(m => m.ContactDetailsLegal_PreferredMailingAddress)
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ContactDetailsLegal_EmailAddressForSendingAlerts" class="control-label"></label>
+                                @(Html.Kendo().TextBoxFor(m=>m.ContactDetailsLegal_EmailAddressForSendingAlerts).HtmlAttributes(new { @class="form-control",id= "ContactDetailsLegal_EmailAddressForSendingAlerts" }))
+                                @Html.ValidationMessageFor(m => m.ContactDetailsLegal_EmailAddressForSendingAlerts)
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ContactDetailsLegal_PreferredCommunicationLanguage" class="control-label"></label>
+                                @(Html.Kendo().DropDownListFor(m => m.ContactDetailsLegal_PreferredCommunicationLanguage).BindTo((System.Collections.IEnumerable)ViewBag.communicationLanguage)
+                .OptionLabel("- Select - ")
+                .DataValueField("Value")
+                .DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+                                @Html.ValidationMessageFor(X => X.ContactDetailsLegal_PreferredCommunicationLanguage)
+                            </div>*@
+        </div>
+    </form>
+</div>
+@*</div>*@
+<script>
+    $(".datepicker1").kendoDatePicker();
+</script>
+
+<script src="~/Scripts/Custom/Editor/AddEditPersonsRegistry.js"></script>
+

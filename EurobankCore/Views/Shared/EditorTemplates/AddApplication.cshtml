@@ -1,0 +1,69 @@
+﻿@model Eurobank.Models.Applications.ApplicationDetailsModelView
+@using Kendo.Mvc.UI
+
+<div class="row">
+	<div class="col-md-8">
+		<form asp-action="Apllications">
+
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_ApplicationType" class="control-label"></label>
+				@(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ApplicationType).BindTo((System.Collections.IEnumerable)ViewBag.applicationType)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicationType)
+			</div>
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_ApplicatonServices" class="control-label"></label>
+				<br />
+				@{ int id = 0;}
+				@foreach(var item in ViewBag.applicatonServices)
+				{
+					id = id + 1;
+
+					@(Html.Kendo().RadioButton().Name(item.NodeName+id).Value(item.NodeGUID).Checked(false).HtmlAttributes(new { @name = "ApplicationDetails_ApplicatonServices" }).Label(item.NodeName));
+
+				}
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicatonServices)
+			</div>
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_ApplicationStatus" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.ApplicationDetails_ApplicationStatus).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_ApplicationStatus)
+			</div>
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_IntroducerName" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.ApplicationDetails_IntroducerName).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_IntroducerName)
+			</div>
+
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_IntroducerCIF" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.ApplicationDetails_IntroducerCIF).HtmlAttributes(new { @class = "form-control datepicker1" })
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_IntroducerCIF)
+			</div>
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_ResponsibleBankingCenter" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.ApplicationDetails_ResponsibleBankingCenter).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleBankingCenter)
+			</div>
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_ResponsibleOfficer" class="control-label"></label>
+				@(Html.Kendo().DropDownListFor(m => m.ApplicationDetails_ResponsibleOfficer).BindTo((System.Collections.IEnumerable)ViewBag.responsibleOfficer)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_ResponsibleOfficer)
+			</div>
+			<div class="form-group">
+				<label asp-for="ApplicationDetails_CurrentStage" class="control-label"></label>
+				@Html.Kendo().TextBoxFor(model => model.ApplicationDetails_CurrentStage).HtmlAttributes(new { @class = "form-control" })
+				@Html.ValidationMessageFor(X => X.ApplicationDetails_CurrentStage)
+			</div>
+			</form>
+
+	</div>
+</div>
+
+
+

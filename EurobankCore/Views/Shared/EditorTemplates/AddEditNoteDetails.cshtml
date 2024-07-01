@@ -1,0 +1,50 @@
+﻿@model Eurobank.Models.Application.NoteDetailsModel
+@using Kendo.Mvc.UI
+<div class="form-group">
+    <label asp-for="NoteDetailsType" class="control-label">@ResHelper.GetString("Eurobank.Application.NoteDetail.Label.Type")</label>
+    @(Html.Kendo().DropDownListFor(m => m.NoteDetailsType).BindTo((System.Collections.IEnumerable)ViewBag.DocumentType)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+    @Html.ValidationMessageFor(X => X.NoteDetailsType)
+</div>
+@*<div class="form-group">
+    <label asp-for="Subject" class="control-label">@ResHelper.GetString("Eurobank.Application.NoteDetail.Label.Subject")</label>
+    @(Html.Kendo().DropDownListFor(m => m.Subject).BindTo((System.Collections.IEnumerable)ViewBag.Subjects)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+    @Html.ValidationMessageFor(X => X.NoteDetailsType)
+</div>*@
+<div class="form-group">
+        <label asp-for="Subject" class="control-label">@ResHelper.GetString("Eurobank.Application.NoteDetail.Label.Subject")</label>
+    @Html.Kendo().TextBoxFor(model => model.Subject).HtmlAttributes(new { @class = "form-control", @onKeyDown="return limitlength(this,255,'SubjectError')", @onKeyUp ="return limitlength(this,255,'SubjectError')" })
+        @Html.ValidationMessageFor(X => X.Subject)
+    <span id="SubjectError" class="text-danger"></span>
+    </div>
+<div class="form-group">
+    <label asp-for="Details" class="control-label">@ResHelper.GetString("Eurobank.Application.NoteDetail.Label.Details")</label>
+    @Html.Kendo().TextBoxFor(model => model.Details).HtmlAttributes(new { @class = "form-control", @onKeyDown="return limitlength(this,4000,'DetailsError')", @onKeyUp ="return limitlength(this,4000,'DetailsError')" })
+    @Html.ValidationMessageFor(X => X.Details)
+    <span id="DetailsError" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="PendingOn" class="control-label">@ResHelper.GetString("Eurobank.Application.NoteDetail.Label.PendingOn")</label>
+    @(Html.Kendo().DropDownListFor(m => m.PendingOn).BindTo((System.Collections.IEnumerable)ViewBag.PendingOnUser)
+.OptionLabel(ResHelper.GetString("Eurobank.General.DropDownList.Select"))
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+    @Html.ValidationMessageFor(X => X.PendingOn)
+</div>
+<div class="form-group">
+    <label asp-for="ExpectedDate" class="control-label">@ResHelper.GetString("Eurobank.Application.NoteDetail.Label.ExpectedDate")</label>
+    @Html.Kendo().DatePickerFor(model => model.ExpectedDate).Format("dd/MM/yyyy").Value("").HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.ExpectedDate)
+</div>
+
+
+
+
+
+
+

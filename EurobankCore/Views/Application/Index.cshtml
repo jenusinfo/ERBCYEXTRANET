@@ -1,0 +1,199 @@
+﻿@model Eurobank.Models.ContactDetailViewModel
+@using Kendo.Mvc.UI
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="application">
+	<div class="shadow-box">
+			<div id="validation-success" class="alert alert-success" role="alert"></div>
+			<form asp-action="Index" class="row">
+				@Html.HiddenFor(model => model.ApplicationID)
+				<div class="col-md-6">
+					<div class="form-group">
+						<label asp-for="Title" class="control-label"></label>
+						@(Html.Kendo().DropDownListFor(m => m.Title).BindTo((System.Collections.IEnumerable)ViewBag.titles)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+
+						@Html.ValidationMessageFor(X => X.Title)
+					</div>
+					<div class="form-group">
+						<label asp-for="FirstName" class="control-label"></label>
+						@Html.Kendo().TextBoxFor(model => model.FirstName).HtmlAttributes(new { @class = "form-control" })
+						@Html.ValidationMessageFor(X => X.FirstName)
+					</div>
+					<div class="form-group">
+						<label asp-for="LastName" class="control-label"></label>
+						@Html.Kendo().TextBoxFor(model => model.LastName).HtmlAttributes(new { @class = "form-control" })
+						@Html.ValidationMessageFor(X => X.LastName)
+					</div>
+				</div>
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<label asp-for="FatherName" class="control-label"></label>
+						@Html.Kendo().TextBoxFor(model => model.FatherName).HtmlAttributes(new { @class = "form-control" })
+						@Html.ValidationMessageFor(X => X.FatherName)
+					</div>
+					<div class="form-group">
+						<label asp-for="DateofBirth" class="control-label w-100"></label>
+						@Html.Kendo().TextBoxFor(model => model.DateofBirth).HtmlAttributes(new { @class = " datepicker1" })
+					</div>
+					<div class="form-group">
+						<label asp-for="Gender" class="control-label"></label>
+						@(Html.Kendo().DropDownListFor(m => m.Gender).BindTo((System.Collections.IEnumerable)ViewBag.gender)
+.OptionLabel("- Select - ")
+.DataValueField("Value")
+.DataTextField("Text").HtmlAttributes(new { @class = "form-control" }))
+					</div>
+					<div class="form-group">
+						<input type="checkbox" name="Isactive" checked data-toggle="toggle" data-size="sm" data-on="True" data-off="False" data-onstyle="success">
+						<label asp-for="Isactive" class="control-label ml-2"></label>
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+				
+				
+					
+			</form>
+	</div>
+	@if(TempData["IsEdit"] != null)
+	{
+		<div class="shadow-box">
+
+
+			@(Html.Kendo().Grid<Eurobank.Models.FormModels.AddressViewModel>()
+	.Name("grid")
+	.Columns(columns =>
+	{
+		columns.Bound(p => p.AddressGuid).Hidden();
+		columns.Bound(p => p.ApplicationID).Hidden();
+		columns.Bound(p => p.ApplicationID).Hidden();
+		columns.Bound(p => p.AddressType).Hidden();
+		columns.Bound(p => p.AddressDocument).Hidden();
+		columns.Bound(p => p.AddresTypeName).Width(150);
+		columns.Bound(p => p.PostalCode).Width(50);
+		columns.Bound(p => p.City).Width(50);
+		columns.Bound(p => p.Country).Hidden().Width(50);
+		columns.Bound(p => p.CountryName).Width(70);
+		columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+	})
+	.ToolBar(toolbar => toolbar.Create().IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }))
+	.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AddEditAddress").DisplayDeleteConfirmation("Delete?").Window(w=>w.Title("Add/Edit").HtmlAttributes(new { style = "margin-left: auto;" }))).EnableCustomBinding(true)
+	.Pageable()
+	.Sortable()
+	.Scrollable()
+	.HtmlAttributes(new { style = "height:550px;" })
+	.DataSource(dataSource => dataSource
+		.Ajax()
+		.PageSize(10)
+		//.Events(e => e.RequestStart("hideIdField"))
+		.Model(model =>
+		{
+			model.Id(p => p.AddressGuid);
+			model.Field(p => p.AddressType);
+			model.Field(p => p.City);
+			model.Field(p => p.Country);
+			model.Field(p => p.PostalCode);
+			model.Field(p => p.StreetLane1);
+			model.Field(p => p.StreetLane2);
+			model.Field(p => p.CountryName);
+			model.Field(p => p.ApplicationID);
+			model.Field(p => p.AddresTypeName);
+			model.Field(p => p.AddressDocument).Editable();
+		})
+		//.Model(model => model.Id(p => p.AddressGuid))
+		.ServerOperation(true)
+		.Create(update => update.Action("EditingPopup_Create", "CommonForm"))
+		.Read(read => read.Action("Address_Read", "CommonForm"))
+	  .Update(update => update.Action("EditingPopup_Update", "CommonForm"))
+	  .Destroy(update => update.Action("EditingPopup_Destroy", "CommonForm"))
+	)
+)
+			<script type="text/javascript">
+				function error_handler(e) {
+					if(e.errors) {
+						var message = "Errors:\n";
+						$.each(e.errors, function(key, value) {
+							if('errors' in value) {
+								$.each(value.errors, function() {
+									message += this + "\n";
+								});
+							}
+						});
+						alert(message);
+					}
+				}
+			</script>
+		</div>
+	}
+
+</div>
+<script>
+	$(function() {
+		$("form").kendoValidator();
+	});
+	$(".datepicker1").kendoDatePicker();
+
+	$(".datepicker1").change(function(e) {
+		var currentDate = kendo.parseDate(this.value);
+		if(!currentDate) {
+			this.value = "";
+		}
+	});
+	function onRequestStart(e) {
+		var v = $("#txtLookupTableId").val();
+	}
+
+</script>
+<script>
+	function AddressTypeChangeEvent(data) {
+		$("#AddresTypeNameHidden").val("");
+		var selectedText = data.options[data.selectedIndex].innerHTML;
+		$("#AddresTypeNameHidden").val(selectedText);
+	}
+</script>
+<script>
+
+
+	function onUpload(e) {
+		alert();
+		console.log("Success (" + e.operation + ") :: " + getFileInfo(e));
+		//$("#AddressDocument").val(getFileInfo(e));
+	}
+
+	function onSuccess(e) {
+		console.log("Success (" + e.operation + ") :: " + getFileInfo(e));
+	}
+
+
+	function onSelect(e) {
+	
+		
+		var uid = this.element.closest("[data-uid]").data("uid"),
+			dataSource = $("#grid").data("kendoGrid").dataSource,
+			item = dataSource.getByUid(uid);
+		    item.dirty = true;
+		//var dataItem1 = grid.data(row);
+
+		console.log(uid);
+		//console.log("Selected files uids :: [ " + getFileInfo(e) + " ]");
+		//if(e.action == "itemchange") {
+		//	e.items[0].dirtyFields = e.items[0].dirtyFields || {};
+		//	e.items[0].dirtyFields[e.field] = true;
+		//}
+	}
+
+	function getFileInfo(e) {
+		return $.map(e.files, function(file) {
+			var info = file.uid;
+
+			return info;
+		}).join(", ");
+	}
+	
+</script>

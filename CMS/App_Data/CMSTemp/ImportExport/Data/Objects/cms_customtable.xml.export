@@ -1,0 +1,119 @@
+﻿<cms_customtable version="13.0">
+  <NewDataSet>
+    <cms_class>
+      <ClassID>5630</ClassID>
+      <ClassDisplayName>Counties Custom Fields</ClassDisplayName>
+      <ClassName>Eurobank.CountiesCustomFields</ClassName>
+      <ClassUsesVersioning>false</ClassUsesVersioning>
+      <ClassIsDocumentType>false</ClassIsDocumentType>
+      <ClassIsCoupledClass>true</ClassIsCoupledClass>
+      <ClassXmlSchema>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"&gt;
+  &lt;xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true"&gt;
+    &lt;xs:complexType&gt;
+      &lt;xs:choice minOccurs="0" maxOccurs="unbounded"&gt;
+        &lt;xs:element name="Eurobank_CountiesCustomFields"&gt;
+          &lt;xs:complexType&gt;
+            &lt;xs:sequence&gt;
+              &lt;xs:element name="ItemID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" /&gt;
+              &lt;xs:element name="CountryID" type="xs:int" /&gt;
+              &lt;xs:element name="EUFLAG"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:maxLength value="1" /&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:element&gt;
+              &lt;xs:element name="ItemCreatedBy" type="xs:int" minOccurs="0" /&gt;
+              &lt;xs:element name="ItemCreatedWhen" type="xs:dateTime" minOccurs="0" /&gt;
+              &lt;xs:element name="ItemModifiedBy" type="xs:int" minOccurs="0" /&gt;
+              &lt;xs:element name="ItemModifiedWhen" type="xs:dateTime" minOccurs="0" /&gt;
+              &lt;xs:element name="ItemOrder" type="xs:int" minOccurs="0" /&gt;
+              &lt;xs:element name="ItemGUID" msdata:DataType="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" type="xs:string" /&gt;
+            &lt;/xs:sequence&gt;
+          &lt;/xs:complexType&gt;
+        &lt;/xs:element&gt;
+      &lt;/xs:choice&gt;
+    &lt;/xs:complexType&gt;
+    &lt;xs:unique name="Constraint1" msdata:PrimaryKey="true"&gt;
+      &lt;xs:selector xpath=".//Eurobank_CountiesCustomFields" /&gt;
+      &lt;xs:field xpath="ItemID" /&gt;
+    &lt;/xs:unique&gt;
+  &lt;/xs:element&gt;
+&lt;/xs:schema&gt;</ClassXmlSchema>
+      <ClassFormDefinition>&lt;form version="2"&gt;&lt;field column="ItemID" columntype="integer" guid="d3e30851-e84b-4083-867c-68259b79d0dd" isPK="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;ItemID&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;field column="CountryID" columntype="integer" guid="6db88e48-4c24-443f-8ecf-fb8da767e879" visible="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Country&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;controlname&gt;DropDownListControl&lt;/controlname&gt;&lt;DisplayActualValueAsItem&gt;False&lt;/DisplayActualValueAsItem&gt;&lt;EditText&gt;False&lt;/EditText&gt;&lt;Query&gt;select 0 as ddlValue, '--Select Country--' as ddlText
+union All
+select CountryID as ddlValue, CountryDisplayName as ddlText from CMS_Country&lt;/Query&gt;&lt;SortItems&gt;False&lt;/SortItems&gt;&lt;TextFormat&gt;{%ddlText%}&lt;/TextFormat&gt;&lt;ValueFormat&gt;{%ddlValue%}&lt;/ValueFormat&gt;&lt;/settings&gt;&lt;rules&gt;&lt;rule errormsg="Please select country"&gt;{%Rule("(Value &amp;gt;= 1)", "&amp;lt;rules&amp;gt;&amp;lt;r pos=\"0\" par=\"\" op=\"and\" n=\"MinValue\" &amp;gt;&amp;lt;p n=\"minvalue\"&amp;gt;&amp;lt;t&amp;gt;1&amp;lt;/t&amp;gt;&amp;lt;v&amp;gt;1&amp;lt;/v&amp;gt;&amp;lt;r&amp;gt;0&amp;lt;/r&amp;gt;&amp;lt;d&amp;gt;&amp;lt;/d&amp;gt;&amp;lt;vt&amp;gt;double&amp;lt;/vt&amp;gt;&amp;lt;tv&amp;gt;0&amp;lt;/tv&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/r&amp;gt;&amp;lt;/rules&amp;gt;")%}&lt;/rule&gt;&lt;/rules&gt;&lt;/field&gt;&lt;field column="EUFLAG" columnsize="1" columntype="text" guid="c6858128-7451-4c98-93b1-c1addf17a27f" visible="true"&gt;&lt;properties&gt;&lt;defaultvalue&gt;Y&lt;/defaultvalue&gt;&lt;fieldcaption&gt;EUFLAG&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;settings&gt;&lt;controlname&gt;RadioButtonsControl&lt;/controlname&gt;&lt;Options&gt;Y;Yes
+N;No&lt;/Options&gt;&lt;RepeatDirection&gt;horizontal&lt;/RepeatDirection&gt;&lt;RepeatLayout&gt;Flow&lt;/RepeatLayout&gt;&lt;SortItems&gt;False&lt;/SortItems&gt;&lt;/settings&gt;&lt;/field&gt;&lt;field allowempty="true" column="ItemCreatedBy" columntype="integer" guid="f9f0db92-4f9c-4dc8-9a76-9c25b8886cfc" system="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Created by&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;field allowempty="true" column="ItemCreatedWhen" columnprecision="7" columntype="datetime" guid="68550ea3-f269-4ac7-b96f-5cf1f22b7341" system="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Created when&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;field allowempty="true" column="ItemModifiedBy" columntype="integer" guid="9ffc8ba7-34ce-438c-9fda-0b4aca2ff36f" system="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Modified by&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;field allowempty="true" column="ItemModifiedWhen" columnprecision="7" columntype="datetime" guid="4557a33b-a173-4880-adfa-b6060e1766bf" system="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Modified when&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;field allowempty="true" column="ItemOrder" columntype="integer" guid="118572b8-22fc-45df-adb2-84a5e9ae0c8d" system="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;Order&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;field column="ItemGUID" columntype="guid" guid="fa9e3892-9287-461a-9062-09bb3aafce25" system="true"&gt;&lt;properties&gt;&lt;fieldcaption&gt;GUID&lt;/fieldcaption&gt;&lt;/properties&gt;&lt;/field&gt;&lt;/form&gt;</ClassFormDefinition>
+      <ClassNodeNameSource></ClassNodeNameSource>
+      <ClassTableName>Eurobank_CountiesCustomFields</ClassTableName>
+      <ClassShowAsSystemTable>false</ClassShowAsSystemTable>
+      <ClassUsePublishFromTo>false</ClassUsePublishFromTo>
+      <ClassShowTemplateSelection>false</ClassShowTemplateSelection>
+      <ClassIsMenuItemType>false</ClassIsMenuItemType>
+      <ClassLastModified>2023-12-14T11:03:23.8132272+00:00</ClassLastModified>
+      <ClassGUID>e62ca8ab-2395-4eac-bf97-cf266d894875</ClassGUID>
+      <ClassIsProduct>false</ClassIsProduct>
+      <ClassIsCustomTable>true</ClassIsCustomTable>
+      <ClassSearchTitleColumn>DocumentName</ClassSearchTitleColumn>
+      <ClassSearchCreationDateColumn>DocumentCreatedWhen</ClassSearchCreationDateColumn>
+      <ClassSearchSettings>&lt;search&gt;&lt;item azurecontent="False" azureretrievable="False" azuresearchable="False" content="False" id="19ca17ae-0064-4756-bc5f-ae1a4dc1a5ff" name="ItemGUID" searchable="False" tokenized="False" /&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="4a28ab4a-b404-4722-a568-e281218c3df3" name="ItemID" searchable="True" tokenized="False" /&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="52426287-55d9-4f98-9321-09e2961c970b" name="ItemModifiedBy" searchable="True" tokenized="False" /&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="5f3c52ba-ad2d-43c2-8101-38685fe60d94" name="ItemCreatedWhen" searchable="True" tokenized="False" /&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="78e88200-8357-4991-8219-b5771eb3e1fc" name="ItemModifiedWhen" searchable="True" tokenized="False" /&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="ad680a8d-ce2d-4464-8852-4a482b60d971" name="ItemCreatedBy" searchable="True" tokenized="False" /&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="df98c394-5310-4614-a780-545716780e27" name="ItemOrder" searchable="True" tokenized="False" /&gt;&lt;item azurecontent="False" azureretrievable="True" azuresearchable="False" content="False" id="e3debad4-2115-4670-b32b-2557ee4ef5ac" name="CountryID" searchable="True" tokenized="False" /&gt;&lt;/search&gt;</ClassSearchSettings>
+      <ClassSearchEnabled>true</ClassSearchEnabled>
+      <ClassVersionGUID>bbdccbcf-7026-4fa2-b6b8-a52471b78ac2</ClassVersionGUID>
+      <ClassIsForm>false</ClassIsForm>
+      <ClassCodeGenerationSettings>&lt;Data&gt;&lt;NameSpace&gt;Eurobank&lt;/NameSpace&gt;&lt;/Data&gt;</ClassCodeGenerationSettings>
+      <ClassUsesPageBuilder>false</ClassUsesPageBuilder>
+      <ClassIsNavigationItem>false</ClassIsNavigationItem>
+      <ClassHasURL>false</ClassHasURL>
+      <ClassHasMetadata>false</ClassHasMetadata>
+    </cms_class>
+    <cms_permission>
+      <PermissionID>16981</PermissionID>
+      <PermissionDisplayName>{$permissionnames.read$}</PermissionDisplayName>
+      <PermissionName>Read</PermissionName>
+      <ClassID>5630</ClassID>
+      <PermissionGUID>389c2f4d-e177-422e-8a34-67408f9d5e92</PermissionGUID>
+      <PermissionLastModified>2023-12-12T07:40:42.8612575+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.customtable.read$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>1</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16982</PermissionID>
+      <PermissionDisplayName>{$general.delete$}</PermissionDisplayName>
+      <PermissionName>Delete</PermissionName>
+      <ClassID>5630</ClassID>
+      <PermissionGUID>2e19c7d6-9c66-4336-8f10-9f7dff478670</PermissionGUID>
+      <PermissionLastModified>2023-12-12T07:40:42.9084588+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.customtable.delete$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>4</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16983</PermissionID>
+      <PermissionDisplayName>{$permissionnames.modify$}</PermissionDisplayName>
+      <PermissionName>Modify</PermissionName>
+      <ClassID>5630</ClassID>
+      <PermissionGUID>7a2a28c9-7a38-4cfe-8627-a92f301c6f45</PermissionGUID>
+      <PermissionLastModified>2023-12-12T07:40:42.9029195+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.customtable.modify$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>2</PermissionOrder>
+    </cms_permission>
+    <cms_permission>
+      <PermissionID>16984</PermissionID>
+      <PermissionDisplayName>{$permissionnames.create$}</PermissionDisplayName>
+      <PermissionName>Create</PermissionName>
+      <ClassID>5630</ClassID>
+      <PermissionGUID>12fb6039-19f0-4966-a147-fc138691a238</PermissionGUID>
+      <PermissionLastModified>2023-12-12T07:40:42.9059197+00:00</PermissionLastModified>
+      <PermissionDescription>{$permissiondescription.customtable.create$}</PermissionDescription>
+      <PermissionDisplayInMatrix>true</PermissionDisplayInMatrix>
+      <PermissionOrder>3</PermissionOrder>
+    </cms_permission>
+    <cms_classsite>
+      <ClassID>5630</ClassID>
+      <SiteID>1</SiteID>
+    </cms_classsite>
+  </NewDataSet>
+</cms_customtable>

@@ -1,0 +1,51 @@
+﻿@model Eurobank.Models.PEPDetails.PepApplicantViewModel
+@using Kendo.Mvc.UI
+
+
+@*<div class="form-group">
+    <label asp-for="PepApplicant_FirstName" class="control-label"></label>
+    @Html.Kendo().TextBoxFor(model => model.PepApplicant_FirstName).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.PepApplicant_FirstName)
+</div>
+<div class="form-group">
+    <label asp-for="PepApplicant_Surname" class="control-label"></label>
+    @Html.Kendo().TextBoxFor(model => model.PepApplicant_Surname).HtmlAttributes(new { @class = "form-control" })
+    @Html.ValidationMessageFor(X => X.PepApplicant_Surname)
+</div>*@
+	
+	<div class="form-group">
+		<label asp-for="PepApplicant_PositionOrganization" class="control-label"></label>
+		@Html.Kendo().TextBoxFor(model => model.PepApplicant_PositionOrganization).HtmlAttributes(new { @class = "form-control" })
+		@Html.ValidationMessageFor(X => X.PepApplicant_PositionOrganization)
+	</div>
+	
+	<div class="form-group">
+		<label asp-for="PepApplicant_Country" class="control-label"></label>
+		@(Html.Kendo().DropDownListFor(m => m.PepApplicant_Country)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+        .HtmlAttributes(new { @class = "form-control" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("PepApplicant_Country_Read", "Applicant");
+            });
+        })
+    )
+		@Html.ValidationMessageFor(X => X.PepApplicant_Country)
+	</div>
+	<div class="form-group">
+		<label asp-for="PepApplicant_Since" class="control-label"></label>
+		@Html.Kendo().DatePickerFor(model => model.PepApplicant_Since).Format("dd/MM/yyyy").Value("").HtmlAttributes(new { @class = "form-control" })
+		@Html.ValidationMessageFor(X => X.PepApplicant_Since)
+	</div>
+	<div class="form-group">
+		<label asp-for="PepApplicant_Untill" class="control-label"></label>
+		@Html.Kendo().DatePickerFor(model => model.PepApplicant_Untill).Format("dd/MM/yyyy").Value("").HtmlAttributes(new { @class = "form-control" })
+		@Html.ValidationMessageFor(X => X.PepApplicant_Untill)
+	</div>
+<script>
+	$(".datepicker1").kendoDatePicker();
+</script>

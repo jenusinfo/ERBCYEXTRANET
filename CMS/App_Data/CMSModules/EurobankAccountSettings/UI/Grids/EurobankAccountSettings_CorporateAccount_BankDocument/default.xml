@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<grid>
+	<actions>
+		<action name="edit" caption="$General.Edit$" fonticonclass="icon-edit" fonticonstyle="allow" />
+		<action name="#delete" caption="$General.Delete$" fonticonclass="icon-bin" fonticonstyle="critical" confirmation="$General.ConfirmDelete$" />
+	</actions>
+	<columns>
+		<column source="CorporateAccount_BankDocument_PersonType" caption="Person Type" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/PERSON-TYPE" />
+					<filterparameter name="source" value="CorporateAccount_BankDocument_PersonType" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_BankDocument_PersonRole" caption="Person Role" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/PERSON-ROLE" />
+					<filterparameter name="source" value="CorporateAccount_BankDocument_PersonRole" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_BankDocument_Type" caption="Type" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/TYPE" />
+					<filterparameter name="source" value="CorporateAccount_BankDocument_Type" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_BankDocument_SubType" caption="Sub-Type" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/SUB-TYPE" />
+					<filterparameter name="source" value="CorporateAccount_BankDocument_SubType" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_BankDocument_BankDocumentType" caption="Bank Document Type" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/BANK-DOCUMENT-TYPE" />
+					<filterparameter name="source" value="CorporateAccount_BankDocument_BankDocumentType" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_BankDocument_MandatoryOptionalConditional" caption="Mandatory / Optional / Conditional" externalsourcename="#customNodeNameFromNodeGUID">
+			<filter type="custom" path="~/CMSGlobalFiles/CMSModules/EurobankAccountSettings/AccountSettingsFilter.ascx" defaultvalue="_any">
+				<parameters>
+					<filterparameter name="nodealiaspath" value="/Lookups/Corporate-Account/MANDATORY-OPTIONAL-CONDITIONAL" />
+					<filterparameter name="source" value="CorporateAccount_BankDocument_MandatoryOptionalConditional" />
+				</parameters>
+			</filter>
+		</column>
+		<column source="CorporateAccount_BankDocument_IsActive" caption="Is Active" externalsourcename="#yesno">
+			<filter type="bool" />
+		</column>
+	</columns>
+	<options>
+		<key name="DisplayFilter" value="true" />
+		<key name="FilterLimit" value="0" />
+	</options>
+</grid>

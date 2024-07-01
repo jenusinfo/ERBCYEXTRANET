@@ -1,0 +1,71 @@
+﻿@model Eurobank.Models.PEPDetails.PepAssociatesViewModel
+@using Kendo.Mvc.UI
+
+
+	<div class="form-group">
+		<label asp-for="PepAssociates_FirstName" class="control-label"></label>
+		@Html.Kendo().TextBoxFor(model => model.PepAssociates_FirstName).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,50,'PepAssociatesFirstNameError')",@onKeyDown="return limitlength(this,50,'PepAssociatesFirstNameError')" })
+		@Html.ValidationMessageFor(X => X.PepAssociates_FirstName)
+		<span id="PepAssociatesFirstNameError" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="PepAssociates_Surname" class="control-label"></label>
+		@Html.Kendo().TextBoxFor(model => model.PepAssociates_Surname).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,50,'PepAssociatesSurnameError')",@onKeyDown="return limitlength(this,50,'PepAssociatesSurnameError')" })
+		@Html.ValidationMessageFor(X => X.PepAssociates_Surname)
+		<span id="PepAssociatesSurnameError" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="PepAssociates_Relationship" class="control-label"></label>
+		@(Html.Kendo().DropDownListFor(m => m.PepAssociates_Relationship)
+			.OptionLabel("- Select - ")
+		.DataTextField("Text")
+		.DataValueField("Value")
+		.HtmlAttributes(new { @class = "form-control" })
+		.DataSource(source => {
+			source.Read(read =>
+			{
+				read.Action("PepApplicant_Relationship_Read", "Applicant");
+			});
+		})
+    )
+		@Html.ValidationMessageFor(X => X.PepAssociates_Relationship)
+	</div>
+	<div class="form-group">
+		<label asp-for="PepAssociates_PositionOrganization" class="control-label"></label>
+		@Html.Kendo().TextBoxFor(model => model.PepAssociates_PositionOrganization).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,65,'PepAssociatesPositionOrganizationError')",@onKeyDown="return limitlength(this,65,'PepAssociatesPositionOrganizationError')" })
+		@Html.ValidationMessageFor(X => X.PepAssociates_PositionOrganization)
+		<span id="PepAssociatesPositionOrganizationError" class="text-danger"></span>
+	</div>
+
+
+	<div class="form-group">
+		<label asp-for="PepAssociates_Country" class="control-label"></label>
+		@(Html.Kendo().DropDownListFor(m => m.PepAssociates_Country)
+            .OptionLabel("- Select - ")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("startswith")
+        .HtmlAttributes(new { @class = "form-control" })
+        .DataSource(source => {
+            source.Read(read =>
+            {
+                read.Action("PepApplicant_Country_Read", "Applicant");
+            });
+        })
+    )
+		@Html.ValidationMessageFor(X => X.PepAssociates_Country)
+	</div>
+	<div class="form-group">
+		<label asp-for="PepAssociates_Since" class="control-label"></label>
+		@Html.Kendo().DatePickerFor(model =>model.PepAssociates_Since).Format("dd/MM/yyyy").Value("").HtmlAttributes(new { @class = "form-control" })
+
+		@Html.ValidationMessageFor(X => X.PepAssociates_Since)
+	</div>
+	<div class="form-group">
+		<label asp-for="PepAssociates_Until" class="control-label"></label>
+		@Html.Kendo().DatePickerFor(model => model.PepAssociates_Until).Format("dd/MM/yyyy").Value("").HtmlAttributes(new { @class = "form-control" })
+		@Html.ValidationMessageFor(X => X.PepAssociates_Until)
+	</div>
+<script>
+	$(".datepicker1").kendoDatePicker();
+</script>

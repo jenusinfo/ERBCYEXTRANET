@@ -1,0 +1,22 @@
+﻿@model IEnumerable<CMS.DocumentEngine.Types.Eurobank.News>
+
+@{
+	ViewData["Title"] = "News";
+}
+
+<h4>News</h4>
+<hr />
+@foreach(var news in Model)
+{
+	<a class="row" href="~/news/details/@news.NodeAlias">
+		<div class="col-md-2">
+			<img src="~/CMSPages/GetFile.aspx?guid=@news.NewsTeaser" width="200" height="200" />
+		</div>
+		<div class="col-md-6">
+			@news.NewsTitle
+		</div>
+	</a>
+}
+<div>
+	<a href="@Url.Action("Index", "Home")">@ResHelper.GetString("Eurobank.News.BackToHome")</a>
+</div>
