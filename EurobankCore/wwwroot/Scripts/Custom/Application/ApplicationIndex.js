@@ -205,13 +205,15 @@ function showHideFileLoader() {
     $progressbar.progressbar({
         value: false
     });
-
     
     $dialog.dialog({
         modal: true,
         closeOnEscape: false,
         resizable: false,
         buttons: {},
+        open: function (event, ui) {
+            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+        }
     });
 }
 

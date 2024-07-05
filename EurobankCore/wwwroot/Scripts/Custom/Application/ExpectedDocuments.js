@@ -34,6 +34,7 @@ function onGridDataBoundExpectedDocument(e) {
     $("#ExpectedDocuments .k-grid-add").html("<span class='k-icon k-i-plus-circle mr-1'></span>New").addClass("new-contact").removeClass("k-button k-button-icontext");
     $("#ExpectedDocuments .k-grid-content").attr("style", "max-height: 400px");
     deleteEmptyGridRecord('ExpectedDocuments');
+    $(".k-toolbar .k-textbox input").removeAttr("disabled");
 }
 function onSavechangeExpectedDocument(e) {
     console.log('OnSaveChange');

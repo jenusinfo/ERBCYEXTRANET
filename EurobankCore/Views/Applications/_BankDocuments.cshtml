@@ -70,12 +70,13 @@
                 </span>
                 <div id="accordionBankDocumentsContentOne">
 
-                    @(Html.Kendo().Grid<Eurobank.Models.Documents.DocumentsViewModel>
-        ()
+                    @(
+                        Html.Kendo().Grid<Eurobank.Models.Documents.DocumentsViewModel>
+                        ()
 
-        .Name("Bankdocuments")
-        .Columns(columns =>
-        {
+                        .Name("Bankdocuments")
+                        .Columns(columns =>
+                        {
                             columns.Template
                             (
                             @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
@@ -87,46 +88,55 @@
                             columns.Bound(p => p.RequiresSignatureStatus).Width(100);
                             columns.Bound(p => p.uploadedBy).Width(100);
                             columns.Bound(p => p.uploadedOn).ClientTemplate("#= (uploadedOn == null) ? ' ' : kendo.toString(uploadedOn, \"dd/MM/yyyy \") #").Width(100);
-            columns.Bound(p => p.BankDocuments_Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
-            
-        })
-        .Events(e =>
-        {
-            e.Edit("addConfirmButton");
-            e.DataBound("onGridDataBoundBankdocuments");
-            e.Cancel("onGridCancel");
-        })
-        // .ToolBar(toolbar => toolbar.ClientTemplate("<a class='k-button' style='margin-left: auto;' href='" + Url.Action("AddNewBankDouments", "Applications", new { id = Model.Id, entity = Model.EntityType }) + "'>New</a>"))
-        .ToolBar(toolbar => { if (Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
-        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode== Eurobank.Helpers.DataAnnotation.Constants.LegalEntity  ? "LegalAddEditBankDocuments" : "AddEditBankDocuments").DisplayDeleteConfirmation(false).Window(w=>w.Title("Bank Documents-Upload").Width(800))).EnableCustomBinding(true)
-        // .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode == Eurobank.Helpers.DataAnnotation.Constants.LegalEntity ? "# if(EntityType_Name == 'INDIVIDUAL') {# 'AddEditBankDocuments'; #}# else {# 'LegalAddEditBankDocuments'; #}#" : "AddEditBankDocuments").DisplayDeleteConfirmation(false).Window(w => w.Title("Bank Documents-Upload").Width(800))).EnableCustomBinding(true)
-        .Pageable()
-        .Sortable()
-        .Scrollable()
-        .HtmlAttributes(new { style = "max-height:550px;" })
-        .DataSource(dataSource => dataSource
-        .Ajax()
-        .PageSize(10)
-         .Sort(x => x.Add("BankDocuments_Status_Name").Descending())
-        //.Events(e => e.RequestStart("hideIdField"))
-        .Model(model =>
-        {
+                            columns.Bound(p => p.BankDocuments_Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
 
-            model.Id(p => p.DocId);
-            model.Field(p => p.EntityType);
-            model.Field(p => p.FileUpload);
-            model.Field(p => p.FileUpload1);
-            model.Field(p => p.FileName);
-        })
-         //.Model(model => model.Id(p => p.AddressGuid))
-         .Events(events => events.Error("error_handlerBankDocuments").Sync("Sync_handlerBankDocuments"))
-        .ServerOperation(true)
-        .Create(update => update.Action("BankDocumentsPopup_Create", "Applications",new { id=Model.Id,applicationNumber=Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
-        .Read(read => read.Action("BankDocuments_Read", "Applications", new { id = Model.Id, entityType=Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName, applicationNumber = Model.ApplicationNumber }))
-        .Update(update => update.Action("BankDocumentsPopup_Update", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
-        .Destroy(update => update.Action("BankDocumentsPopup_Destroy", "Applications"))
-        )
-		)
+                        })
+                        .Events(e =>
+                        {
+                            e.Edit("addConfirmButton");
+                            e.DataBound("onGridDataBoundBankdocuments");
+                            e.Cancel("onGridCancel");
+                        })
+                        // .ToolBar(toolbar => toolbar.ClientTemplate("<a class='k-button' style='margin-left: auto;' href='" + Url.Action("AddNewBankDouments", "Applications", new { id = Model.Id, entity = Model.EntityType }) + "'>New</a>"))
+                        .ToolBar(toolbar =>
+                        {
+                            if (Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); }
+                            toolbar.Search();
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode == Eurobank.Helpers.DataAnnotation.Constants.LegalEntity ? "LegalAddEditBankDocuments" : "AddEditBankDocuments").DisplayDeleteConfirmation(false).Window(w => w.Title("Bank Documents-Upload").Width(800))).EnableCustomBinding(true)
+                        // .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode == Eurobank.Helpers.DataAnnotation.Constants.LegalEntity ? "# if(EntityType_Name == 'INDIVIDUAL') {# 'AddEditBankDocuments'; #}# else {# 'LegalAddEditBankDocuments'; #}#" : "AddEditBankDocuments").DisplayDeleteConfirmation(false).Window(w => w.Title("Bank Documents-Upload").Width(800))).EnableCustomBinding(true)
+                        .Pageable()
+                        .Sortable()
+                        .Scrollable()
+                        .ColumnMenu(col => col.Filterable(false))
+                        .Navigatable()
+                        .Reorderable(r => r.Columns(true))
+                        .Groupable(g => g.ShowFooter(false))
+                        .Filterable()
+                        .HtmlAttributes(new { style = "max-height:550px;" })
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .Sort(x => x.Add("BankDocuments_Status_Name").Descending())
+                        //.Events(e => e.RequestStart("hideIdField"))
+                        .Model(model =>
+                        {
+
+                            model.Id(p => p.DocId);
+                            model.Field(p => p.EntityType);
+                            model.Field(p => p.FileUpload);
+                            model.Field(p => p.FileUpload1);
+                            model.Field(p => p.FileName);
+                        })
+                        //.Model(model => model.Id(p => p.AddressGuid))
+                        .Events(events => events.Error("error_handlerBankDocuments").Sync("Sync_handlerBankDocuments"))
+                        .ServerOperation(true)
+                        .Create(update => update.Action("BankDocumentsPopup_Create", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+                        .Read(read => read.Action("BankDocuments_Read", "Applications", new { id = Model.Id, entityType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName, applicationNumber = Model.ApplicationNumber }))
+                        .Update(update => update.Action("BankDocumentsPopup_Update", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+                        .Destroy(update => update.Action("BankDocumentsPopup_Destroy", "Applications"))
+                        )
+                        )
 
                 </div>
             </li>
@@ -135,23 +145,22 @@
 </div>
 <div>
     @(Html.Kendo().Window()
-	.Name("EntityRoleWindow")
-	.Title("Related Party Roles")
-	.Content(@<text>
+        .Name("EntityRoleWindow")
+        .Title("Related Party Roles")
+        .Content(@<text>
 
-	<table>
-		<tbody id="EntityRoletbodyId">
-
-		</tbody>
-	</table>
+        <table>
+            <tbody id="EntityRoletbodyId">
+            </tbody>
+        </table>
 
     </text>)
-	.Visible(false)
-	.Width(900)
-	.Height(900)
-	.Actions(actions => actions.Close())
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Actions(actions => actions.Close())
 
-)
+        )
 </div>
 <ul id="context-menuBankdocuments">
 
@@ -159,7 +168,7 @@
 
     <li id="removeRow" class="">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="">X</span></li>
 </ul>
-@Html.Hidden("IsBankDocAttachmentAllowed",Model.ApplicationDetails.IsBankDocAttachmentAllowed)
+@Html.Hidden("IsBankDocAttachmentAllowed", Model.ApplicationDetails.IsBankDocAttachmentAllowed)
 @Html.Hidden("GetRelatedPartyRolesUrl", Url.Action("GetRelatedPartyRoles", "Applications"))
 @Html.Hidden("IsLegalEntity", isLegalEntity)
 @Html.Hidden("ApplicationNumber", applicationNumber)

@@ -271,29 +271,29 @@ namespace Eurobank.Controllers
             model.UserFullName = user.FullName;
             model.UserNodeGUID = ValidationHelper.GetString(user.UserGUID, "");
             model.Application_NodeGUID = application;
-            //ViewBag.responsibleOfficer = ServiceHelper.GetResponsibleOfficer();
-            //ViewBag.applicationType = ServiceHelper.GetApplicationType();
-            //ViewBag.applicatonServices = ServiceHelper.GetApplicationService();
-            //ViewBag.bankingService = ServiceHelper.GetBankingService();
-            //ViewBag.Country = ServiceHelper.GetCountries();
-            //ViewBag.CountryIdentification = ServiceHelper.GetCountriesWithID();
+            ViewBag.responsibleOfficer = ServiceHelper.GetResponsibleOfficer();
+            ViewBag.applicationType = ServiceHelper.GetApplicationType();
+            ViewBag.applicatonServices = ServiceHelper.GetApplicationService();
+            ViewBag.bankingService = ServiceHelper.GetBankingService();
+            ViewBag.Country = ServiceHelper.GetCountries();
+            ViewBag.CountryIdentification = ServiceHelper.GetCountriesWithID();
 
 
-            //ViewBag.AccessToAllPersonalAccount = ServiceHelper.GetBoolDropDownListDefaults();
-            //ViewBag.AutomaticallyAddFuturePersonalAccount = ServiceHelper.GetBoolDropDownListDefaults();
-            //ViewBag.DocumentType = ServiceHelper.GetDocumentTypes();
+            ViewBag.AccessToAllPersonalAccount = ServiceHelper.GetBoolDropDownListDefaults();
+            ViewBag.AutomaticallyAddFuturePersonalAccount = ServiceHelper.GetBoolDropDownListDefaults();
+            ViewBag.DocumentType = ServiceHelper.GetDocumentTypes();
 
-            //ViewBag.Subjects = ServiceHelper.GetDocumentSubjects();
+            ViewBag.Subjects = ServiceHelper.GetDocumentSubjects();
 
             ////Below Value needs to be changed
 
-            //ViewBag.AccessRights = ServiceHelper.GetAccessRights();
-            //ViewBag.EntityTypes = ServiceHelper.GetEntityType();
-            //ViewBag.GroupStructureEntityTypes = ServiceHelper.GetGroupStructureEntityType();
-            //ViewBag.Parents = CompanyGroupStructureProcess.GetGroupStructures();
-            //ViewBag.LimitAmount = ServiceHelper.GetLimitAmount();
+            ViewBag.AccessRights = ServiceHelper.GetAccessRights();
+            ViewBag.EntityTypes = ServiceHelper.GetEntityType();
+            ViewBag.GroupStructureEntityTypes = ServiceHelper.GetGroupStructureEntityType();
+            ViewBag.Parents = CompanyGroupStructureProcess.GetGroupStructures();
+            ViewBag.LimitAmount = ServiceHelper.GetLimitAmount();
             ViewBag.EntityBelongToAGroup = ServiceHelper.GetBoolDropDownListDefaults();
-            //ViewBag.SignatureRights = ServiceHelper.GetSignatureRights();
+            ViewBag.SignatureRights = ServiceHelper.GetSignatureRights();
 
             ViewBag.SignatoryGroup = ServiceHelper.GetSignatoryGroup();
 
@@ -416,13 +416,13 @@ namespace Eurobank.Controllers
                         ViewBag.AccessLevels = ServiceHelper.GetAccessLevelIndividual();
                         ViewBag.DocumentEntityType = ServiceHelper.GetPERSON_ROLE();
                     }
-                    //ViewBag.PendingOnUser = UserProcess.GetNotePendingUserDDL(applicationDetails.ApplicationDetails_ResponsibleBankingCenter, applicationDetails.ApplicationDetails_UserOrganisation.ToString());
-                    //ViewBag.EscalateToUsers = UserProcess.GetEscalateToUsers(applicationDetails.ApplicationDetails_ResponsibleBankingCenter);
-                    //List<IInputGroupItem> signatureGroupRights = ServiceHelper.SignatureMandateTypeGroup();
-                    //if (signatureGroupRights != null)
-                    //{
-                    //    ViewBag.SignatureGroupRights = signatureGroupRights.Where(u => !string.Equals(u.Label, "Other", StringComparison.OrdinalIgnoreCase)).ToList();
-                    //}
+                    ViewBag.PendingOnUser = UserProcess.GetNotePendingUserDDL(applicationDetails.ApplicationDetails_ResponsibleBankingCenter, applicationDetails.ApplicationDetails_UserOrganisation.ToString());
+                    ViewBag.EscalateToUsers = UserProcess.GetEscalateToUsers(applicationDetails.ApplicationDetails_ResponsibleBankingCenter);
+                    List<IInputGroupItem> signatureGroupRights = ServiceHelper.SignatureMandateTypeGroup();
+                    if (signatureGroupRights != null)
+                    {
+                        ViewBag.SignatureGroupRights = signatureGroupRights.Where(u => !string.Equals(u.Label, "Other", StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
 
 
                 }
@@ -551,7 +551,7 @@ namespace Eurobank.Controllers
                 TempData["ErrorSummary"] = JsonConvert.SerializeObject(applicationValidationResult);
                 return RedirectToAction("Edit", new { application = model.Application_NodeGUID });
             }
-
+               
             if (string.Equals(appplicationButton, "SAVE_AS_DRAFT", StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction("Edit", new { application = model.Application_NodeGUID });
@@ -3577,7 +3577,8 @@ namespace Eurobank.Controllers
         }
 
         //[HttpPost]
-        public string ExportXMLJS(string appId)
+        //public string ExportXMLJS(string appId)
+        public ActionResult ExportXMLJS(string appId)
         {
             string xml = string.Empty;
             int applicationId = Convert.ToInt16(appId);
@@ -3589,8 +3590,7 @@ namespace Eurobank.Controllers
 
             if (applicationDetailsModels != null && applicationDetailsModels.Count == 0)
             {
-                return xml;
-
+                return Unauthorized();
             }
 
             var applicationDetails = applicationsRepository.GetApplicationDetailsByID(applicationId);
@@ -3604,9 +3604,10 @@ namespace Eurobank.Controllers
             {
                 xml = ApplicationIndividualService.GetApplicationIndividualElement(applicationId);
             }
-            return xml;
+            //return xml;
+            return Content(xml,"application/xml");
         }
-
+       
 
         public ActionResult PrintSummary(string applicationNumber)
         {
@@ -3616,7 +3617,9 @@ namespace Eurobank.Controllers
                 CMS.Membership.UserInfo user = UserInfoProvider.GetUserInfo(User.Identity.Name);
                 UserModel userModel = UserProcess.GetUser(User.Identity.Name);
 
-                List<ApplicationDetailsModelView> applicationDetailsModels = ApplicationsProcess.GetApplicationByUserByApplication(userModel, applicationsRepository, applicationDetails.ApplicationDetailsID);
+                List<ApplicationDetailsModelView> applicationDetailsModels = applicationDetails != null ? 
+                    ApplicationsProcess.GetApplicationByUserByApplication(userModel, applicationsRepository, applicationDetails.ApplicationDetailsID) :
+                    new List<ApplicationDetailsModelView>();
 
                 if (applicationDetailsModels != null && applicationDetailsModels.Count == 0)
                 {
@@ -3674,7 +3677,9 @@ namespace Eurobank.Controllers
             CMS.Membership.UserInfo user = UserInfoProvider.GetUserInfo(User.Identity.Name);
             UserModel userModel = UserProcess.GetUser(User.Identity.Name);
 
-            List<ApplicationDetailsModelView> applicationDetailsModels = ApplicationsProcess.GetApplicationByUserByApplication(userModel, applicationsRepository, applicationDetails.ApplicationDetailsID);
+            List<ApplicationDetailsModelView> applicationDetailsModels = applicationDetails != null ?
+                ApplicationsProcess.GetApplicationByUserByApplication(userModel, applicationsRepository, applicationDetails.ApplicationDetailsID) :
+                new List<ApplicationDetailsModelView>();
 
             if (applicationDetailsModels != null && applicationDetailsModels.Count == 0)
             {

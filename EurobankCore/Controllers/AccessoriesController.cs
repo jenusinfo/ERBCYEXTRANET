@@ -88,7 +88,7 @@ namespace Eurobank.Controllers
 
 
         private string GetProductStatus(SKUTreeNode accessory)
-        {
+        {    
             if (accessory is FilterPack filterPack)
             {
                 return filterPack.Product.PublicStatus?.PublicStatusDisplayName;

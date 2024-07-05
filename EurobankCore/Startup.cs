@@ -273,7 +273,7 @@ namespace Eurobank
 
             app.UseKentico();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseCookiePolicy();
             app.UseCors();

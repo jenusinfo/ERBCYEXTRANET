@@ -36,7 +36,7 @@ $(document).ready(function () {
 
     // Format the value when the user is done editing (blur event) for any textbox with the class 'thousands-separator'
     $('.thousands-separator').blur(function () {
-        if ($(this).val() != '') {        
+        if ($(this).val() != '') {
             var value = parseFloat($(this).val()).toFixed(2); // Convert to float with 2 decimal places
             $(this).val(formatNumber(value));
         }
@@ -45,7 +45,7 @@ $(document).ready(function () {
     if ($('#ApplicationTypeName').val() == 'INDIVIDUAL') {
         $('#SignatureMandateTypeGroup > li:nth-child(1) > label:nth-child(2)').text($('#hdnIndividualSignatureMandateLabel').val())
     }
-    
+
 
 });
 function formatNumber(num) {
@@ -207,7 +207,7 @@ function manageApplicantMenuPanel() {
             var fullApplicantName = datasourcedata[i].FullName;
             var url = $("#RedirectToApplicant").val() + "?application=" + $("#ApplicationNodeGUID").val() + "&&applicant=" + datasourcedata[i].NodeGUID;
             //console.log("url for appliction -- " + url);
-            innerHtml = innerHtml + '<a class="appl-list" href="javascript:void(0);" onclick="showHideLoader();window.location.href=\'' + url +'\'"><span class="row viewall appl-item" style="margin-left: 20%;color: #27438c;">' + fullApplicantName.toUpperCase() + '</span></a>';
+            innerHtml = innerHtml + '<a class="appl-list" href="javascript:void(0);" onclick="showHideLoader();window.location.href=\'' + url + '\'"><span class="row viewall appl-item" style="margin-left: 20%;color: #27438c;">' + fullApplicantName.toUpperCase() + '</span></a>';
         }
         if ($('#ApplicationStepper li a[title="Applicants"]').parent().length > 0) {
             if ($('#appendedAppplicants').length > 0) {
@@ -495,7 +495,7 @@ function ShowHideOtherDeliveryAddress() {
     }
     else {
         $('#DebitCardDetails_OtherDeliveryAddress').val('');
-        $('#otherDeliveryAddress').hide();        
+        $('#otherDeliveryAddress').hide();
     }
 }
 
@@ -655,7 +655,7 @@ function showHideCardEbankingSection() {
             dialog.wrapper.addClass("middle-popup");
             dialog.center().open();
             $(".k-i-close").addClass('CLDebitCard');
-            
+
         }
         else {
             $("#accordionDebitCardDetails").hide();
@@ -737,7 +737,7 @@ function SelectEbankingYes() {
 //function closeApplicantErroList() {
 //    $('#errorList').hide();
 //}
-function applicationPrintSummary() {    
+function applicationPrintSummary() {
     $("#successDisplay .toastbody").html($("#PrintSummaryDownloadStartMessage").val());
     $("#successDisplay").show().delay(10000).fadeOut();
     var url = $("#RedirectPrintSummary").val();
@@ -746,7 +746,7 @@ function applicationPrintSummary() {
 }
 function applicationPrintFriendly() {
     $("#successDisplay .toastbody").html($("#PrintFriendlyDownloadStartMessage").val());
-				$("#successDisplay").show().delay(10000).fadeOut(); 
+    $("#successDisplay").show().delay(10000).fadeOut();
     var url = $("#RedirectPrintFriendly").val();
     window.location.href = url + "?applicationNumber=" + $("#ApplicationNumber").val();
     //alert('Wait !! File will start downloading');
@@ -757,19 +757,20 @@ function applicationPrintFriendly() {
 //}
 function applicationExportXML() {
     //var loader = $("#loader").data("kendoLoader");
-    
+
     $.ajax({
-        async: false,
+        async: true,
         type: 'GET',
         url: $("#ExportXMLUrlJS").val(),
         data: { appId: $("#hdnapplicationId").val() },
         //timeout: 180000, //180 seconds
         beforeSend: function () {
-            $("#loader").data("kendoLoader").show();
+            /*$("#loader").data("kendoLoader").show();*/
+            showHideFileLoader();
         },
         success: function (result) {
             //debugger;
-            
+
             // Your XML data as a string
             var xmlString = result;
 
@@ -784,15 +785,16 @@ function applicationExportXML() {
             // Trigger a click event to initiate the download
             a.click();
             //downloadCSV(result, 'Applications.csv');
-            $("#loader").data("kendoLoader").hide(); 
+            //$("#loader").data("kendoLoader").hide();
+            hideFileLoader();
         },
         error: function (error) {
             //debugger;
             console.log(error);
-            $("#loader").data("kendoLoader").hide(); 
+            $("#loader").data("kendoLoader").hide();
         }
     });
-       
+
 }
 
 function downloadXMLThroughJavaScript(appid, applicationNumber) {
@@ -835,4 +837,30 @@ function isNumberWithoutDecimalKey(evt) {
         return false;
 
     return true;
+}
+
+function showHideFileLoader() {
+    var $dialog = $("#dialog");
+    var $progressbar = $("#progressbar");
+    var $progressLabel = $(".progress-label");
+
+    $progressbar.progressbar({
+        value: false
+    });
+
+
+    $dialog.dialog({
+        modal: true,
+        closeOnEscape: false,
+        resizable: false,
+        buttons: {},
+        open: function (event, ui) {
+            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+        }
+    });
+}
+
+function hideFileLoader() {
+    var $dialog = $("#dialog");
+    $dialog.dialog("close");
 }

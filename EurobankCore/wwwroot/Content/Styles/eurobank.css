@@ -901,7 +901,7 @@ b, strong {
 }
 
 .k-menu-vertical .k-menu-link {
-	padding: 3px 10px !important;
+	padding: 3px 10px;
 	width: 165px;
 	justify-content: space-between;
 }
@@ -2304,5 +2304,19 @@ a.backtologin {
 input.sign-out-button {
 	text-transform: none;
 }
+#download-btn {
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+}
 
+#progressbar {
+	width: 100%;
+	margin-top: 20px;
+	height: 15px;
+}
+
+.ui-dialog-titlebar-close {
+	display: none;
+}
 

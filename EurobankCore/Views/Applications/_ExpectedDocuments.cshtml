@@ -72,63 +72,76 @@
 
 
                     @(Html.Kendo().Grid<Eurobank.Models.Documents.DocumentsViewModel>
-		()
-		.Name("ExpectedDocuments")
-		.Columns(columns =>
-		{
-							columns.Template
-							(
-							@"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
-							).Width(30);
-							columns.Bound(p => p.Entity_Name).Width(150);
-							columns.Bound(p => p.EntityRole_Name).Width(150);
-							columns.Bound(p => p.EntityType_Name).ClientTemplate("#= bindRolesData(data) #").Width(150);
-							columns.Bound(p => p.DocumentType_Name).Width(150);
-							columns.Bound(p => p.RequiresSignatureStatus).Width(150);
-							columns.Bound(p => p.uploadedBy).Width(150);
-							columns.Bound(p => p.uploadedOn).ClientTemplate("#= (uploadedOn == null) ? ' ' : kendo.toString(uploadedOn, \"dd/MM/yyyy \") #").Width(150);
-			columns.Bound(p => p.BankDocuments_Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
+                        ()
+                        .Name("ExpectedDocuments")
+                        .Columns(columns =>
+                        {
+                            columns.Template
+                            (
+                            @"<div id='target'><i class='fa fa-ellipsis-v' style='font-size:25px'></i></div>"
+                            ).Width(30);
+                            columns.Bound(p => p.Entity_Name).Width(150);
+                            columns.Bound(p => p.EntityRole_Name).Width(150);
+                            columns.Bound(p => p.EntityType_Name).ClientTemplate("#= bindRolesData(data) #").Width(150);
+                            columns.Bound(p => p.DocumentType_Name).Width(150);
+                            columns.Bound(p => p.RequiresSignatureStatus).Width(150);
+                            columns.Bound(p => p.uploadedBy).Width(150);
+                            columns.Bound(p => p.uploadedOn).ClientTemplate("#= (uploadedOn == null) ? ' ' : kendo.toString(uploadedOn, \"dd/MM/yyyy \") #").Width(150);
+                            columns.Bound(p => p.BankDocuments_Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
 
-		})
-		.Events(e =>
+                        })
+                        .ColumnMenu(col => col.Filterable(false))
+                        .Navigatable()
+                        .Reorderable(r => r.Columns(true))
+                        .Groupable(g => g.ShowFooter(false))
+                        .Filterable()
+                        .Events(e =>
 
-		{
-			e.Edit("addExpectedConfirmButton");
-			e.DataBound("onGridDataBoundExpectedDocument");
-			e.Cancel("onGridCancel");
-			e.SaveChanges("onSavechangeExpectedDocument");
-		})
-		 //.ToolBar(toolbar => toolbar.ClientTemplate("<a class='k-button' style='margin-left: auto;' href='" + Url.Action("AddNewExpectedDouments", "Applications", new { id = Model.Id, entityType=Model.EntityType }) + "'>New</a>"))
-		 .ToolBar(toolbar => { if (Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); } })
-		.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode==Eurobank.Helpers.DataAnnotation.Constants.LegalEntity? "LegalAddEditExpectedDocuments" : "AddEditExpectedDocuments").DisplayDeleteConfirmation(false).Window(w=>w.Title("Expected Documents-Upload").Width(800))).EnableCustomBinding(true)
-		.Pageable()
-		.Sortable()
-		.Scrollable()
-		.HtmlAttributes(new { style = "max-height:550px;" })
-		.DataSource(dataSource => dataSource
-		.Ajax()
-		.PageSize(10)
-		 .Sort(x => x.Add("BankDocuments_Status_Name").Descending())
-		//.Events(e => e.RequestStart("hideIdField"))
-		.Model(model =>
-
-		{
-
-			model.Id(p => p.DocId);
-			model.Field(p => p.EntityType);
-			model.Field(p => p.FileUpload);
-			model.Field(p => p.FileUpload1);
-		})
-		 //.Model(model => model.Id(p => p.AddressGuid))
-		 .Events(events => events.Error("error_handlerExpectedDocuments").Sync("Sync_handlerExpectedDocuments"))
-
-		.ServerOperation(true)
-		.Create(update => update.Action("ExpectedDocumentsPopup_Create", "Applications",new { id=Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
-		.Read(read => read.Action("ExpectedDocuments_Read", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
-		.Update(update => update.Action("ExpectedDocumentsPopup_Update", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
-		.Destroy(update => update.Action("ExpectedDocumentsPopup_Destroy", "Applications"))
-		)
-		)
+                        {
+                            e.Edit("addExpectedConfirmButton");
+                            e.DataBound("onGridDataBoundExpectedDocument");
+                            e.Cancel("onGridCancel");
+                            e.SaveChanges("onSavechangeExpectedDocument");
+                        })
+                        //.ToolBar(toolbar => toolbar.ClientTemplate("<a class='k-button' style='margin-left: auto;' href='" + Url.Action("AddNewExpectedDouments", "Applications", new { id = Model.Id, entityType=Model.EntityType }) + "'>New</a>"))
+                        .ToolBar(toolbar =>
+                        {
+                            if (Model.ApplicationDetails.IsEdit)
+                            {
+                                toolbar
+                                .Create()
+                                .Text("New")
+                                .IconClass("justify-content-end")
+                                .HtmlAttributes(new { style = "margin-left: auto;" });
+                            }
+                            toolbar.Search();
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode == Eurobank.Helpers.DataAnnotation.Constants.LegalEntity ? "LegalAddEditExpectedDocuments" : "AddEditExpectedDocuments").DisplayDeleteConfirmation(false).Window(w => w.Title("Expected Documents-Upload").Width(800))).EnableCustomBinding(true)
+                        .Pageable()
+                        .Sortable()
+                        .Scrollable()
+                        .HtmlAttributes(new { style = "max-height:550px;" })
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(true)
+                        .Sort(x => x.Add("BankDocuments_Status_Name").Descending())
+                        //.Events(e => e.RequestStart("hideIdField"))
+                        //.Model(model => model.Id(p => p.AddressGuid))
+                        .Events(events => events.Error("error_handlerExpectedDocuments").Sync("Sync_handlerExpectedDocuments"))
+                        .Model(model =>
+                        {
+                            model.Id(p => p.DocId);
+                            model.Field(p => p.EntityType);
+                            model.Field(p => p.FileUpload);
+                            model.Field(p => p.FileUpload1);
+                        })
+                        .Create(update => update.Action("ExpectedDocumentsPopup_Create", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+                        .Read(read => read.Action("ExpectedDocuments_Read", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+                        .Update(update => update.Action("ExpectedDocumentsPopup_Update", "Applications", new { id = Model.Id, applicationNumber = Model.ApplicationNumber, applicationType = Model.ApplicationDetails.ApplicationDetails_ApplicationTypeName }))
+                        .Destroy(update => update.Action("ExpectedDocumentsPopup_Destroy", "Applications"))
+                        )
+                        )
 
 
                 </div>
@@ -141,23 +154,22 @@
 </div>
 <div id="EntityRole">
     @(Html.Kendo().Window()
-	.Name("EntityRoleWindow")
-	.Title("Related Party Roles")
-	.Content(@<text>
+        .Name("EntityRoleWindow")
+        .Title("Related Party Roles")
+        .Content(@<text>
 
-	<table>
-		<tbody id="EntityRoletbodyId">
-
-		</tbody>
-	</table>
+        <table>
+            <tbody id="EntityRoletbodyId">
+            </tbody>
+        </table>
 
     </text>)
-	.Visible(false)
-	.Width(900)
-	.Height(900)
-	.Actions(actions => actions.Close())
+        .Visible(false)
+        .Width(900)
+        .Height(900)
+        .Actions(actions => actions.Close())
 
-)
+        )
 </div>
 @Html.Hidden("IsExpectedDocAttachmentAllowed", Model.ApplicationDetails.IsExpectedDocAttachmentAllowed)
 @Html.Hidden("GetRelatedPartyRolesUrl", Url.Action("GetRelatedPartyRoles", "Applications"))

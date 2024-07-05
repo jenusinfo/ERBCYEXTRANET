@@ -33,6 +33,7 @@ function onGridDataBoundBankdocuments(e) {
     $("#Bankdocuments .k-grid-add").html("<span class='k-icon k-i-plus-circle mr-1'></span>New").addClass("new-contact").removeClass("k-button k-button-icontext");
     $("#Bankdocuments .k-grid-content").attr("style", "max-height: 400px");
     deleteEmptyGridRecord('Bankdocuments');
+    $(".k-toolbar .k-textbox input").removeAttr("disabled");
 }
 function addConfirmButton(e) {
     $(".k-widget k-window k-display-inline-flex").addClass("leftpopup");
