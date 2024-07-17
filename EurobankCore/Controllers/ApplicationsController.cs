@@ -240,6 +240,20 @@ namespace Eurobank.Controllers
         #endregion
         public IActionResult Edit(string application)
         {
+            string checkNullApplication = HttpContext.Session.GetString("checkNullApplication");
+
+            // If application is not null or empty, update checkNullApplication and store it in session
+            if (!string.IsNullOrEmpty(application))
+            {
+                checkNullApplication = application;
+                HttpContext.Session.SetString("checkNullApplication", checkNullApplication);
+            }
+            else if (!string.IsNullOrEmpty(checkNullApplication))
+            {
+                // Use the last saved value if application is null or empty
+                application = checkNullApplication;
+            }
+
             //WorkFlowMailProcess.SendMailSubmitToPendingVerificationIntroducer("","","","","",true);
             string applicationNumber = "I-000000101";
             int id = 0;
@@ -451,25 +465,29 @@ namespace Eurobank.Controllers
                 IsApplicationDisabledMode = true;
             }
             TempData.Keep("Application");
-            if (Request.Form["ReasonForOpeningTheAccountGroup"].Any())
+            if (model.PurposeAndActivity != null)
             {
-                model.PurposeAndActivity.ReasonForOpeningTheAccountGroup = new MultiselectDropDownViewModel() { MultiSelectValue = Request.Form["ReasonForOpeningTheAccountGroup"] };
+                if (Request.Form["ReasonForOpeningTheAccountGroup"].Any())
+                {
+                    model.PurposeAndActivity.ReasonForOpeningTheAccountGroup = string.IsNullOrEmpty(Request.Form["ReasonForOpeningTheAccountGroup"]) ? new MultiselectDropDownViewModel() : new MultiselectDropDownViewModel() { MultiSelectValue = Request.Form["ReasonForOpeningTheAccountGroup"] };
+                }
+                if (Request.Form["ExpectedNatureOfInAndOutTransactionGroup"].Any())
+                {
+                    model.PurposeAndActivity.ExpectedNatureOfInAndOutTransactionGroup = string.IsNullOrEmpty(Request.Form["ExpectedNatureOfInAndOutTransactionGroup"]) ? new MultiselectDropDownViewModel() : new MultiselectDropDownViewModel() { MultiSelectValue = Request.Form["ExpectedNatureOfInAndOutTransactionGroup"] };
+                }
+                if (Request.Form["ExpectedFrequencyOfInAndOutTransactionGroup"].Any())
+                {
+                    model.PurposeAndActivity.ExpectedFrequencyOfInAndOutTransactionGroup = string.IsNullOrEmpty(Request.Form["ExpectedFrequencyOfInAndOutTransactionGroup"]) ? new RadioGroupViewModel() : new RadioGroupViewModel() { RadioGroupValue = Request.Form["ExpectedFrequencyOfInAndOutTransactionGroup"] };
+                }
+                if (Request.Form["SignatureMandateTypeGroup"].Any())
+                {
+                    model.PurposeAndActivity.SignatureMandateTypeGroup = string.IsNullOrEmpty(Request.Form["SignatureMandateTypeGroup"]) ? new RadioGroupViewModel() : new RadioGroupViewModel() { RadioGroupValue = Request.Form["SignatureMandateTypeGroup"] };
+                }
             }
-            if (Request.Form["ExpectedNatureOfInAndOutTransactionGroup"].Any())
-            {
-                model.PurposeAndActivity.ExpectedNatureOfInAndOutTransactionGroup = new MultiselectDropDownViewModel() { MultiSelectValue = Request.Form["ExpectedNatureOfInAndOutTransactionGroup"] };
-            }
-            if (Request.Form["ExpectedFrequencyOfInAndOutTransactionGroup"].Any())
-            {
-                model.PurposeAndActivity.ExpectedFrequencyOfInAndOutTransactionGroup = new RadioGroupViewModel() { RadioGroupValue = Request.Form["ExpectedFrequencyOfInAndOutTransactionGroup"] };
-            }
-            if (Request.Form["SignatureMandateTypeGroup"].Any())
-            {
-                model.PurposeAndActivity.SignatureMandateTypeGroup = new RadioGroupViewModel() { RadioGroupValue = Request.Form["SignatureMandateTypeGroup"] };
-            }
+            
             var applicationDetails = applicationsRepository.GetApplicationDetailsByID(id);
             model.ApplicationDetails = ApplicationsProcess.GetApplicationsDetails(userModel.UserType, userModel.UserRole, applicationDetails);
-            model.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup = new CheckBoxGroupViewModel() { CheckBoxGroupValue = Request.Form["ApplicationDetails_ApplicatonServices"] };
+            model.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup = string.IsNullOrEmpty(Request.Form["ApplicationDetails_ApplicatonServices"]) ? new CheckBoxGroupViewModel() : new CheckBoxGroupViewModel() { CheckBoxGroupValue = Request.Form["ApplicationDetails_ApplicatonServices"] };
             //model.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup= ControlBinder.BindCheckBoxGroupItems(ServiceHelper.GetApplicationServiceItemGroup(), null, '\0');
             ApplicationDetailsModelView applicationResult = ApplicationsProcess.UpdateApplicationsModel(model.ApplicationDetails, User.Identity.Name);
 
@@ -481,6 +499,10 @@ namespace Eurobank.Controllers
                 }
                 if (model.GroupStructureLegalParent != null)
                 {
+                    if(model.GroupStructureLegalParent.DoesTheEntityBelongToAGroupName == null)
+                    {
+                        model.GroupStructureLegalParent.DoesTheEntityBelongToAGroupName = "true";
+                    }
                     //model.GroupStructureLegalParent.DoesTheEntityBelongToAGroup = Convert.ToBoolean(model.GroupStructureLegalParent.DoesTheEntityBelongToAGroupName);
                     GroupStructureLegalParentProcess.SaveGroupStructureLegalParentModel(model.ApplicationNumber, model.GroupStructureLegalParent);
                     if (string.Equals(model.GroupStructureLegalParent.DoesTheEntityBelongToAGroupName, "false", StringComparison.OrdinalIgnoreCase))
@@ -532,7 +554,10 @@ namespace Eurobank.Controllers
                     }
                     else
                     {
-                        TempData["ErrorSummary"] = JsonConvert.SerializeObject(ValidateDecision);
+                        if(ValidateDecision != null)
+                        {
+                            TempData["ErrorSummary"] = JsonConvert.SerializeObject(new List<ValidationResultModel> { ValidateDecision });
+                        }
                         return RedirectToAction("Edit", new { application = model.ApplicationDetails.Application_NodeGUID });
                     }
 
@@ -551,7 +576,7 @@ namespace Eurobank.Controllers
                 TempData["ErrorSummary"] = JsonConvert.SerializeObject(applicationValidationResult);
                 return RedirectToAction("Edit", new { application = model.Application_NodeGUID });
             }
-               
+
             if (string.Equals(appplicationButton, "SAVE_AS_DRAFT", StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction("Edit", new { application = model.Application_NodeGUID });
@@ -3577,8 +3602,8 @@ namespace Eurobank.Controllers
         }
 
         //[HttpPost]
-        //public string ExportXMLJS(string appId)
-        public ActionResult ExportXMLJS(string appId)
+        public string ExportXMLJS(string appId)
+        //public ActionResult ExportXMLJS(string appId)
         {
             string xml = string.Empty;
             int applicationId = Convert.ToInt16(appId);
@@ -3590,7 +3615,7 @@ namespace Eurobank.Controllers
 
             if (applicationDetailsModels != null && applicationDetailsModels.Count == 0)
             {
-                return Unauthorized();
+                //return Unauthorized();
             }
 
             var applicationDetails = applicationsRepository.GetApplicationDetailsByID(applicationId);
@@ -3604,8 +3629,8 @@ namespace Eurobank.Controllers
             {
                 xml = ApplicationIndividualService.GetApplicationIndividualElement(applicationId);
             }
-            //return xml;
-            return Content(xml,"application/xml");
+            return xml;
+            //return Content(xml,"application/xml");
         }
        
 

@@ -41,9 +41,16 @@
     input {
         text-transform: uppercase;
     }
+
+    @@media (min-width: 1028px) {
+        .custom-pt {
+            padding-top: 150px; /* Adjust the value as needed */
+        }
+    }
 </style>
 <span id="loader"></span>
 <form id="relatedPartyForm" asp-action="RelatedParty" asp-controller="RelatedParty">
+    <div class="custom-pt"></div>
     @Html.HiddenFor(model => model.ApplicationNumber)
     @Html.HiddenFor(model => model.ApplicationID)
     @Html.HiddenFor(model => model.Application_NodeGUID)

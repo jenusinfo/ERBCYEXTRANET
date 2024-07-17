@@ -125,7 +125,8 @@
 						<div class="col-md-6">
 							<div class="form-group" id="divGIINNumber">
 								<label asp-for="FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber" class="control-label"></label>
-								@Html.Kendo().TextBoxFor(model => model.FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,19,'FATCADetailsGlobalIntermediaryIdentificationNumberError')",@onKeyDown="return limitlength(this,19,'FATCADetailsGlobalIntermediaryIdentificationNumberError')" })
+								@* @Html.Kendo().TextBoxFor(model => model.FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber).HtmlAttributes(new { @class = "form-control",@onkeyup="return limitlength(this,19,'FATCADetailsGlobalIntermediaryIdentificationNumberError')",@onKeyDown="return limitlength(this,19,'FATCADetailsGlobalIntermediaryIdentificationNumberError')" }) *@
+								@Html.Kendo().TextBoxFor(model => model.FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber).HtmlAttributes(new { @class = "form-control", @onkeyup = "return limitlength(this,36,'FATCADetailsGlobalIntermediaryIdentificationNumberError')", @onKeyDown = "return limitlength(this,36,'FATCADetailsGlobalIntermediaryIdentificationNumberError')" })
 								<span id="FATCADetailsGlobalIntermediaryIdentificationNumberError" class="text-danger"></span>
 
 								@*@(Html.Kendo().DropDownListFor(m => m.FATCACRSDetails.FATCADetails_GlobalIntermediaryIdentificationNumber)

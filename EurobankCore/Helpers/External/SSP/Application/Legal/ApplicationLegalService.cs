@@ -290,12 +290,14 @@ namespace Eurobank.Helpers.External.SSP.Application.Legal
                             writer.WriteElementString(GetXmlElementName("AccessLevel", path), item.AccessLevelName.Trim().ToUpper());
                             writer.WriteElementString(GetXmlElementName("AccessLevel", path) + "_code", GetLookUpItemCode(item.AccessLevelName, Constants.Access_Level)?.Trim().ToUpper());
                             writer.WriteElementString(GetXmlElementName("SignatoryGroup", path), item.SignatoryGroup.Trim().ToUpper());
-                            writer.WriteElementString(GetXmlElementName("AccessToAllPersonalAccounts", path), item.AccessToAllPersonalAccounts == true ? "YES" : "NO");
+							//writer.WriteElementString(GetXmlElementName("SignatoryGroup", path) + "_code", "GROUPB");
+							writer.WriteElementString(GetXmlElementName("SignatoryGroup", path) + "_code", GetLookUpItemCode(item.SignatoryGroup, Constants.SIGNATORY_GROUP)?.Trim().ToUpper());
+							writer.WriteElementString(GetXmlElementName("AccessToAllPersonalAccounts", path), item.AccessToAllPersonalAccounts == true ? "YES" : "NO");
                             writer.WriteElementString(GetXmlElementName("AutomaticallyAddFuturePersonalAccounts", path), "YES");
                             writer.WriteElementString(GetXmlElementName("AccountProduct", path), "");
                             writer.WriteElementString(GetXmlElementName("AccountCurrency", path), "");
-                            writer.WriteElementString(GetXmlElementName("LimitPerTransactionType", path), "DOMESTIC");
-                            writer.WriteElementString(GetXmlElementName("TypeOfLimit", path), "1");
+                            writer.WriteElementString(GetXmlElementName("LimitPerTransactionType", path), "ALL");
+                            writer.WriteElementString(GetXmlElementName("TypeOfLimit", path), "2");
                             writer.WriteElementString(GetXmlElementName("LimitAmount", path), item.LimitAmountName.Trim().ToUpper());
                             writer.WriteElementString(GetXmlElementName("LimitAmount", path) + "_code", GetLookUpItemCode(item.LimitAmountName, Constants.LIMIT_AMOUNT)?.Trim().ToUpper());
                             //writer.WriteElementString(GetXmlElementName("Accounts_StatementFrequency", path), item.Accounts_StatementFrequencyName);
@@ -876,7 +878,7 @@ namespace Eurobank.Helpers.External.SSP.Application.Legal
                                     //{
                                     //    writer.WriteElementString(GetXmlElementName("MainCorrespondenceAddress", addressPath), "0");
                                     //}
-                                    writer.WriteElementString(GetXmlElementName("MainCorrespondenceAddress", addressPath), address.MainCorrespondenceAddress == true ? "1" : "0");
+                                    writer.WriteElementString(GetXmlElementName("MainCorrespondenceAddress", addressPath), address.MainCorrespondenceAddress == true ? "1" : "2");
                                     writer.WriteElementString(GetXmlElementName("AddressLine1", addressPath), address.AddressLine1.Trim().ToUpper());
                                     writer.WriteElementString(GetXmlElementName("AddressLine2", addressPath), address.AddressLine2.Trim().ToUpper());
                                     writer.WriteElementString(GetXmlElementName("PostalCode", addressPath), address.PostalCode.Trim().ToUpper());
@@ -920,7 +922,8 @@ namespace Eurobank.Helpers.External.SSP.Application.Legal
                                         }
                                         else if (address.AddressTypeName.Trim().ToUpper().Contains("OFFICE IN CYPRUS"))
                                         {
-                                            writer.WriteElementString(GetXmlElementName("FaxType", addressPath), "OFF.CYP.ADDR");
+                                            writer.WriteElementString(GetXmlElementName("FaxType", addressPath), "CYPRUSOFFICE");
+                                            //writer.WriteElementString(GetXmlElementName("CyprusOffice", addressPath), "OFF.CYP.ADDR");
                                         }
                                         else
                                         {
@@ -1275,7 +1278,8 @@ namespace Eurobank.Helpers.External.SSP.Application.Legal
                                 {
                                     writer.WriteStartElement("address");
                                     writer.WriteElementString(GetXmlElementName("AddressType", path), address.AddressTypeName.Trim().ToUpper());
-                                    writer.WriteElementString(GetXmlElementName("MainCorrespondenceAddress", path), address.MainCorrespondenceAddress == true ? "YES" : "NO");
+                                    //writer.WriteElementString(GetXmlElementName("MainCorrespondenceAddress", path), address.MainCorrespondenceAddress == true ? "YES" : "NO");
+                                    writer.WriteElementString(GetXmlElementName("MainCorrespondenceAddress", path), address.MainCorrespondenceAddress == true ? "1" : "2");
                                     writer.WriteElementString(GetXmlElementName("AddressLine1", path), address.AddressLine1.Trim().ToUpper());
                                     writer.WriteElementString(GetXmlElementName("AddressLine2", path), address.AddressLine2.Trim().ToUpper());
                                     writer.WriteElementString(GetXmlElementName("PostalCode", path), address.PostalCode.Trim().ToUpper());
@@ -2104,8 +2108,9 @@ namespace Eurobank.Helpers.External.SSP.Application.Legal
 								//Customer Check
 								writer.WriteStartElement(GetLookupCode("Customer Check", customerCheckPath));
 								writer.WriteElementString(GetXmlElementName("Partyreference", customerCheckPath), item.CompanyDetails.Id.ToString());
-								writer.WriteElementString(GetXmlElementName("PartyType", customerCheckPath), item.CompanyDetails.IsRelatedPartyUBO == true ? "UBOCORP" : "UBO");
-								writer.WriteElementString(GetXmlElementName("CustomerType", customerCheckPath), "CORPORATE");
+                                //writer.WriteElementString(GetXmlElementName("PartyType", customerCheckPath), item.CompanyDetails.IsRelatedPartyUBO == true ? "UBOCORP" : "UBO");
+                                writer.WriteElementString(GetXmlElementName("PartyType", customerCheckPath), item.CompanyDetails.IsRelatedPartyUBO == true ? "UBO" : "3RDPARTY");
+                                writer.WriteElementString(GetXmlElementName("CustomerType", customerCheckPath), "CORPORATE");
 								writer.WriteElementString(GetXmlElementName("CustomerExists", customerCheckPath), "NO");
 								writer.WriteElementString(GetXmlElementName("CustomerCode", customerCheckPath), item.CompanyDetails.CustomerCIF);
 								writer.WriteEndElement();
@@ -2367,7 +2372,7 @@ namespace Eurobank.Helpers.External.SSP.Application.Legal
                                 //Customer Check
                                 writer.WriteStartElement(GetLookupCode("Customer Check", customerCheckPath));
                                 writer.WriteElementString(GetXmlElementName("Partyreference", customerCheckPath), item.CompanyDetails.Id.ToString());
-                                writer.WriteElementString(GetXmlElementName("PartyType", customerCheckPath), item.CompanyDetails.IsRelatedPartyUBO == true ? "3RDPARTY-UBO" : "3RDPARTY");
+                                writer.WriteElementString(GetXmlElementName("PartyType", customerCheckPath), item.CompanyDetails.IsRelatedPartyUBO == true ? "UBO" : "3RDPARTY");
                                 writer.WriteElementString(GetXmlElementName("CustomerType", customerCheckPath), "CORPORATE");
                                 writer.WriteElementString(GetXmlElementName("CustomerExists", customerCheckPath), "NO");
                                 writer.WriteElementString(GetXmlElementName("CustomerCode", customerCheckPath), string.Empty);

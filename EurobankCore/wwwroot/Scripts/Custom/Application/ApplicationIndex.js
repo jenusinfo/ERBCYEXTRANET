@@ -168,17 +168,21 @@ function downloadXMLThroughJavaScript(appid,applicationNumber) {
         success: function (result) {
             //debugger;
             console.log(result);
+            console.log(result.statusText);
             // Your XML data as a string
             var xmlString = result;
 
             // Create a Blob with the XML data
-            var blob = new Blob([xmlString], { type: 'application/xml' });
-
+            /*var blob = new Blob([xmlString], { type: 'application/xml' });*/
+            var blob = new Blob([xmlString]);
             // Create a link element to trigger the download
             var a = document.createElement('a');
-            a.href = window.URL.createObjectURL(blob);
-            a.download = applicationNumber +'.xml'; // Set the desired filename
 
+            a.href = window.URL.createObjectURL(blob);
+            //a.href = window.URL.createObjectURL(xmlString);
+
+            a.download = applicationNumber + '.xml'; // Set the desired filename
+            //console.log(blob);
             // Trigger a click event to initiate the download
             a.click();
             //downloadCSV(result, 'Applications.csv');

@@ -354,7 +354,7 @@ namespace Eurobank.Helpers.Validation
                 }
                 if (signatureMandate != null && signatureMandate.Count > 0)
                 {
-                    var signatoryGroup = SignatoryGroupProcess.GetApplicationSignatoryGroup(applicantionId).Where(x=>x.SignatoryGroup!= "AUTHORISED PERSONS");
+                    var signatoryGroup = SignatoryGroupProcess.GetApplicationSignatoryGroup(applicantionId)?.Where(x=>x.SignatoryGroup!= "AUTHORISED PERSONS");
                     if (signatoryGroup != null)
                     {
                         if (signatoryGroup.Any(y => !signatureMandate.Any(x => x.AuthorizedSignatoryGroup.Contains(y.SignatoryGroupName) || x.AuthorizedSignatoryGroup1.Contains(y.SignatoryGroupName))))

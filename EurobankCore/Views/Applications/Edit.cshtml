@@ -22,6 +22,12 @@
     input {
         text-transform: uppercase;
     }
+
+    @@media (min-width: 1028px) {
+        .custom-pt {
+                padding-top: 150px; /* Adjust the value as needed */
+            }
+        }
 </style>
 
 <span id="loader">
@@ -29,7 +35,7 @@
 
 <form id="applicationsForm" asp-action="Edit">
 
-
+    <div class="custom-pt"></div>
 
     @Html.Partial("_ApplicationDetails", Model.ApplicationDetails)
 
@@ -240,7 +246,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (Model.ApplicationDetails.IsVisibleSaveAsDraftButton)
+                         @if (Model.ApplicationDetails.IsVisibleSaveAsDraftButton)
                         {
                             <button id="btnApplicationSaveAsDraft" form="applicationsForm" name="appplicationButton" value="SAVE_AS_DRAFT" type="submit" class="btn btn-success mr-3 btnShowLoader">Save AS DRAFT</button>
                         }
@@ -300,6 +306,10 @@
 
         </div>
         <div class="col-6 text-right">
+            @* @if (Model.ApplicationDetails.IsVisibleSaveAsDraftButton)
+            {
+                <button id="btnApplicationSaveAsDraft" form="applicationsForm" name="appplicationButton" value="SAVE_AS_DRAFT" type="submit" class="btn btn-success mr-3 btnShowLoader">Save AS DRAFT</button>
+            } *@
             @if (Model.ApplicationDetails.IsVisibleSaveAsDraftButton)
             {
                 <button id="btnApplicationSaveAsDraft" form="applicationsForm" name="appplicationButton" value="SAVE_AS_DRAFT" type="submit" class="btn btn-success mr-3 btnShowLoader">Save AS DRAFT</button>
@@ -365,6 +375,14 @@
 @* <script src="~/Scripts/Custom/Application/ApplicationEdit.js"></script> *@
 <script src="~/Scripts/Custom/Editor/AddEditExpectedDocuments.js"></script>
 <script src="~/Scripts/Custom/Editor/AddEditBankDocuments.js"></script>
-
+<script>
+    $(document).ready(function () {
+        $('.k-toolbar .k-grid-search .k-input').on('keydown', function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+            }
+        });
+    })
+</script>
 
 

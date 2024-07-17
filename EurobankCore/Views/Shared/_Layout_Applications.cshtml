@@ -159,7 +159,7 @@
 	<div class="page-wrap">
 		<vc:tracking-consent />
 
-		<div class="fullpage">
+		<di		v class="fullpage">
 			<div class="page-container-inner">
 				<div class="application-details" id="stPageBeginApplication">
 					@Html.Partial("_ApplicationHeader", applicationViewModel.ApplicationDetails)
@@ -186,7 +186,7 @@
 				</div>
 				<div class="clear"></div>
 			</div>
-		</div>
+		</di		v>
 	</div>
 
 	<span id="imageLoader"></span>
@@ -271,9 +271,27 @@
 				var parentElement = $("." + parentClassName + " input");
 				var parentSelectElement = $("." + parentClassName + " select");
 				var parentTextAreaElement = $("." + parentClassName + " textarea");
-				parentTextAreaElement.attr('disabled', 'disabled');
-				parentElement.attr('disabled', 'disabled');
-				$.each(parentElement, function(i) {
+				 parentTextAreaElement.attr('disabled', 'disabled');
+				 parentElement.attr('disabled', 'disabled');
+
+				if ($("#IsDecissionCommentsAllowed").val() != 'True' && $('#DecisionHistory_DecisionID').data("kendoDropDownList") != undefined) {
+					$('#DecisionHistory_DecisionID').data("kendoDropDownList").enable(false);
+				} else if ($("#IsDecissionCommentsAllowed").val() == 'True') {
+					$("#DecisionHistory_DecisionID").data("kendoDropDownList").enable(true);
+					$("#DecisionHistory_CommentsID").prop("disabled", false);
+					$('#DecisionHistory_CommentsID').removeAttr("disabled")
+				}
+
+				if($('[name=ReasonForOpeningTheAccountGroup]').data("kendoMultiSelect") != undefined) {
+					$('[name=ReasonForOpeningTheAccountGroup]').data("kendoMultiSelect").enable(false);
+				}
+
+				if($('[name=ExpectedNatureOfInAndOutTransactionGroup]').data("kendoMultiSelect") != undefined) {
+					$('[name=ExpectedNatureOfInAndOutTransactionGroup]').data("kendoMultiSelect").enable(false);
+				}					
+
+				$.each(parentElement, function (i) {
+
 					if($('#' + $(parentElement)[i].id).data("kendoDropDownList") != undefined) {
 						$('#' + $(parentElement)[i].id).data("kendoDropDownList").enable(false);
 					}
