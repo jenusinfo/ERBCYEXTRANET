@@ -100,20 +100,20 @@
                         // .ToolBar(toolbar => toolbar.ClientTemplate("<a class='k-button' style='margin-left: auto;' href='" + Url.Action("AddNewBankDouments", "Applications", new { id = Model.Id, entity = Model.EntityType }) + "'>New</a>"))
                         .ToolBar(toolbar =>
                         {
-                            toolbar.Search();
                             if (Model.ApplicationDetails.IsEdit) { toolbar.Create().Text("New").IconClass("justify-content-end").HtmlAttributes(new { style = "margin-left: auto;" }); }
+                            toolbar.Search();
                         })
                         .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode == Eurobank.Helpers.DataAnnotation.Constants.LegalEntity ? "LegalAddEditBankDocuments" : "AddEditBankDocuments").DisplayDeleteConfirmation(false).Window(w => w.Title("Bank Documents-Upload").Width(800))).EnableCustomBinding(true)
                         // .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode == Eurobank.Helpers.DataAnnotation.Constants.LegalEntity ? "# if(EntityType_Name == 'INDIVIDUAL') {# 'AddEditBankDocuments'; #}# else {# 'LegalAddEditBankDocuments'; #}#" : "AddEditBankDocuments").DisplayDeleteConfirmation(false).Window(w => w.Title("Bank Documents-Upload").Width(800))).EnableCustomBinding(true)
                         .Pageable()
                         .Sortable()
                         .Scrollable()
-                       @*  .ColumnMenu(col => col.Filterable(false))
+                        .ColumnMenu(col => col.Filterable(false))
                         .Navigatable()
                         .Reorderable(r => r.Columns(true))
                         .Groupable(g => g.ShowFooter(false))
-                        .Filterable() *@
-                        .HtmlAttributes(new { style = "max-height:620px;" })
+                        .Filterable()
+                        .HtmlAttributes(new { style = "max-height:550px;" })
                         .DataSource(dataSource => dataSource
                         .Ajax()
                         .PageSize(10)

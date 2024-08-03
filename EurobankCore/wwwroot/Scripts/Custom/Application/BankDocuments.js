@@ -34,9 +34,6 @@ function onGridDataBoundBankdocuments(e) {
     $("#Bankdocuments .k-grid-content").attr("style", "max-height: 400px");
     deleteEmptyGridRecord('Bankdocuments');
     $(".k-toolbar .k-textbox input").removeAttr("disabled");
-    $(".k-toolbar .k-grid-search .k-input").attr("placeholder", "Type to filter...")
-        .css("text-transform", "none");
-    
 }
 function addConfirmButton(e) {
     $(".k-widget k-window k-display-inline-flex").addClass("leftpopup");

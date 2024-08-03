@@ -90,11 +90,11 @@
                             columns.Bound(p => p.BankDocuments_Status_Name).Title(ResHelper.GetString("Eurobank.Application.General.GridHeader.RecordStatus")).Width(100);
 
                         })
-                       @*  .ColumnMenu(col => col.Filterable(false))
+                        .ColumnMenu(col => col.Filterable(false))
                         .Navigatable()
                         .Reorderable(r => r.Columns(true))
                         .Groupable(g => g.ShowFooter(false))
-                        .Filterable() *@
+                        .Filterable()
                         .Events(e =>
 
                         {
@@ -106,7 +106,6 @@
                         //.ToolBar(toolbar => toolbar.ClientTemplate("<a class='k-button' style='margin-left: auto;' href='" + Url.Action("AddNewExpectedDouments", "Applications", new { id = Model.Id, entityType=Model.EntityType }) + "'>New</a>"))
                         .ToolBar(toolbar =>
                         {
-                            toolbar.Search();
                             if (Model.ApplicationDetails.IsEdit)
                             {
                                 toolbar
@@ -115,12 +114,13 @@
                                 .IconClass("justify-content-end")
                                 .HtmlAttributes(new { style = "margin-left: auto;" });
                             }
+                            toolbar.Search();
                         })
                         .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Model.EntityTypeCode == Eurobank.Helpers.DataAnnotation.Constants.LegalEntity ? "LegalAddEditExpectedDocuments" : "AddEditExpectedDocuments").DisplayDeleteConfirmation(false).Window(w => w.Title("Expected Documents-Upload").Width(800))).EnableCustomBinding(true)
                         .Pageable()
                         .Sortable()
                         .Scrollable()
-                        .HtmlAttributes(new { style = "max-height:620px;" })
+                        .HtmlAttributes(new { style = "max-height:550px;" })
                         .DataSource(dataSource => dataSource
                         .Ajax()
                         .PageSize(10)

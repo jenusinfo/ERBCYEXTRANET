@@ -153,15 +153,7 @@ namespace Eurobank.Helpers.Process
                 var nonFinancialForeignInstitution = ServiceHelper.GetTYPE_OF_NON_FINANCIAL_FOREIGN_ENTITY_NFFE();
                 var globalIdentificationNumber = ServiceHelper.GetGLOBAL_INTERMEDIARY_IDENTIFICATION_NUMBER_GIIN();
                 var examptionReason = ServiceHelper.GetEXEMPTION_REASON();
-
-                var test = (globalIdentificationNumber != null 
-                    && globalIdentificationNumber.Count > 0 
-                    && item.FATCADetails_GlobalIntermediaryIdentificationNumber != null 
-                    && globalIdentificationNumber.Any(f => f.Value == item.FATCADetails_GlobalIntermediaryIdentificationNumber.ToString())) 
-                    ? globalIdentificationNumber.FirstOrDefault(f => f.Value == item.FATCADetails_GlobalIntermediaryIdentificationNumber.ToString()).Text 
-                    : string.Empty;
-
-
+                
                 retVal = new FATCACRSDetailsModel()
                 {
                     FATCADetailsID = item.FATCADetailsID,

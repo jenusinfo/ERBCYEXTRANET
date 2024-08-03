@@ -614,16 +614,17 @@ namespace Eurobank.Helpers.Process
                                     if (previousStatus == ApplicationWorkflowStatus.PENDING_CHECKER || previousStatus == ApplicationWorkflowStatus.PENDING_VERIFICATION)
                                     {
                                         retVal.IsEdit = true;
-                                        retVal.IsVisibleSaveAsDraftButton = true;
                                     }
+                                    retVal.IsView = true;
                                     retVal.IsExpectedDocAttachmentAllowed = true;
                                     retVal.IsDecissionCommentsAllowed = true;
                                     retVal.IsVisibleSubmitButton = true;
+                                    retVal.IsVisibleSaveAsDraftButton = true;
                                     break;
                                 case ApplicationWorkflowStatus.PENDING_CHECKER:
                                     retVal.IsView = true;
                                     retVal.IsExpectedDocAttachmentAllowed = true;
-                                    retVal.IsVisibleSaveAsDraftButton = false;
+                                    retVal.IsVisibleSaveAsDraftButton = true;
                                     if (string.Equals(userRole, ApplicationUserRole.POWER.ToString(), StringComparison.OrdinalIgnoreCase))
                                     {
                                         retVal.IsEdit = true;
@@ -664,12 +665,6 @@ namespace Eurobank.Helpers.Process
                                 case ApplicationWorkflowStatus.PENDING_VERIFICATION:
                                 case ApplicationWorkflowStatus.PENDING_EXECUTION:
                                 case ApplicationWorkflowStatus.PENDING_BANK_DOCUMENTS:
-                                    retVal.IsView = true;
-                                    retVal.IsBankDocAttachmentAllowed = true;
-                                    retVal.IsDecissionCommentsAllowed = true;
-                                    retVal.IsVisibleSubmitButton = true;
-                                    break;
-                                case ApplicationWorkflowStatus.PENDING_COMPLETION:
                                     retVal.IsView = true;
                                     retVal.IsBankDocAttachmentAllowed = true;
                                     retVal.IsDecissionCommentsAllowed = true;

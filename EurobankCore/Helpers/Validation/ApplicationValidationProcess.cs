@@ -29,13 +29,13 @@ namespace Eurobank.Helpers.Validation
             var applicationServiceGroup = ControlBinder.BindCheckBoxGroupItems(ServiceHelper.GetApplicationServiceItemGroup(), null, '\0');
             bool isCard = false;
             string cardValue = applicationServiceGroup.Items.Where(x =>string.Equals( x.Label, "CARD",StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault();
-            if (applicationModel.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue != null && applicationModel.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue.Contains(cardValue))
+            if (applicationModel.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue.Contains(cardValue))
             {
                 isCard = true;
             }
             bool isEbanking = false;
             string eBankingValue = applicationServiceGroup.Items.Where(x => string.Equals(x.Label, "DIGITAL BANKING", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault();
-            if (applicationModel.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue != null && applicationModel.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue.Contains(eBankingValue))
+            if (applicationModel.ApplicationDetails.ApplicationDetails_ApplicatonServicesGroup.CheckBoxGroupValue.Contains(eBankingValue))
             {
                 isEbanking = true;
             }

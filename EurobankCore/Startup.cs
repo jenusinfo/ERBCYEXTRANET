@@ -98,7 +98,6 @@ namespace Eurobank
             services.AddScoped<IAuthorizationHandler, RolesAuthorizationHandler>();
             services
                 .AddControllersWithViews()
-                .AddRazorRuntimeCompilation()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 // Maintain property names during serialization. See:
                 // https://github.com/aspnet/Announcements/issues/194

@@ -66,12 +66,6 @@
     input {
         text-transform: uppercase;
     }
-
-    @@media (min-width: 1028px) {
-        .custom-pt {
-            padding-top: 150px; /* Adjust the value as needed */
-        }
-    }
 </style>
 @*<script>
         function CloseErrorBox(id) {
@@ -83,7 +77,6 @@
 
 <span id="loader"></span>
 <form asp-action="Index" asp-controller="Applicant" id="applicantForm">
-    <div class="custom-pt"></div>
     @Html.HiddenFor(model => model.ApplicationNumber)
     @Html.HiddenFor(model => model.ApplicationId)
     @Html.HiddenFor(model => model.Application_NodeGUID)
